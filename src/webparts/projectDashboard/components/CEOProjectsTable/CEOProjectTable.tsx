@@ -30,6 +30,11 @@ export default class CEOProjectTable extends React.Component<ICEOProjectProps, I
     if(rowData.Status0)
      return (<div style={{backgroundColor: rowData.Status0.Status_x0020_Color, height: '2.9em', width:'100%', textAlign: 'center', paddingTop: 7, color: '#fff'}}>{rowData.Status0.Status}</div>)
   }
+  
+  ownerTemplate(rowData : CEOProjects, column){
+    if(rowData.AssignedTo)
+     return (<div><span className="glyphicon glyphicon-user"></span> {rowData.AssignedTo[0].Title}</div>)
+  }
 
   /* Html UI */ 
   public render(): React.ReactElement<ICEOProjectProps> {
@@ -132,9 +137,14 @@ export default class CEOProjectTable extends React.Component<ICEOProjectProps, I
       <div>
         <CEOProjectTimeLine tasks= {tasks} ></CEOProjectTimeLine>
         <div>
-          <DataTable value={this.state.projectList} responsive={true}>          
-              <Column field="Project_x0020_ID" header="ID" />  
+          <DataTable value={this.state.projectList} responsive={true}> 
               <Column field="Project" header="Name" />
+              <Column field="Body" header="Description" />
+              <Column
+              field="Owner"
+              header="Owner"
+              body={this.ownerTemplate}
+            />
               <Column field="Priority" header="Priority" />
               <Column
               field="Status"
@@ -153,7 +163,7 @@ export default class CEOProjectTable extends React.Component<ICEOProjectProps, I
     
     sp.web.lists.getByTitle("Project")
     .items
-    .select("Project_x0020_ID","Project", "StartDate", "DueDate", "AssignedTo/Title", "AssignedTo/ID","Status0/ID","Status0/Status","Status0/Status_x0020_Color","Priority").expand("AssignedTo", "Status0")
+    .select("Project_x0020_ID","Project", "StartDate", "DueDate", "AssignedTo/Title", "AssignedTo/ID","Status0/ID","Status0/Status","Status0/Status_x0020_Color","Priority","Body").expand("AssignedTo", "Status0")
     .getAll()
     .then((response) => {
       this.setState({projectList : response})

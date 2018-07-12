@@ -11,16 +11,25 @@
     "test": "gulp test"
   },
   "dependencies": {
-    "react": "15.6.2",
-    "react-dom": "15.6.2",
-    "@types/react": "15.6.6",
-    "@types/react-dom": "15.5.6",
     "@microsoft/sp-core-library": "1.5.1",
-    "@microsoft/sp-webpart-base": "1.5.1",
     "@microsoft/sp-lodash-subset": "1.5.1",
     "@microsoft/sp-office-ui-fabric-core": "1.5.1",
+    "@microsoft/sp-webpart-base": "1.5.1",
+    "@pnp/common": "^1.1.2",
+    "@pnp/logging": "^1.1.2",
+    "@pnp/odata": "^1.1.2",
+    "@pnp/sp": "^1.1.2",
+    "@types/es6-promise": "0.0.33",
+    "@types/react": "15.6.6",
+    "@types/react-dom": "15.5.6",
     "@types/webpack-env": "1.13.1",
-    "@types/es6-promise": "0.0.33"
+    "classnames": "^2.2.6",
+    "frappe-gantt": "^0.2.0",
+    "lodash": "^4.17.10",
+    "primeicons": "^1.0.0-beta.9",
+    "primereact": "^1.6.2",
+    "react": "15.6.2",
+    "react-dom": "15.6.2"
   },
   "devDependencies": {
     "@microsoft/sp-build-web": "1.5.1",

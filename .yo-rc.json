@@ -1,0 +1,11 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "isCreatingSolution": true,
+    "environment": "spo",
+    "version": "1.5.1",
+    "libraryName": "project-dashboard",
+    "libraryId": "513efc2c-2634-486e-9bb9-a85ea888674e",
+    "packageManager": "npm",
+    "componentType": "webpart"
+  }
+}

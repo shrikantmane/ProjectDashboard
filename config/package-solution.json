@@ -1,0 +1,12 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "project-dashboard-client-side-solution",
+    "id": "513efc2c-2634-486e-9bb9-a85ea888674e",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true
+  },
+  "paths": {
+    "zippedPackage": "solution/project-dashboard.sppkg"
+  }
+}

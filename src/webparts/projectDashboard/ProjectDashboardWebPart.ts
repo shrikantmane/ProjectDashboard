@@ -7,6 +7,7 @@ import {
   PropertyPaneTextField
 } from '@microsoft/sp-webpart-base';
 
+require('./ProjectDashbaord.overrides.scss');
 import * as strings from 'ProjectDashboardWebPartStrings';
 import ProjectDashboard from './components/ProjectDashboard';
 import { IProjectDashboardProps } from './components/IProjectDashboardProps';

@@ -11,7 +11,7 @@ export default class ProjectTimeLine {
     name: string;
     start: string;
     end: string;
-    progress: number;
+    progress?: number;
     custom_class?: string;
     dependencies? :string;      
 }

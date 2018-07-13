@@ -6,12 +6,12 @@ export enum ViewMode {
     Month = "Month"
 }
 
-export default class Task {     
+export default class ProjectTimeLine {     
     id: string;
     name: string;
     start: string;
     end: string;
-    progress: number;
+    progress?: number;
     custom_class?: string;
     dependencies? :string;      
 }

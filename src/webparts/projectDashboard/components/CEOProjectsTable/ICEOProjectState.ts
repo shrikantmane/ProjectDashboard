@@ -1,5 +1,7 @@
 import { CEOProjects } from "./CEOProject";
+import ProjectTimeLine  from "../CEOProjectTimeLine/ProjectTimeLine";
 
 export interface ICEOProjectState {
-  projectList?: Array<CEOProjects>,
+  projectList: Array<CEOProjects>,
+  projectTimeLine: Array<ProjectTimeLine>,
 }

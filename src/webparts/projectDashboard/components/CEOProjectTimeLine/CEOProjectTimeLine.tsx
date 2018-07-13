@@ -3,7 +3,7 @@ import GanttJS from "frappe-gantt";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 import { ICEOProjectTimeLineProps } from './ICEOProjectTimeLineProps';
 import { ICEOProjectTimeLineState } from './ICEOProjectTimeLineState';
-import CEOProjectTable from '../CEOProjectsTable/CEOProjectTable'
+import CEOProjectTable from '../CEOProjectsTable/CEOProjectTable';
 
 export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeLineProps, ICEOProjectTimeLineState> {  
  
@@ -20,7 +20,6 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
   }
 
   componentDidMount() {
-    SPComponentLoader.loadCss("./TimeLine.module.scss");
     this.renderFrappeGanttDOM();
   }
 
@@ -37,22 +36,23 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
 
   public render(): React.ReactElement<ICEOProjectTimeLineProps> {
     return (
-           
-      <div style={{ marginTop: "10px", height:"320px", overflow:"auto"}}>
-        <div className="row">
-          <div className="col-md-2">
-            <div style={{ float:"left", marginTop:"60px", fontWeight:"bold", fontSize: "12px", color:"grey" }}>
-              { 
-                    this.props.tasks.map(function(item, index){
-                        return <div key={index} style={{height:"38px", paddingTop:"9px"}}>{item.name} </div>
-                    }) 
-                }
+       <div className="TimeLineContainer">    
+          <div style={{ marginTop: "10px", height:"320px", overflow:"auto"}}>
+            <div className="row">
+              <div className="col-md-2">
+                <div style={{ float:"left", marginTop:"60px", fontWeight:"bold", fontSize: "12px", color:"grey" }}>
+                  { 
+                        this.props.tasks.map(function(item, index){
+                            return <div key={index} style={{height:"38px"}}>{item.name} </div>
+                        }) 
+                    }
+                </div>
+              </div>
+              <div className="col-md-10">
+                  <div ref={r => this.target = r} />
+              </div>
             </div>
-          </div>
-          <div className="col-md-10">
-              <div ref={r => this.target = r} />
-          </div>
-        </div>
+          </div>              
       </div>
     );
   }

@@ -295,7 +295,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
             onRowToggle={this.onRowToggle.bind(this)}
             rowExpansionTemplate={this.rowExpansionTemplate.bind(this)}
           >
-            <Column expander={true} style={{ width: "2em" }} />
+            <Column expander={true} style={{ width: "2em" }} className={styles.firstColExpand}/>
             <Column field="Project1" header="Project Name"  body={this.projectNameTemplate} style={{ width: "30%" }}/>            
             <Column field="Owner1" header="Owner" body={this.ownerTemplate} style={{ width: "20%" }}/>
             <Column field="MildStone1" header="Mildstone" body={this.mildstoneTemplate} style={{ width: "30%" }}/>
@@ -303,7 +303,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
               field="Status"
               header="Status"
               body={this.statusTemplate}
-              style={{ padding: 0, width:"10%" }} 
+              style={{width:"10%" }}
             />
             <Column field="Priority" header="Priority"  body={this.priorityTemplate} style={{ width: "10%" }}/>   
           </DataTable>

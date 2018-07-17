@@ -37,10 +37,10 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
   public render(): React.ReactElement<ICEOProjectTimeLineProps> {
     return (
        <div className="TimeLineContainer">    
-          <div style={{ height:"320px", overflow:"auto"}}>
+          <div className="timelineMainDiv">
             <div className="row">
               <div className="col-md-2">
-                <div style={{ float:"left", marginTop:"60px", fontWeight:"bold", fontSize: "12px", color:"grey" }}>
+                <div className="timelineProjectName">
                   { 
                         this.props.tasks.map(function(item, index){
                             return <div key={index} style={{height:"38px"}}>{item.name} </div>

@@ -150,4 +150,93 @@
     border: 5px solid transparent;
     border-top-color: rgba(0, 0, 0, 0.8);
   }
+
+  .timelineProjectName{
+      float: left;
+      margin-top: 60px;
+      font-weight: bold;
+      font-size: 12px;
+      color: #fff;
+      position: fixed;
+      z-index: 999;
+      max-height:40%;
+      height: 40%;
+      background-color: rgba(0,0,0,0.1);
+       padding: 0.5rem 1rem;
+    }
+    .timelineMainDiv{
+      height:"320px";
+       overflow:"auto"
+    }
+}
+
+// Prashant Custom CSS
+.TimeLineContainer {
+  background-color: #1d203a;
+  overflow-y: hidden;
+}
+
+.TimeLineContainer .gantt .tick {
+  stroke: #030306;
+  stroke-width: .2;
+}
+.TimeLineContainer .gantt .grid-row {
+  fill: #1d203a;
+}
+.TimeLineContainer .gantt .grid-row:nth-child(2n) {
+  fill: #1d203a;
+}
+.TimeLineContainer .gantt .grid-header {
+  fill: #1d203a;
+  stroke: #181b36;
+  stroke-width: 1.4;
+  color: #fff;
+}
+.TimeLineContainer .gantt .row-line {
+  stroke: #151529;
+}
+.TimeLineContainer .gantt .bar {
+  fill: #238ef1;
+  stroke: #238ef1;
+  stroke-width: 0;
+  transition: stroke-width .3s ease;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.TimeLineContainer .gantt .bar-progress {
+  fill: #1773c7;
+}
+.TimeLineContainer .gantt .bar-wrapper.active .bar {
+  fill: #238ef1;
+}
+.TimeLineContainer .gantt .bar-wrapper.active .bar-progress {
+  fill: #1773c7;
+}
+.TimeLineContainer .gantt .today-highlight {
+  fill: #3c405d;
+  opacity: .5;
+}
+.TimeLineContainer .gantt-container .popup-wrapper .title {
+  border-bottom: 3px solid #248ef1;
+  padding: 10px;
+}
+.TimeLineContainer .gantt .upper-text {
+  fill: #fff;
+}
+.TimeLineContainer .gantt .lower-text {
+  fill: #fff;
+}
+.TimeLineContainer .gantt .bar-wrapper:hover .bar {
+  fill: #1f7ed6;;
+}
+.TimeLineContainer .gantt .bar-wrapper:hover .bar-progress {
+  fill: #155c9c;
+}
+
+div#workbenchPageContent {
+  max-width: 10000px !important;
+  padding-left: 400px !important;
+  padding-right: 2px !important;
 }

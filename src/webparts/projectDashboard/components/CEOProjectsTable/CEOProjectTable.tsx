@@ -31,7 +31,7 @@ export default class CEOProjectTable extends React.Component<
 
   componentDidMount() {
     SPComponentLoader.loadCss(
-      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+      "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
     );
     this.getProjectList();
   }
@@ -105,7 +105,7 @@ private statusTemplate(rowData: CEOProjects, column) {
       //   {rowData.Status0.Status}
       // </div>
         <div className={styles.statusDetail}>
-          <div className= {styles.completeStatus +' ' + styles.statusPill}>{rowData.Status0.Status}</div>
+          <div className= {styles.completeStatus +' ' + styles.statusPill} style={{backgroundColor: rowData.Status0.Status_x0020_Color}}>{rowData.Status0.Status}</div>
       </div>
     );
 }
@@ -117,6 +117,11 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
   private rowExpansionTemplate(data : CEOProjects) {
     let teamMemberList = new Array<TeamMembers>();
     let extryTeamMemberList = new Array<TeamMembers>();
+    let tagList = new Array<Tags>();
+    let extryTagList = new Array<Tags>();
+    let docList = new Array<Documents>();
+    let extryDocList = new Array<Documents>();
+    // Team Members
     if(data.TeamMemberList != null){
       if(data.TeamMemberList.length > 4){
         data.TeamMemberList.forEach((element, index) => {
@@ -129,7 +134,37 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
       }else {
         teamMemberList = data.TeamMemberList;
       }
-    }   
+    }
+   
+    // Tags
+    if(data.TagList != null){
+      if(data.TagList.length > 4){
+        data.TagList.forEach((element, index) => {
+          if(index < 4){
+            tagList.push(element);
+          }else{
+            extryTagList.push(element);
+          }
+        });
+      }else {
+        tagList = data.TagList;
+      }
+    }
+
+    if(data.DocumentList != null){
+      if(data.DocumentList.length > 4){
+        data.DocumentList.forEach((element, index) => {
+          if(index < 3){
+            docList.push(element);
+          }else{
+            extryDocList.push(element);
+          }
+        });
+      }else {
+        docList = data.DocumentList;
+      }
+    }
+
     return (
     <div className={styles.milestoneExpand}>
       <div className={styles.milestoneHeader}>
@@ -143,14 +178,21 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
               <div className="col-md-6 col-12">
                  <div className={styles.tagList}>
                     {
-                      data.TagList != null ?
-                        data.TagList.map((item, key)=>{
+                      tagList != null ?
+                      tagList.map((item, key)=>{
                           return (
-                            <span className={styles.pinkTag}>{item.Tag}</span>                                   
+                            <span className={styles.pinkTag}>{item.Tags}</span>                                   
                           );
                         })
                         :null
                       }
+                    {
+                      extryTagList != null && extryTagList.length > 0 ?
+                        (<div className={styles.memberImg}>
+                            <span className={styles.moreMember}>+{extryTagList.length}</span>
+                        </div>)
+                        :null
+                    }
                   </div>
               </div>
               <div className="col-md-3 col-12">
@@ -161,8 +203,8 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
       <table className={styles.milestoneList} style={{ width : "100%"}}>
           <col style={{ width : "30%"}}/>
           <col style={{ width : "10%"}}/>
-          <col style={{ width : "40%"}}/>
-          <col style={{ width : "10%"}}/>
+          <col style={{ width : "35%"}}/>
+          <col style={{ width : "15%"}}/>
           <col style={{ width : "10%"}}/>
           <thead>
               <tr>
@@ -201,7 +243,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
                           </td> */}
                           <td>
                               <div className={styles.statusDetail}>
-                                  <div className={styles.statusPill + ' ' + styles.completeStatus}>{item.Status0 ? item.Status0.Status : ""}</div>
+                                  <div className={styles.statusPill + ' ' + styles.completeStatus} style={{backgroundColor: item.Status0.Status_x0020_Color}}>{item.Status0 ? item.Status0.Status : ""}</div>
                               </div>
                           </td>
                       </tr>
@@ -223,7 +265,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
                                 return (
                                 <div className={styles.memberImg}>
                                     <img src={item.Team_x0020_Member.ImgUrl} className={styles.moreMember} />
-                                    <span className={styles.badgeLight}>17</span>
+                                    {/* <span className={styles.badgeLight}>17</span> */}
                                 </div>                                    
                                 );
                               })
@@ -231,9 +273,9 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
                           }
                           {
                             extryTeamMemberList != null && extryTeamMemberList.length > 0 ?
-                              (<div className={styles.memberImg}>
+                              (
                                   <span className={styles.moreMember}>+{extryTeamMemberList.length}</span>
-                              </div>)
+                              )
                               :null
                           }
                       </div>
@@ -244,15 +286,45 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
                       <h5>Key Documents</h5>
                       <div className={styles.docList}>
                        {
-                            data.DocumentList != null ?
-                              data.DocumentList.map((item, key)=>{
-                                return (
-                                <div className={styles.fileName}>
-                                    <i className="far fa-file-pdf"></i>
-                                    <span>{item.File.Name}</span>
-                                </div>                                    
-                                );
+                            docList != null ?
+                            docList.map((item, key)=>{
+                                if(item.File){
+                                  let type = "";
+                                  let iconClass ="";
+                                  let data = item.File.Name.split(".");
+                                  if(data.length > 1){
+                                    type = data[1];
+                                  }                                  
+                                  switch(type.toLowerCase()){
+                                    case 'doc':
+                                    case 'docx':
+                                        iconClass = "far fa-file-pdf";
+                                    break;
+                                    case 'pdf':
+                                        iconClass = "far fa-file-pdf";                                    
+                                    break;
+                                    case 'xls':
+                                        iconClass = "far fa-file-excel";
+                                    break
+                                    default :
+                                      iconClass = ""
+                                    break;
+                                  }
+                                  return (
+                                  <div className={styles.fileName}>
+                                      <i className={iconClass} style={{marginRight: "5px"}}></i>
+                                      <a href={item.File.LinkingUri} target="_blank">{item.File.Name}</a>
+                                  </div>                                    
+                                  );
+                                }
                               })
+                              :null
+                          }
+                           {
+                            extryDocList != null && extryDocList.length > 0 ?
+                              (
+                                  <span className={styles.moreMember}>+{extryDocList.length}</span>
+                              )
                               :null
                           }
                       </div>
@@ -282,13 +354,20 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
   /* Html UI */
 
   public render(): React.ReactElement<ICEOProjectProps> {
+    var header = <div style={{'textAlign':'left'}}>
+                <i className="fa fa-search" style={{margin:'4px 4px 0 0'}}></i>
+                <input  type="text" placeholder="Global Search" onChange={(e) => this.setState({globalFilter: e.target.value})}/>
+            </div>;
+
     return (
       <div className={ styles.CEOProjectDashboard }>
         {this.state.projectTimeLine.length > 0 ? (
           <CEOProjectTimeLine tasks={this.state.projectTimeLine} />
         ) : null}
         <div style={{ marginTop: "10px" }}>
-          <DataTable
+          <DataTable paginator={true} rows={5} rowsPerPageOptions={[5,10,20]}
+            globalFilter={this.state.globalFilter}
+            header={header}
             value={this.state.projectList}
             responsive={true}
             expandedRows={this.state.expandedRows}
@@ -296,16 +375,18 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
             rowExpansionTemplate={this.rowExpansionTemplate.bind(this)}
           >
             <Column expander={true} style={{ width: "2em" }} className={styles.firstColExpand}/>
-            <Column field="Project1" header="Project Name"  body={this.projectNameTemplate} style={{ width: "30%" }}/>            
-            <Column field="Owner1" header="Owner" body={this.ownerTemplate} style={{ width: "20%" }}/>
-            <Column field="MildStone1" header="Mildstone" body={this.mildstoneTemplate} style={{ width: "30%" }}/>
+            <Column field="Project" header="Project Name"  body={this.projectNameTemplate} style={{ width: "30%" }} filter={true} sortable={true}/>            
+            <Column field="OwnerTitle" header="Owner" body={this.ownerTemplate} style={{ width: "20%" }} filter={true} sortable={true}/>
+            <Column field="MildStone" header="Mildstone" body={this.mildstoneTemplate} style={{ width: "30%" }}/>
             <Column
-              field="Status"
+              field="StatusText"
               header="Status"
               body={this.statusTemplate}
               style={{width:"10%" }}
+              filter={true}
+              sortable={true}
             />
-            <Column field="Priority" header="Priority"  body={this.priorityTemplate} style={{ width: "10%" }}/>   
+            <Column field="Priority" header="Priority"  body={this.priorityTemplate} style={{ width: "10%" }} filter={true} sortable={true}/>   
           </DataTable>
         </div>
       </div>
@@ -358,8 +439,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
           let currentDate = new Date().getTime();
           for (let count = 0; count < filteredMilestones.length; count++) {
             let startDate = new Date(filteredMilestones[count].StartDate).getTime();
-            let dueDate = new Date(filteredMilestones[count].DueDate).getTime();
-                         
+            let dueDate = new Date(filteredMilestones[count].DueDate).getTime();                         
              
             if(currentDate <= startDate && currentDate >= dueDate ){
               mildstone = filteredMilestones[count];
@@ -381,6 +461,9 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
                 "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";
             }
           });
+
+          item.StatusText = item.Status0 ? item.Status0.Status : "";
+          item.OwnerTitle = item.AssignedTo && item.AssignedTo.length > 0  ? item.AssignedTo[0].Title : "";           
 
           // Time Line
           timeline.push({
@@ -477,16 +560,21 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
   }
 
   private getTaggingByProject(name): void {
-    let filter = "Project/Title eq '" + name + "'";
+    let filter = "Project eq '" + name + "'";
     sp.web.lists
-      .getByTitle("Project Tags")
-      .items.filter(filter)
+      .getByTitle("Project")
+      .items
+      .select("Project_x0020_Tag/ID","Project_x0020_Tag/Tags").expand("Project_x0020_Tag")
+      .filter("Project eq 'AlphaServe'")
       .get()
-      .then((response: Array<Tags>) => {
-        let projects = this.state.projectList;
-        let project = find(projects, {"Project" : name })
-        project.TagList = response; 
-        this.setState({ projectList: projects });
+      .then((response: Array<any>) => {
+        if(response != null && response.length > 0){
+          let tags = response[0].Project_x0020_Tag;
+          let projects = this.state.projectList;
+          let project = find(projects, {"Project" : name })
+          project.TagList = tags; 
+          this.setState({ projectList: projects });
+        }
       });
   }
 }

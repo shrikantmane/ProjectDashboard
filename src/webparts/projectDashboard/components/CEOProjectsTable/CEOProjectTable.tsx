@@ -15,6 +15,7 @@ import {
 import CEOProjectTimeLine from "../CEOProjectTimeLine/CEOProjectTimeLine";
 import ProjectTimeLine from "../CEOProjectTimeLine/ProjectTimeLine";
 import { find, filter } from "lodash";
+import { SPComponentLoader } from "@microsoft/sp-loader";
 
 export default class CEOProjectTable extends React.Component<
   ICEOProjectProps,
@@ -29,6 +30,9 @@ export default class CEOProjectTable extends React.Component<
   }
 
   componentDidMount() {
+    SPComponentLoader.loadCss(
+      "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+    );
     this.getProjectList();
   }
   componentWillReceiveProps(nextProps) {}
@@ -218,8 +222,8 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
                              teamMemberList.map((item, key)=>{
                                 return (
                                 <div className={styles.memberImg}>
-                                    <img src={item.Team_x0020_Member.ImgUrl} className={styles.moreMember}/>
-                                    <span className="badge badge-light">17</span>
+                                    <img src={item.Team_x0020_Member.ImgUrl} className={styles.moreMember} />
+                                    <span className={styles.badgeLight}>17</span>
                                 </div>                                    
                                 );
                               })
@@ -292,16 +296,16 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
             rowExpansionTemplate={this.rowExpansionTemplate.bind(this)}
           >
             <Column expander={true} style={{ width: "2em" }} />
-            <Column field="Project1" header="Project Name"  body={this.projectNameTemplate}/>            
-            <Column field="Owner1" header="Owner" body={this.ownerTemplate} />
-            <Column field="MildStone1" header="Mildstone" body={this.mildstoneTemplate}/>
+            <Column field="Project1" header="Project Name"  body={this.projectNameTemplate} style={{ width: "30%" }}/>            
+            <Column field="Owner1" header="Owner" body={this.ownerTemplate} style={{ width: "20%" }}/>
+            <Column field="MildStone1" header="Mildstone" body={this.mildstoneTemplate} style={{ width: "30%" }}/>
             <Column
               field="Status"
               header="Status"
               body={this.statusTemplate}
-              style={{ padding: 0 }}
+              style={{ padding: 0, width:"10%" }} 
             />
-            <Column field="Priority" header="Priority"  body={this.priorityTemplate} />   
+            <Column field="Priority" header="Priority"  body={this.priorityTemplate} style={{ width: "10%" }}/>   
           </DataTable>
         </div>
       </div>
@@ -338,7 +342,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
     sp.web.lists
       .getByTitle("Tasks List")
      // .items
-      .items.select("Title","StartDate", "DueDate", "Status0/ID",  "Status0/Status", "Status0/Status_x0020_Color","Project/ID", "Project/Title", "AssignedTo/Title", "AssignedTo/ID",
+      .items.select("Title","StartDate", "DueDate", "Status0/ID", "Body", "Status0/Status", "Status0/Status_x0020_Color","Project/ID", "Project/Title", "AssignedTo/Title", "AssignedTo/ID",
       "AssignedTo/EMail")
       .expand("Project", "Status0","AssignedTo")
       .filter("Duration eq 0")

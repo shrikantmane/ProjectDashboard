@@ -89,28 +89,29 @@
 .redTag{
     background-color: #ff6363;
 }
-.table{
+table{
     font-size: 14px;
     color: #424860;
 }
-.table .thead-light th {
-    font-size: 10px;
+table thead tr th {
+    background-color: #f8f9fd!important;
+    font-size: 11px;
     color: #696d80;
-    background-color: transparent;
-    border-color: transparent;
+    border-color: transparent!important;
     text-align: center;
+    font-weight: 800 !important;
 }
-.table tbody tr{
+table tbody tr{
     background-color: #ffffff;
 }
-.table tbody tr.expandView{
+table tbody tr.expandView{
     background-color: transparent;
 }
-.table tbody tr.expandView td{
+table tbody tr.expandView td{
     padding: 0px;
 }
-.table tbody tr td{
-    border: 3px solid #f8f9fd;
+table tbody tr td{
+    border: 3px solid #f8f9fd !important;;
 }
 .projectName{
     font-weight: 600;
@@ -123,6 +124,8 @@
 .ownerImg > img{
     display: inline-block;
     width:20%;
+    border-radius: 3rem;
+    margin-right: 4px;
 }
 .ownerImg > div{
     display: inline-block;   
@@ -185,16 +188,17 @@
     box-shadow: 0px 0px 5px 0px rgba(180,35,241,0.23);
 }
 .statusDetail{
-    width: 7rem;
+    width: 6rem;
     height: 1.6rem;
     margin: 0 auto;
     color: #fff;
-    font-size: 1rem;
-    padding-top: 1.5rem;
+    font-size: 0.8rem;
+    font-weight: 600;
 }
 .statusPill{
     border-radius: 3rem;
     text-align: center;
+    padding: 2px;
 }
 .completeStatus{
     background-color: #12c877;
@@ -218,7 +222,6 @@
     text-align: center;
 }
 .priorityDetail{
-    padding-top: 1.5rem;
     text-align: center;
     font-weight: bold;
 }
@@ -237,12 +240,13 @@
 .tagList > span{
     border-radius: 3rem;
     color: #fff;
-    width: 4rem;
+    width: auto;
     height: 1.5rem;
     display: inline-block;
     font-size: 11px;
     text-align: center;
-    padding-top: 0.2rem;
+    padding: .2rem .5rem;
+    margin: 0 0.3rem;
 }
 .milestoneHeader button{
     float: right;
@@ -261,6 +265,7 @@
     border: none;
 }
 .milestoneList thead th{
+    background-color: transparent !important;
     color: #6168b6;
     font-size: 10px;
     padding: 0px;
@@ -270,9 +275,10 @@
 .milestoneList tbody tr.milestoneItems{
     background-color: #393b51;
     border: none;
+    color: #fff;
 }
 .milestoneList tbody tr.milestoneItems td {
-    border: 2px solid #1d203a;
+    border: 2px solid #1d203a !important;
     padding: 0.5rem;
 }
 .milestoneDesc {
@@ -290,16 +296,14 @@ tr.milestoneItems .ownerImg > img {
 }
 tr.milestoneItems .ownerImg > div {
     display: block;
+    font-weight: 600;
 }
 tr.milestoneItems .statusDetail {
-    padding-top: 0.5rem;
-}
-tr.milestoneItems .statusDetail {
+    padding-top: 0rem;
     width: 5rem;
     margin: 0 auto;
     color: #fff;
-    font-size: 0.8rem;
-    padding-top: 1rem;
+    font-size: .7rem;
     font-weight: 500;
 }
 .milestoneFooter{
@@ -320,21 +324,41 @@ tr.milestoneItems .statusDetail {
     position: relative;
     display: inline-block;
     margin-right: 6px;
+    width: 10%;
+    height: auto;
 }
-.memberList > .memberImg > .badge{
+// .memberList  .memberImg  .badge{
+//     border-radius: 3rem;
+//     position: absolute;
+//     top: -3px;
+//     right: -10px;
+//     font-size: 9px;
+//     z-index: 99;
+// }
+.badgeLight{
+    display: inline-block;
+    padding: .25em .4em;
+    font-size: 75%;
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
     border-radius: 3rem;
     position: absolute;
-    top: -3px;
-    right: -10px;
+    top: 0px;
+    right: -11px;
     font-size: 9px;
     z-index: 99;
+    color: #212529;
+    background-color: #f8f9fa;
 }
 .memberList > .memberImg > .moreMember{
     background-color: #504f6c;
     border-radius: 50%;
     color: #fff;
     font-size: 11px;
-    padding: 0.5rem;
+    width: 100%;
 }
 .docList .fileName{
     margin-right: 0.5rem;

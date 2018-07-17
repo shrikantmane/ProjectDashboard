@@ -111,7 +111,7 @@ table tbody tr.expandView td{
     padding: 0px;
 }
 table tbody tr td{
-    border: 3px solid #f8f9fd !important;;
+    border: 3px solid #f8f9fd !important;
 }
 .projectName{
     font-weight: 600;
@@ -399,27 +399,110 @@ tr.milestoneItems .statusDetail {
 ****************Media Queries******************
 *************************************************/
 
-@media only screen and (max-width: 760px){
-    .milestoneHeader, .tagList{
-        margin-top: 1rem;
+    @media only screen and (max-width: 760px){
+        .milestoneHeader, .tagList{
+            margin-top: 1rem;
+        }
+        .milestoneHeader button{
+            float: left;
+            margin-top: 1rem;
+        }
+        .milestoneFooter {
+            padding: 1rem;
+        }
+        .teamMembers, .keyDoc, .projectPageLink{
+            margin-top: 1rem;
+        }
+        .projectPageLink h5 {
+            float: none;
+            display: block;
+        }
+        .projectPageLink button{
+            float: left;
+            display: block;
+        }
+        .ownerImg{
+            padding-top: 0rem;
+            text-align: left;
+        }
+        .ownerImg > img{
+            width:20%;
+            width: 13%;
+            margin-bottom: 5px;
+        }
+        .ownerImg > div{
+            display: inline-block;   
+        }
+        .statusDetail{
+            margin-left: 9px;
+            margin-bottom: 6px;
+        }
+        .priorityDetail{
+            text-align: left;
+            font-weight: bold;
+        }
+        .firstColExpand{
+            background-color: #161726;
+        }
+        .pi-fw {
+            text-align: center;
+            font-size: 1.5rem;
+    color: #fff;
+        }
+        table tbody tr td{
+            padding: 1rem;
+        }
     }
-    .milestoneHeader button{
-        float: left;
-        margin-top: 1rem;
+
+    /* 
+Max width before this PARTICULAR table gets nasty
+This query will take effect for any screen smaller than 760px
+and also iPads specifically.
+*/
+@media 
+only screen and (max-width: 760px),
+(min-device-width: 768px) and (max-device-width: 1024px)  {
+
+	/* Force table to not be like tables anymore */
+	table.milestoneList, table.milestoneList thead, table.milestoneList tbody, table.milestoneList th, table.milestoneList td, table.milestoneList tr { 
+		display: block; 
+	}
+	
+	/* Hide table headers (but not display: none;, for accessibility) */
+	table.milestoneList thead tr { 
+		position: absolute;
+		top: -9999px;
+		left: -9999px;
+	}
+	
+	table.milestoneList tr { margin-bottom: 2rem; }
+	table.milestoneList tr::before { content: "" }
+	table.milestoneList td { 
+		border: none;
+		border-bottom: 1px solid #eee; 
+		position: relative;
+		padding-left: 50%; 
     }
-    .milestoneFooter {
-        padding: 1rem;
+    table.milestoneList td div{
+        margin-top: 1.5rem;
     }
-    .teamMembers, .keyDoc, .projectPageLink{
-        margin-top: 1rem;
-    }
-    .projectPageLink h5 {
-        float: none;
-        display: block;
-    }
-    .projectPageLink button{
-        float: left;
-        display: block;
-    } 
+	
+	table.milestoneList td:before { 
+		position: absolute;
+		top: 6px;
+		left: 6px;
+		width: 45%; 
+		padding-right: 10px; 
+		white-space: nowrap;
+	}
+	
+	/*
+	Label the data
+	*/
+	table.milestoneList td:nth-of-type(1):before { content: "Milestone Name"; font-weight: 600; color: #6168b6;}
+	table.milestoneList td:nth-of-type(2):before { content: "Owner"; font-weight: 600; color: #6168b6;}
+	table.milestoneList td:nth-of-type(3):before { content: "Description"; font-weight: 600; color: #6168b6;}
+	table.milestoneList td:nth-of-type(4):before { content: "Start Date"; font-weight: 600; color: #6168b6;}
+	table.milestoneList td:nth-of-type(5):before { content: "Status"; font-weight: 600; color: #6168b6;}
 }
 }

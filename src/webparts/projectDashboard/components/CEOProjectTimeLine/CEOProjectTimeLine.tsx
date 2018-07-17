@@ -39,7 +39,7 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
        <div className="TimeLineContainer">    
           <div className="timelineMainDiv">
             <div className="row">
-              <div className="col-md-2">
+              <div className="col-md-2 col-6">
                 <div className="timelineProjectName">
                   { 
                         this.props.tasks.map(function(item, index){
@@ -48,7 +48,7 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
                     }
                 </div>
               </div>
-              <div className="col-md-10">
+              <div className="col-md-10 col-5">
                   <div ref={r => this.target = r} />
               </div>
             </div>

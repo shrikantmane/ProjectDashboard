@@ -1,3 +1,4 @@
 export interface IProjectDashboardProps {
-  description: string;
+  list: string;
+  context: any;
 }

@@ -7,12 +7,13 @@ import {
   PropertyPaneTextField
 } from '@microsoft/sp-webpart-base';
 
+require('./ProjectDashbaord.overrides.scss');
 import * as strings from 'ProjectDashboardWebPartStrings';
 import ProjectDashboard from './components/ProjectDashboard';
 import { IProjectDashboardProps } from './components/IProjectDashboardProps';
 
 export interface IProjectDashboardWebPartProps {
-  description: string;
+  list: string;
 }
 
 export default class ProjectDashboardWebPart extends BaseClientSideWebPart<IProjectDashboardWebPartProps> {
@@ -21,7 +22,8 @@ export default class ProjectDashboardWebPart extends BaseClientSideWebPart<IProj
     const element: React.ReactElement<IProjectDashboardProps > = React.createElement(
       ProjectDashboard,
       {
-        description: this.properties.description
+        list: this.properties.list,
+        context: this.context
       }
     );
 

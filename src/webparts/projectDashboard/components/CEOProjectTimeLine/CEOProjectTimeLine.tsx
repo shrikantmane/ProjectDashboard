@@ -9,6 +9,9 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
  
   constructor(props) {
     super(props);
+    this.onDayViewClick = this.onDayViewClick.bind(this);
+    this.onWeekViewClick = this.onWeekViewClick.bind(this);
+    this.onMonthsViewClick = this.onMonthsViewClick.bind(this);  
   }
 
   private gantt: any;
@@ -18,8 +21,12 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
         this.gantt.change_view_mode(this.props.viewMode);
     }
   }
-
+  
   componentDidMount() {
+    this.renderFrappeGanttDOM();
+  }
+
+  componentDidUpdate(){
     this.renderFrappeGanttDOM();
   }
 
@@ -34,12 +41,30 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
     //this._gantt.change_view_mode(this.props.viewMode);
   }
 
+  private onDayViewClick(){
+    this.gantt.change_view_mode("Day");
+  }
+
+  private onWeekViewClick(){
+    this.gantt.change_view_mode("Week");
+  }
+
+  private onMonthsViewClick(){
+    this.gantt.change_view_mode("Month ");
+  }
+
   public render(): React.ReactElement<ICEOProjectTimeLineProps> {
     return (
-       <div className="TimeLineContainer">    
+       <div className="TimeLineContainer">
+        <div>
+          <button type="button" className="btn btn-default btn-sm" onClick={this.onDayViewClick}>Day </button>
+          <button type="button" className="btn btn-default btn-sm" onClick={this.onWeekViewClick}>Week</button>
+          <button type="button" className="btn btn-default btn-sm" onClick={this.onMonthsViewClick}>Month</button>
+        </div> 
           <div className="timelineMainDiv">
             <div className="row">
               <div className="col-md-2 col-6">
+              <div className="timelineProjectNameDiv"> Project Name </div>
                 <div className="timelineProjectName">
                   { 
                         this.props.tasks.map(function(item, index){

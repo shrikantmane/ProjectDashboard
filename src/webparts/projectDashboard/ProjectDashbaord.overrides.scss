@@ -194,7 +194,7 @@ body, html{
   }
 
   .timelineProjectName{
-    margin-top: 60px;
+    margin-top: 13px;
     font-weight: 500;
     font-size: 11px;
     color: #fff;
@@ -204,6 +204,12 @@ body, html{
     .timelineMainDiv{
       height:320px;
        overflow:auto;
+    }
+
+    .timelineProjectNameDiv{
+      color: aquamarine;
+      margin-top: 30px;
+      margin-left: 10px;
     }
 }
 

@@ -6,4 +6,8 @@ export interface ICEOProjectState {
   projectTimeLine: Array<ProjectTimeLine>,
   expandedRows? :any,
   globalFilter?: any,
+  projectName: string,
+  ownerName: string,
+  status: string,
+  priority: string
 }

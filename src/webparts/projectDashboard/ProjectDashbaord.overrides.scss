@@ -1,3 +1,6 @@
+.ControlZone{
+  background-color: #f8f9fd;
+}
 .TimeLineContainer {
   .gantt .grid-background {
     fill: none;
@@ -160,8 +163,8 @@
     padding: .5rem 1rem;
     }
     .timelineMainDiv{
-      height:"320px";
-       overflow:"auto"
+      height:320px;
+       overflow:auto;
     }
 }
 

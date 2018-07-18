@@ -77,6 +77,7 @@
     margin-top: 3rem;
   body, html, .ControlZone{
     background-color: #f8f9fd;
+    font-family: 'Conv_AVENIRLTSTD-BOOK';
 }
 .pinkTag{
     background-color: #ff4381;
@@ -149,6 +150,7 @@ table tbody tr td{
     color: #161726;
     font-size: 0.7rem;
     font-weight: bold;
+    font-family: 'Conv_AVENIRLTSTD-HEAVY';
     margin-bottom: 0.3rem;
 }
 .stepMilestone{
@@ -285,6 +287,9 @@ table tbody tr td{
 .milestoneDesc {
     color: rgba(255,255,255,0.76);
     font-size: 12px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 tr.milestoneItems .ownerImg {
     padding-top: 0rem;
@@ -354,12 +359,17 @@ tr.milestoneItems .statusDetail {
     color: #212529;
     background-color: #f8f9fa;
 }
-.memberList > .memberImg > .moreMember{
+.memberList .memberImg img{
+    border-radius: 50%;
+    width: 2.3rem;
+}
+.moreMember{
     background-color: #504f6c;
     border-radius: 50%;
     color: #fff;
     font-size: 11px;
     width: 100%;
+    padding: 0.7rem;
 }
 .docList .fileName{
     margin-right: 0.5rem;
@@ -413,6 +423,12 @@ tr.milestoneItems .statusDetail {
 .datatablePosition{
     position: inherit !important;
 }
+.datatablePosition .ui-datatable .ui-column-filter{
+    border: 1px solid #d9dbe4;
+-webkit-border-radius: 3px;
+-moz-border-radius: 3px;
+border-radius: 3px;
+} 
 
 /*************************************************
 ****************Media Queries******************

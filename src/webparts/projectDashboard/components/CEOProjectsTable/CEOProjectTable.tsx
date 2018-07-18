@@ -264,7 +264,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
                              teamMemberList.map((item, key)=>{
                                 return (
                                 <div className={styles.memberImg}>
-                                    <img src={item.Team_x0020_Member.ImgUrl} className={styles.moreMember} />
+                                    <img src={item.Team_x0020_Member.ImgUrl} />
                                     {/* <span className={styles.badgeLight}>17</span> */}
                                 </div>                                    
                                 );
@@ -370,7 +370,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
             globalFilter={this.state.globalFilter}
             header={header}
             value={this.state.projectList}
-            responsive={true}
+            // responsive={true}
             className={styles.datatablePosition}
             expandedRows={this.state.expandedRows}
             onRowToggle={this.onRowToggle.bind(this)}

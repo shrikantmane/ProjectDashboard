@@ -188,9 +188,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
                       }
                     {
                       extryTagList != null && extryTagList.length > 0 ?
-                        (<div className={styles.memberImg}>
-                            <span className={styles.moreMember}>+{extryTagList.length}</span>
-                        </div>)
+                        (<span className={styles.moreMember}>+{extryTagList.length}</span>)
                         :null
                     }
                   </div>
@@ -264,7 +262,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
                              teamMemberList.map((item, key)=>{
                                 return (
                                 <div className={styles.memberImg}>
-                                    <img src={item.Team_x0020_Member.ImgUrl} className={styles.moreMember} />
+                                    <img src={item.Team_x0020_Member.ImgUrl} />
                                     {/* <span className={styles.badgeLight}>17</span> */}
                                 </div>                                    
                                 );
@@ -360,6 +358,8 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
                 <input  type="text" placeholder="Global Search" onChange={(e) => this.setState({globalFilter: e.target.value})}/>
             </div>;
 
+let brandFilter = <input className={styles.filterCustom}/>
+
     return (
       <div className={ styles.CEOProjectDashboard }>
         {this.state.projectTimeLine.length > 0 ? (
@@ -370,16 +370,16 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
             globalFilter={this.state.globalFilter}
             header={header}
             value={this.state.projectList}
-            responsive={true}
+            // responsive={true}
             className={styles.datatablePosition}
             expandedRows={this.state.expandedRows}
             onRowToggle={this.onRowToggle.bind(this)}
             rowExpansionTemplate={this.rowExpansionTemplate.bind(this)}
           >
-            <Column expander={true} style={{ width: "2em" }} className={styles.firstColExpand}/>
-            <Column field="Project" header="Project Name"  body={this.projectNameTemplate} style={{ width: "30%" }} filter={true} sortable={true}/>            
-            <Column field="OwnerTitle" header="Owner" body={this.ownerTemplate} style={{ width: "20%" }} filter={true} sortable={true}/>
-            <Column field="MildStone" header="Mildstone" body={this.mildstoneTemplate} style={{ width: "30%" }}/>
+            <Column expander={true} style={{ width: "2em" }} className={styles.firstColExpand} filterElement={brandFilter}/>
+            <Column field="Project" header="Project Name"  body={this.projectNameTemplate} style={{ width: "30%" }} filter={true} sortable={true} filterElement={brandFilter}/>            
+            <Column field="OwnerTitle" header="Owner" body={this.ownerTemplate} style={{ width: "20%" }} filter={true} sortable={true} filterElement={brandFilter}/>
+            <Column field="MildStone" header="Mildstone" body={this.mildstoneTemplate} style={{ width: "30%" }} filterElement={brandFilter}/>
             <Column
               field="StatusText"
               header="Status"
@@ -387,8 +387,9 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
               style={{width:"10%" }}
               filter={true}
               sortable={true}
+              filterElement={brandFilter}
             />
-            <Column field="Priority" header="Priority"  body={this.priorityTemplate} style={{ width: "10%" }} filter={true} sortable={true}/>   
+            <Column field="Priority" header="Priority"  body={this.priorityTemplate} style={{ width: "10%" }} filter={true} sortable={true} filterElement={brandFilter}/>   
           </DataTable>
         </div>
       </div>

@@ -19,6 +19,8 @@ export class CEOProjects {
     public Status0: Status;
     public StartDate :string;
     public DueDate: string;
+    public StatusText: string;
+    public OwnerTitle: string;
     public MildStone : MildStones;
     public AssignedTo: Array<AssignedTo>;
     public MildStoneList: Array<MildStones>;
@@ -44,7 +46,7 @@ export class MildStones {
 
 export class Tags {
     public ID: number;
-    public Tag: string;
+    public Tags: string;
     public Title:string;   
 }
 

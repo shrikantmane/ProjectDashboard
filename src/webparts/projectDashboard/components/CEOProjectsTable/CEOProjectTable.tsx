@@ -353,8 +353,9 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
   }
   /* Html UI */
 
+  
   public render(): React.ReactElement<ICEOProjectProps> {
-    var header = <div style={{'textAlign':'left'}}>
+    var header = <div className= { styles.globalSearch } style={{'textAlign':'left'}}>
                 <i className="fa fa-search" style={{margin:'4px 4px 0 0'}}></i>
                 <input  type="text" placeholder="Global Search" onChange={(e) => this.setState({globalFilter: e.target.value})}/>
             </div>;
@@ -370,6 +371,7 @@ return (<div className={styles.priorityDetail}>{rowData.Priority}</div>);
             header={header}
             value={this.state.projectList}
             responsive={true}
+            className={styles.datatablePosition}
             expandedRows={this.state.expandedRows}
             onRowToggle={this.onRowToggle.bind(this)}
             rowExpansionTemplate={this.rowExpansionTemplate.bind(this)}

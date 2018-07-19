@@ -305,3 +305,40 @@ div#workbenchPageContent {
 .workbench{
   font-family: 'Conv_AVENIRLTSTD-BOOK' !important;
 }
+
+tr.ui-widget-content > td:first-child {
+  padding: 0;
+  background-color: #c5c8d6;
+}
+.ui-cell-data > .pi-fw{
+  color: #8e91af;
+  font-size: 1rem;
+}
+
+div[class^="feedback_"]{
+  display: none !important;
+}
+
+.fa-file-pdf:before{
+  color: #fa5959;
+}
+.fa-file-excel:before{
+  color: #80ea78;
+}
+.fa-file-word:before{
+  color: #faba6b;
+}
+.fa-file-archive:before{
+  color: #acd9e4;
+}
+.fa-file-video:before{
+  color: #cf84ef;
+}
+.fa-file-image:before{
+  color: #80c2ff;
+}
+.btn-white{
+  color: #000;
+}
+
+

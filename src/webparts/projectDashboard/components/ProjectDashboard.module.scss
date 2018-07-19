@@ -333,16 +333,17 @@
     }
     tr.milestoneItems .ownerImg > div {
         display: block;
-        font-weight: 600;
-    }
+        // font-weight: 600;
+      }
+      
     tr.milestoneItems .statusDetail {
         padding-top: 0rem;
         width: 5rem;
         margin: 0 auto;
         color: #fff;
-        font-size: .7rem;
-        font-weight: 500;
-    }
+        font-size: .9rem;
+        font-weight: 400;
+      }
     .milestoneFooter{
         border: 1px solid #393b51;
     }

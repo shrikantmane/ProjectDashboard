@@ -135,7 +135,7 @@ export default class CEOProjectTable extends React.Component<
       <div className={styles.milestoneExpand}>
         <div className={styles.milestoneHeader}>
           <div className="row">
-            <div className="col-md-3 col-12">
+            <div className="col-md-2 col-12">
               <div className={styles.milestoneHeader}>
                 <div>Milestone List</div>
                 {/* <div className={styles.activityStatus}>
@@ -154,7 +154,7 @@ export default class CEOProjectTable extends React.Component<
                   : null}
               </div>
             </div>
-            <div className="col-md-3 col-12">
+            <div className="col-md-4 col-12">
               <button type="button" className="btn btn-outline btn-sm" style={{backgroundColor : "#1b1a30" , border:"1px solid #504f6c", color: "#fff", fontSize:"12px"}}>
                 Project Outline
               </button>
@@ -162,8 +162,8 @@ export default class CEOProjectTable extends React.Component<
           </div>
         </div>
         <table className={styles.milestoneList} style={{ width: "100%" }}>
-          <col style={{ width: "30%" }} />
-          <col style={{ width: "10%" }} />
+          <col style={{ width: "25%" }} />
+          <col style={{ width: "15%" }} />
           <col style={{ width: "35%" }} />
           <col style={{ width: "15%" }} />
           <col style={{ width: "10%" }} />

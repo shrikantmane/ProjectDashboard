@@ -53,7 +53,8 @@ export class Tags {
 
 export class Team_x0020_Member {
     EMail : string;
-    ImgUrl: string
+    ImgUrl: string;
+    Title: string;
 }
 export class TeamMembers {
     public ID: number;

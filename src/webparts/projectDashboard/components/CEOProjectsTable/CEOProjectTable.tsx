@@ -155,7 +155,7 @@ export default class CEOProjectTable extends React.Component<
               </div>
             </div>
             <div className="col-md-3 col-12">
-              <button type="button" className="btn btn-outline btn-sm">
+              <button type="button" className="btn btn-outline btn-sm" style={{backgroundColor : "#1b1a30" , border:"1px solid #504f6c", color: "#fff", fontSize:"12px"}}>
                 Project Outline
               </button>
             </div>

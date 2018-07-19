@@ -24,6 +24,7 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
   
   componentDidMount() {
     this.renderFrappeGanttDOM();
+    document.getElementById('timelineMainDiv').scrollLeft = 1000;   
   }
 
   componentDidUpdate(){
@@ -43,14 +44,17 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
 
   private onDayViewClick(){
     this.gantt.change_view_mode("Day");
+    document.getElementById('timelineMainDiv').scrollLeft = 1000;
   }
 
   private onWeekViewClick(){
     this.gantt.change_view_mode("Week");
+    document.getElementById('timelineMainDiv').scrollLeft = 400;
   }
 
   private onMonthsViewClick(){
-    this.gantt.change_view_mode("Month ");
+    this.gantt.change_view_mode("Month");
+    document.getElementById('timelineMainDiv').scrollLeft = 300;
   }
 
   public render(): React.ReactElement<ICEOProjectTimeLineProps> {

@@ -9,7 +9,7 @@ export default class DepartmentHeadDashboard extends React.Component<IDepartment
     public render(): React.ReactElement<IDepartmentHeadDashboardProps> {
     return (
       <div>
-          Department Head Dashboard
+         <h6>Department Head Dashboard</h6>
       </div>
     );
   }

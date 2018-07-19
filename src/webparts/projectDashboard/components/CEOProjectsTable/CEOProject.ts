@@ -47,11 +47,12 @@ export class MildStones {
 export class Tags {
     public ID: number;
     public Tags: string;
-    public Title:string;   
+    public Title:string;
+    public Color:string;
 }
 
 export class Team_x0020_Member {
-    Email : string;
+    EMail : string;
     ImgUrl: string
 }
 export class TeamMembers {

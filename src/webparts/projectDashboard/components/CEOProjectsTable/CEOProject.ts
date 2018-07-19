@@ -52,7 +52,7 @@ export class Tags {
 }
 
 export class Team_x0020_Member {
-    Email : string;
+    EMail : string;
     ImgUrl: string
 }
 export class TeamMembers {

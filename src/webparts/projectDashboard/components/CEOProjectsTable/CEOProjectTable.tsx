@@ -138,9 +138,9 @@ export default class CEOProjectTable extends React.Component<
             <div className="col-md-3 col-12">
               <div className={styles.milestoneHeader}>
                 <div>Milestone List</div>
-                <div className={styles.activityStatus}>
+                {/* <div className={styles.activityStatus}>
                   Last Activity Yesterday
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="col-md-6 col-12">
@@ -279,7 +279,7 @@ export default class CEOProjectTable extends React.Component<
                             case "xls":
                               iconClass = "far fa-file-excel";
                               break;
-                            case "img":
+                            case "png":
                               iconClass = "far fa-file-image";
                               break;
                             default:
@@ -322,7 +322,7 @@ export default class CEOProjectTable extends React.Component<
       this.getMildStonesByProject(event.data[event.data.length - 1].Project);
       this.getKeyDocumentsByProject(event.data[event.data.length - 1].Project);
       this.getTaggingByProject(event.data[event.data.length - 1].Project);
-      this.getTeamMembersByProject(event.data[event.data.length - 1].Project);
+      this.getTeamMembersByProject(event.data[event.data.length - 1].Project_x0020_ID);
     }
     this.setState({ expandedRows: event.data });
   }
@@ -631,17 +631,19 @@ export default class CEOProjectTable extends React.Component<
             mildstone == null && mildstones.length > 0
               ? mildstones[0]
               : mildstone;
-          item.AssignedTo.forEach(element => {
-            if (element.EMail != null) {
-              element.imgURL =
-                "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
-                element.EMail.split("@")[0].toLowerCase() +
-                "_esplrms_onmicrosoft_com_MThumb.jpg";
-            } else {
-              element.imgURL =
-                "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";
+            if (item.AssignedTo && item.AssignedTo.length > 0){
+                  item.AssignedTo.forEach(element => {
+                    if (element.EMail != null) {
+                      element.imgURL =
+                        "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
+                        element.EMail.split("@")[0].toLowerCase() +
+                        "_esplrms_onmicrosoft_com_MThumb.jpg";
+                    } else {
+                      element.imgURL =
+                        "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";
+                    }
+                  });
             }
-          });
 
           item.StatusText = item.Status0 ? item.Status0.Status : "";
           item.OwnerTitle =
@@ -661,8 +663,8 @@ export default class CEOProjectTable extends React.Component<
       });
   }
 
-  private getTeamMembersByProject(name): void {
-    let filter = "Project/Title eq '" + name + "' and  Status eq 'Active'";
+  private getTeamMembersByProject(id): void {
+    let filter = "Project/ID eq " + id + " and  Status eq 'Active'";
     sp.web.lists
       .getByTitle("Project Team Members")
       .items.select(
@@ -681,10 +683,10 @@ export default class CEOProjectTable extends React.Component<
       .then((response: Array<TeamMembers>) => {
         response.forEach(item => {
           if (item.Team_x0020_Member) {
-            if (item.Team_x0020_Member.Email) {
+            if (item.Team_x0020_Member.EMail) {
               item.Team_x0020_Member.ImgUrl =
                 "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
-                item.Team_x0020_Member.Email.split("@")[0].toLowerCase() +
+                item.Team_x0020_Member.EMail.split("@")[0].toLowerCase() +
                 "_esplrms_onmicrosoft_com_MThumb.jpg";
             } else {
               item.Team_x0020_Member.ImgUrl =
@@ -693,7 +695,7 @@ export default class CEOProjectTable extends React.Component<
           }
         });
         let projects = this.state.projectList;
-        let project = find(projects, { Project: name });
+        let project = find(projects, { Project_x0020_ID: id });
         project.TeamMemberList = response;
         this.setState({ projectList: projects });
       });
@@ -722,17 +724,19 @@ export default class CEOProjectTable extends React.Component<
       .get()
       .then((response: Array<MildStones>) => {
         response.forEach(item => {
-          item.AssignedTo.forEach(element => {
-            if (element.EMail != null) {
-              element.imgURL =
-                "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
-                element.EMail.split("@")[0].toLowerCase() +
-                "_esplrms_onmicrosoft_com_MThumb.jpg";
-            } else {
-              element.imgURL =
-                "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";
-            }
-          });
+          if(item.AssignedTo && item.AssignedTo.length > 0){
+            item.AssignedTo.forEach(element => {
+              if (element.EMail != null) {
+                element.imgURL =
+                  "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
+                  element.EMail.split("@")[0].toLowerCase() +
+                  "_esplrms_onmicrosoft_com_MThumb.jpg";
+              } else {
+                element.imgURL =
+                  "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";
+              }
+            });
+          }
         });
         let projects = this.state.projectList;
         let project = find(projects, { Project: name });

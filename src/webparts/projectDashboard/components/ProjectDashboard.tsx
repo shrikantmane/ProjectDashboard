@@ -8,6 +8,7 @@ import { IProjectDashboardProps } from './IProjectDashboardProps';
 import { IProjectDashboardState } from './IProjectDashboardState';
 import CEODashboard from './CEODashboard/CEODashbaord';
 import DepartmentHeadDashboard from '../components/DepartmentHeadDashboard/DepartmentHeadDashboard';
+import TeamMemberDashboard from '../components/TeamMemberDashboard/TeamMemberDashboard';
 import { UserType }  from "./ProjectUser";
 export default class ProjectDashboard extends React.Component<IProjectDashboardProps, IProjectDashboardState> {
 
@@ -32,8 +33,12 @@ export default class ProjectDashboard extends React.Component<IProjectDashboardP
         case UserType.DepartmentHead:
         dashboard = (<DepartmentHeadDashboard></DepartmentHeadDashboard>);
             break;
+        case UserType.Members:
+            dashboard = (<TeamMemberDashboard></TeamMemberDashboard>);
+            break;
         default:
-        dashboard = (<CEODashboard></CEODashboard>);
+         dashboard = (<h6>No Role Found</h6>);
+        break;
     }
     return (
       <div>
@@ -61,6 +66,8 @@ export default class ProjectDashboard extends React.Component<IProjectDashboardP
                 userType = UserType.CEO;
               }else if(res[0].LoginName == "Department Head"){
                 userType = UserType.DepartmentHead;
+              }else if(res[0].LoginName == "Members" ){
+                userType = UserType.Members;
               }
             }
             this.setState({ userType: userType})

@@ -165,7 +165,7 @@ body, html{
 
   .gantt-container {
     position: relative;
-    // overflow: hidden;
+   // overflow: auto;
     font-size: 12px;
   }
   .gantt-container .popup-wrapper {
@@ -210,6 +210,21 @@ body, html{
       color: aquamarine;
       margin-top: 30px;
       margin-left: 10px;
+    }
+    .timeLineBtnDiv {
+      text-align: right;
+      border-bottom: 1px solid #f1f1f1;
+      padding: 5px;
+    }
+
+    .timeLineBtn{
+      background: transparent;
+      color: #ddd;
+      border: 1px solid #ddd;
+      margin-left: 5px;
+      border-radius: 42px;
+      font-size: 12px;
+      padding: 2px 12px;
     }
 }
 

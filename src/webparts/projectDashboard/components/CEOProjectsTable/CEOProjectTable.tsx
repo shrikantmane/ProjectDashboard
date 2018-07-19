@@ -148,7 +148,7 @@ export default class CEOProjectTable extends React.Component<
                 {data.TagList != null
                   ? data.TagList.map((item, key) => {
                       return (
-                        <span className={styles.pinkTag}>{item.Tags}</span>
+                        <span className={styles.pinkTag} style={{backgroundColor : item.Color}}>{item.Tags}</span>
                       );
                     })
                   : null}
@@ -758,19 +758,17 @@ export default class CEOProjectTable extends React.Component<
   }
 
   private getTaggingByProject(name): void {
-    let filter = "Project eq '" + name + "'";
+    let filter = "Project/Title eq '" + name + "'";
     sp.web.lists
-      .getByTitle("Project")
-      .items.select("Project_x0020_Tag/ID", "Project_x0020_Tag/Tags")
-      .expand("Project_x0020_Tag")
-      .filter("Project eq 'AlphaServe'")
+      .getByTitle("Project Tags")
+      .items.select("ID", "Tags", "Color")
+      .filter(filter)
       .get()
-      .then((response: Array<any>) => {
+      .then((response: Array<Tags>) => {
         if (response != null && response.length > 0) {
-          let tags = response[0].Project_x0020_Tag;
           let projects = this.state.projectList;
           let project = find(projects, { Project: name });
-          project.TagList = tags;
+          project.TagList = response;
           this.setState({ projectList: projects });
         }
       });

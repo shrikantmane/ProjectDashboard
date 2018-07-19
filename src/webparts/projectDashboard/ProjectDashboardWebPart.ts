@@ -12,11 +12,22 @@ import * as strings from 'ProjectDashboardWebPartStrings';
 import ProjectDashboard from './components/ProjectDashboard';
 import { IProjectDashboardProps } from './components/IProjectDashboardProps';
 
+import { sp } from '@pnp/sp';
+
 export interface IProjectDashboardWebPartProps {
   list: string;
 }
 
 export default class ProjectDashboardWebPart extends BaseClientSideWebPart<IProjectDashboardWebPartProps> {
+
+  public onInit(): Promise<void> {
+    return super.onInit().then(_ => {
+      // establish SPFx context
+      sp.setup({
+        spfxContext: this.context
+      });
+    });
+  }
 
   public render(): void {
     const element: React.ReactElement<IProjectDashboardProps > = React.createElement(

@@ -246,7 +246,7 @@ export default class CEOProjectTable extends React.Component<
                     ? data.TeamMemberList.map((item, key) => {
                         return (
                           <div className={styles.memberImg}>
-                            <img src={item.Team_x0020_Member.ImgUrl} />
+                            <img src={item.Team_x0020_Member.ImgUrl} title={item.Team_x0020_Member.Title} />
                             {/* <span className={styles.badgeLight}>17</span> */}
                           </div>
                         );
@@ -277,13 +277,14 @@ export default class CEOProjectTable extends React.Component<
                               iconClass = "far fa-file-pdf";
                               break;
                             case "xls":
+                            case "xlsx":
                               iconClass = "far fa-file-excel";
                               break;
                             case "png":
                               iconClass = "far fa-file-image";
                               break;
                             default:
-                              iconClass = "";
+                              iconClass = "fa fa-file";
                               break;
                           }
                           return (
@@ -634,10 +635,15 @@ export default class CEOProjectTable extends React.Component<
             if (item.AssignedTo && item.AssignedTo.length > 0){
                   item.AssignedTo.forEach(element => {
                     if (element.EMail != null) {
+                    //  https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=BenW@esplrms.onmicrosoft.com&UA=0&size=HR64x64&sc=1531997060853
                       element.imgURL =
-                        "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
-                        element.EMail.split("@")[0].toLowerCase() +
-                        "_esplrms_onmicrosoft_com_MThumb.jpg";
+                      "//outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                      element.EMail +
+                      "&UA=0&size=HR64x64&sc=1531997060853";
+                      // element.imgURL =
+                      //   "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
+                      //   element.EMail.split("@")[0].toLowerCase() +
+                      //   "_esplrms_onmicrosoft_com_MThumb.jpg";
                     } else {
                       element.imgURL =
                         "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";
@@ -684,10 +690,14 @@ export default class CEOProjectTable extends React.Component<
         response.forEach(item => {
           if (item.Team_x0020_Member) {
             if (item.Team_x0020_Member.EMail) {
-              item.Team_x0020_Member.ImgUrl =
-                "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
-                item.Team_x0020_Member.EMail.split("@")[0].toLowerCase() +
-                "_esplrms_onmicrosoft_com_MThumb.jpg";
+              // item.Team_x0020_Member.ImgUrl =
+              //   "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
+              //   item.Team_x0020_Member.EMail.split("@")[0].toLowerCase() +
+              //   "_esplrms_onmicrosoft_com_MThumb.jpg";
+                item.Team_x0020_Member.ImgUrl =
+                "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                item.Team_x0020_Member.EMail +
+                "&UA=0&size=HR64x64&sc=1531997060853";
             } else {
               item.Team_x0020_Member.ImgUrl =
                 "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";
@@ -728,9 +738,9 @@ export default class CEOProjectTable extends React.Component<
             item.AssignedTo.forEach(element => {
               if (element.EMail != null) {
                 element.imgURL =
-                  "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
-                  element.EMail.split("@")[0].toLowerCase() +
-                  "_esplrms_onmicrosoft_com_MThumb.jpg";
+                      "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                      element.EMail +
+                      "&UA=0&size=HR64x64&sc=1531997060853";
               } else {
                 element.imgURL =
                   "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";

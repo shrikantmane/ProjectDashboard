@@ -223,7 +223,7 @@ export default class CEOProjectTable extends React.Component<
                               styles.statusPill + " " + styles.completeStatus
                             }
                             style={{
-                              backgroundColor: item.Status0.Status_x0020_Color
+                              backgroundColor: item.Status0 ? item.Status0.Status_x0020_Color : ""
                             }}
                           >
                             {item.Status0 ? item.Status0.Status : ""}
@@ -271,7 +271,7 @@ export default class CEOProjectTable extends React.Component<
                           switch (type.toLowerCase()) {
                             case "doc":
                             case "docx":
-                              iconClass = "far fa-file-excel";
+                              iconClass = "far fa-file-word";
                               break;
                             case "pdf":
                               iconClass = "far fa-file-pdf";
@@ -281,6 +281,8 @@ export default class CEOProjectTable extends React.Component<
                               iconClass = "far fa-file-excel";
                               break;
                             case "png":
+                            case "jpeg":
+                            case "gif":
                               iconClass = "far fa-file-image";
                               break;
                             default:
@@ -320,10 +322,10 @@ export default class CEOProjectTable extends React.Component<
 
   private onRowToggle(event) {
     if (event.data && event.data.length > 0) {
-      this.getMildStonesByProject(event.data[event.data.length - 1].Project);
-      this.getKeyDocumentsByProject(event.data[event.data.length - 1].Project);
-      this.getTaggingByProject(event.data[event.data.length - 1].Project);
-      this.getTeamMembersByProject(event.data[event.data.length - 1].Project_x0020_ID);
+      // this.getMildStonesByProject(event.data[event.data.length - 1]);
+      this.getKeyDocumentsByProject(event.data[event.data.length - 1]);
+      this.getTaggingByProject(event.data[event.data.length - 1]);
+      this.getTeamMembersByProject(event.data[event.data.length - 1]);
     }
     this.setState({ expandedRows: event.data });
   }
@@ -362,7 +364,7 @@ export default class CEOProjectTable extends React.Component<
     let timeLines = new Array<ProjectTimeLine>();
     filterdRecords.forEach(project => {
       timeLines.push({
-        id: project.Project_x0020_ID,
+        id: project.ID,
         name: project.Project,
         start: project.StartDate,
         end: project.DueDate,
@@ -383,7 +385,7 @@ export default class CEOProjectTable extends React.Component<
     let timeLines = new Array<ProjectTimeLine>();
     filterdRecords.forEach(project => {
       timeLines.push({
-        id: project.Project_x0020_ID,
+        id: project.ID,
         name: project.Project,
         start: project.StartDate,
         end: project.DueDate,
@@ -404,7 +406,7 @@ export default class CEOProjectTable extends React.Component<
     let timeLines = new Array<ProjectTimeLine>();
     filterdRecords.forEach(project => {
       timeLines.push({
-        id: project.Project_x0020_ID,
+        id: project.ID,
         name: project.Project,
         start: project.StartDate,
         end: project.DueDate,
@@ -421,7 +423,7 @@ export default class CEOProjectTable extends React.Component<
     let timeLines = new Array<ProjectTimeLine>();
     filterdRecords.forEach(project => {
       timeLines.push({
-        id: project.Project_x0020_ID,
+        id: project.ID,
         name: project.Project,
         start: project.StartDate,
         end: project.DueDate,
@@ -564,6 +566,7 @@ export default class CEOProjectTable extends React.Component<
     sp.web.lists
       .getByTitle("Project")
       .items.select(
+        "ID",
         "Project_x0020_ID",
         "Project",
         "StartDate",
@@ -587,7 +590,6 @@ export default class CEOProjectTable extends React.Component<
   private getMildStones(projectList: Array<CEOProjects>): void {
     sp.web.lists
       .getByTitle("Tasks List")
-      // .items
       .items.select(
         "Title",
         "StartDate",
@@ -609,7 +611,7 @@ export default class CEOProjectTable extends React.Component<
         let timeline = new Array<ProjectTimeLine>();
         projectList.forEach(item => {
           let filteredMilestones = filter(milestones, function(milstoneItem) {
-            return milstoneItem.Project.ID.toString() == item.Project_x0020_ID;
+            return milstoneItem.Project.ID == item.ID;
           });
           let mildstone = null;
           let mildstones = [];
@@ -627,7 +629,22 @@ export default class CEOProjectTable extends React.Component<
                 mildstones.push(filteredMilestones[count]);
               }
             }
+
+            if(filteredMilestones[count].AssignedTo && filteredMilestones[count].AssignedTo.length > 0){
+              filteredMilestones[count].AssignedTo.forEach(element => {
+                if (element.EMail != null) {
+                  element.imgURL =
+                        "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                        element.EMail +
+                        "&UA=0&size=HR64x64&sc=1531997060853";
+                } else {
+                  element.imgURL =
+                    "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";
+                }
+              });
+            }
           }
+          item.MildStoneList = filteredMilestones;
           item.MildStone =
             mildstone == null && mildstones.length > 0
               ? mildstones[0]
@@ -635,15 +652,10 @@ export default class CEOProjectTable extends React.Component<
             if (item.AssignedTo && item.AssignedTo.length > 0){
                   item.AssignedTo.forEach(element => {
                     if (element.EMail != null) {
-                    //  https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=BenW@esplrms.onmicrosoft.com&UA=0&size=HR64x64&sc=1531997060853
                       element.imgURL =
                       "//outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
                       element.EMail +
-                      "&UA=0&size=HR64x64&sc=1531997060853";
-                      // element.imgURL =
-                      //   "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
-                      //   element.EMail.split("@")[0].toLowerCase() +
-                      //   "_esplrms_onmicrosoft_com_MThumb.jpg";
+                      "&UA=0&size=HR64x64&sc=1531997060853";                     
                     } else {
                       element.imgURL =
                         "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";
@@ -659,7 +671,7 @@ export default class CEOProjectTable extends React.Component<
 
           // Time Line
           timeline.push({
-            id: item.Project_x0020_ID,
+            id: item.ID,
             name: item.Project,
             start: item.StartDate,
             end: item.DueDate,
@@ -669,8 +681,8 @@ export default class CEOProjectTable extends React.Component<
       });
   }
 
-  private getTeamMembersByProject(id): void {
-    let filter = "Project/ID eq " + id + " and  Status eq 'Active'";
+  private getTeamMembersByProject(currentProject :CEOProjects): void {
+  let filter = "Project/ID eq " + currentProject.ID + " and  Status eq 'Active'";
     sp.web.lists
       .getByTitle("Project Team Members")
       .items.select(
@@ -687,13 +699,9 @@ export default class CEOProjectTable extends React.Component<
       .filter(filter)
       .get()
       .then((response: Array<TeamMembers>) => {
-        response.forEach(item => {
+        response.forEach(item => {        
           if (item.Team_x0020_Member) {
-            if (item.Team_x0020_Member.EMail) {
-              // item.Team_x0020_Member.ImgUrl =
-              //   "https://esplrms-my.sharepoint.com:443/User%20Photos/Profile%20Pictures/" +
-              //   item.Team_x0020_Member.EMail.split("@")[0].toLowerCase() +
-              //   "_esplrms_onmicrosoft_com_MThumb.jpg";
+            if (item.Team_x0020_Member.EMail) {             
                 item.Team_x0020_Member.ImgUrl =
                 "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
                 item.Team_x0020_Member.EMail +
@@ -705,13 +713,13 @@ export default class CEOProjectTable extends React.Component<
           }
         });
         let projects = this.state.projectList;
-        let project = find(projects, { Project_x0020_ID: id });
+        let project = find(projects, { ID: currentProject.ID });
         project.TeamMemberList = response;
         this.setState({ projectList: projects });
       });
   }
-  private getMildStonesByProject(name): void {
-    let filter = "Project/Title eq '" + name + "' and Duration eq 0";
+  private getMildStonesByProject(currentProject :CEOProjects): void {
+    let filter = "Project/ID eq '" + currentProject.ID + "' and Duration eq 0";
     sp.web.lists
       .getByTitle("Tasks List")
       .items.select(
@@ -749,14 +757,14 @@ export default class CEOProjectTable extends React.Component<
           }
         });
         let projects = this.state.projectList;
-        let project = find(projects, { Project: name });
+        let project = find(projects, { ID: currentProject.ID });
         project.MildStoneList = response;
         this.setState({ projectList: projects });
       });
   }
 
-  private getKeyDocumentsByProject(name): void {
-    let filter = "Project/Title eq '" + name + "'";
+  private getKeyDocumentsByProject(currentProject :CEOProjects): void {
+    let filter = "Project/ID eq '" + currentProject.ID + "'";
     sp.web.lists
       .getByTitle("Project Documents")
       .items.select("File", "Project/ID", "Project/Title")
@@ -765,14 +773,14 @@ export default class CEOProjectTable extends React.Component<
       .get()
       .then((response: Array<Documents>) => {
         let projects = this.state.projectList;
-        let project = find(projects, { Project: name });
+        let project = find(projects, { ID: currentProject.ID });
         project.DocumentList = response;
         this.setState({ projectList: projects });
       });
   }
 
-  private getTaggingByProject(name): void {
-    let filter = "Project/Title eq '" + name + "'";
+  private getTaggingByProject(currentProject :CEOProjects): void {
+    let filter = "Project/ID eq '" + currentProject.ID + "'";
     sp.web.lists
       .getByTitle("Project Tags")
       .items.select("ID", "Tags", "Color")
@@ -781,7 +789,7 @@ export default class CEOProjectTable extends React.Component<
       .then((response: Array<Tags>) => {
         if (response != null && response.length > 0) {
           let projects = this.state.projectList;
-          let project = find(projects, { Project: name });
+          let project = find(projects, { ID: currentProject.ID });
           project.TagList = response;
           this.setState({ projectList: projects });
         }

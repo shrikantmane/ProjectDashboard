@@ -7,7 +7,7 @@ export enum ViewMode {
 }
 
 export default class ProjectTimeLine {     
-    id: string;
+    id: number;
     name: string;
     start: string;
     end: string;

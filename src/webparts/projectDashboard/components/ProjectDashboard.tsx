@@ -3,6 +3,7 @@ import { Web, sp, ItemAddResult } from "@pnp/sp";
 import "primereact/resources/primereact.min.css";
 import "primeicons/primeicons.css";
 import "bootstrap/dist/css/bootstrap.min.css";
+import { find } from "lodash";
 
 import { IProjectDashboardProps } from "./IProjectDashboardProps";
 import { IProjectDashboardState } from "./IProjectDashboardState";
@@ -27,7 +28,7 @@ export default class ProjectDashboard extends React.Component<
 
   public render(): React.ReactElement<IProjectDashboardProps> {
     let dashboard = null;
-    if ((this.state.userType != UserType.Unknow)) {
+    if (this.state.userType != UserType.Unknow) {
       switch (this.state.userType) {
         case UserType.CEO:
           dashboard = <CEODashboard />;
@@ -61,18 +62,27 @@ export default class ProjectDashboard extends React.Component<
       .then(res => {
         let userType;
         if (res && res.length > 0) {
-          if (res.length > 1) {
-            userType = UserType.Admin;
-          } else {
-            if (res[0].LoginName == "CEO_COO") {
-              userType = UserType.CEO;
-            } else if (res[0].LoginName == "Department Head") {
-              userType = UserType.DepartmentHead;
-            } else if (res[0].LoginName == "Members") {
-              userType = UserType.Members;
+          let ceo = "";
+          let dep = "";
+          let team = "";
+          res.forEach(item => {
+            if (item.LoginName == "CEO_COO" || item.LoginName == "Admin") {
+              ceo = "CEO_COO";
             }
-          }
-          this.setState({ userType: userType });
+            if (item.LoginName == "Department Head") {
+              dep = "Department Head";
+            }
+            if (item.LoginName == "Members") {
+              team = "Members";
+            }
+          });
+
+          if (ceo == "CEO_COO") {
+            this.setState({ userType: UserType.CEO });
+          } else if (dep == "Department Head") {
+            this.setState({ userType: UserType.DepartmentHead });
+          } else if ((team == "Members"))
+            this.setState({ userType: UserType.Members });
         }
       });
   }

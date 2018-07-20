@@ -79,7 +79,7 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
         </div> 
           <div className="timelineMainDiv" id="timelineMainDiv">
             <div className="row">
-              <div className="col-md-2 col-6 projectSideBar">
+              <div className="projectSideBar" id="projectSideBar">
               {/* <div className="timelineProjectNameDiv"> Project Name </div> */}
                 <div className="timelineProjectName">
                   { 

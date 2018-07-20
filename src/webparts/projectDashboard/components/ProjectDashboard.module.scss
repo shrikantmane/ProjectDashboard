@@ -98,13 +98,6 @@
       ::-webkit-scrollbar-thumb:hover {
         background: #393b51; 
       }
-
-      .timelineProjectName ::-webkit-scrollbar-thumb{
-        background-color: transparent;
-        outline: 0;
-        border: 0;
-        border-radius: none;
-      }
     .pinkTag{
         background-color: #ff4381;
     }
@@ -258,6 +251,15 @@
         background-color: #1d203a;
         color: #fff;
         padding: 1rem;
+        position: relative;
+    }
+    .expandIndicator{
+        position: absolute;
+        top: -1.3rem;
+        left: 50%;
+        right: 50%;
+        color: #fff;
+        font-size: 2rem;
     }
     .milestoneHeader{
         font-weight: 400;
@@ -480,6 +482,7 @@
         border: 1px solid #c9cad2;
         background-color: #f2f3ff;
         border-radius: 3rem;
+        outline: none;
     }
     .globalSearch > input{
         border: none;
@@ -502,9 +505,14 @@
         box-sizing: border-box;
         margin-top: .25em;
     }
-    // .memberList{
-    //     width:  20000px;
-    // }
+    .globalHeading{
+        position: absolute;
+        top: 18px;
+        left: 0;
+        font-weight: 600;
+        font-size: 1.5rem;
+        color: #1e213a;
+    }
 
     /*************************************************
     ****************Media Queries******************
@@ -555,11 +563,6 @@
         .firstColExpand{
             background-color: #161726;
             padding: 0px;
-        }
-        .pi-fw {
-            text-align: center;
-            font-size: 1.5rem;
-            color: #fff;
         }
         table tbody tr td{
             padding: 1rem;  

@@ -133,6 +133,9 @@ export default class CEOProjectTable extends React.Component<
   private rowExpansionTemplate(data: CEOProjects) {
     return (
       <div className={styles.milestoneExpand}>
+      <div className={styles.expandIndicator}>
+            <i className="fas fa-caret-down"></i>
+        </div>
         <div className={styles.milestoneHeader}>
           <div className="row">
             <div className="col-md-2 col-12">
@@ -435,6 +438,8 @@ export default class CEOProjectTable extends React.Component<
 
   public render(): React.ReactElement<ICEOProjectProps> {
     var header = (
+      <div>
+      <label className={styles.globalHeading}>CEO Dashboard</label>
       <div className={styles.globalSearch} style={{ textAlign: "left" }}>       
         <input
           type="text"
@@ -442,6 +447,7 @@ export default class CEOProjectTable extends React.Component<
           onChange={this.handleGlobalSearchChange}          
         />
          <i className="fa fa-search" style={{ margin: "4px 4px 0 5px" }} />
+      </div>
       </div>
     );
 
@@ -509,14 +515,14 @@ export default class CEOProjectTable extends React.Component<
           >
             <Column
               expander={true}
-              style={{ width: "2em" }}
+              style={{ width: "3em" }}
               className={styles.firstColExpand}
             />
             <Column
               field="Project"
               header="Project Name"
               body={this.projectNameTemplate}
-              style={{ width: "30%" }}
+              style={{ width: "26%" }}
               filter={true}
               sortable={true}
               filterElement={projectNameFilter}

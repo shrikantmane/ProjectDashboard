@@ -336,11 +336,8 @@ div#workbenchPageContent {
 
 tr.ui-widget-content > td:first-child {
   padding: 0;
-  background-color: #c5c8d6;
-}
-.ui-cell-data > .pi-fw{
-  color: #8e91af;
-  font-size: 1rem;
+  background-color: #248ef1;
+  color: #fff;
 }
 
 div[class^="feedback_"]{
@@ -383,4 +380,7 @@ div[class^="pageTitle_"]{
   border: 0px;
   border-radius: 0;
 }
-
+.pi-fw{
+  color: #fff;
+  font-size: 1.5rem;
+}

@@ -41,6 +41,14 @@ body, html{
   background-color: #f8f9fd;
 }
 .TimeLineContainer {
+  .gantt-container {
+    position: relative;
+    font-size: 12px;
+    height: 24rem;
+  }
+  .gantt-container svg.gantt {
+    max-height: 100%;
+  }
   .gantt .grid-background {
     fill: none;
   }
@@ -72,7 +80,7 @@ body, html{
   }
 
   .gantt .today-highlight {
-    fill: #fcf8e3;
+    fill: #606692;
     opacity: 0.5;
   }
 
@@ -163,11 +171,6 @@ body, html{
     display: none;
   }
 
-  .gantt-container {
-    position: relative;
-    // overflow: auto;
-    font-size: 12px;
-  }
   .gantt-container .popup-wrapper {
     position: absolute;
     top: 0;
@@ -205,30 +208,26 @@ body, html{
     z-index: 999;
     padding: .5rem 0 0 1rem;
     overflow-y: scroll;
-    height: 250px;
+    height: 100%;
+    background-color: #191c31;
     }
     .timelineMainDiv{
       height:320px;
        overflow:auto;
     }
 
-    // .projectSideBar {
-    //   display: flex;
-    //     flex-direction: column;
-    //     height: 100%;
-    //     flex-shrink: 0;
-    //     flex: 0 0 50%;
-    //     position: absolute;
-    //     top: 8.5rem;
-    //     bottom: 0;
-    //     left: 0;
-    // }
-    // .timelineProjectName ::-webkit-scrollbar-thumb{
-    //   background-color: transparent;
-    //     outline: 0;
-    //     border: 1px solid transparent;
-    //     border-radius: 3rem;
-    // }
+    .projectSideBar {
+      display: flex;
+        flex-direction: column;
+        height: 100%;
+        flex-shrink: 0;
+        flex: 0 0 50%;
+        position: absolute;
+        top: 3rem;
+        bottom: 0;
+        left: 0;
+        padding-left: 0;
+    }
 
     .timelineProjectNameDiv{
       color: aquamarine;
@@ -258,6 +257,7 @@ body, html{
 .TimeLineContainer {
   background-color: #1d203a;
   overflow-y: hidden;
+  position: relative;
 }
 
 .TimeLineContainer .gantt .tick {
@@ -299,7 +299,7 @@ body, html{
   fill: #1773c7;
 }
 .TimeLineContainer .gantt .today-highlight {
-  fill: #3c405d;
+  fill: #606692;
   opacity: .5;
 }
 .TimeLineContainer .gantt-container .popup-wrapper .title {

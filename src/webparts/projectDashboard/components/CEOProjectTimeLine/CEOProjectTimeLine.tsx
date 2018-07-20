@@ -60,12 +60,12 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
   public render(): React.ReactElement<ICEOProjectTimeLineProps> {
     return (
        <div className="TimeLineContainer">
-        <div className="timeLineBtnDiv" id="timeLineBtnDiv">
+        <div className="timeLineBtnDiv">
           <button type="button" className="btn btn-default btn-sm timeLineBtn" onClick={this.onDayViewClick}>Day </button>
           <button type="button" className="btn btn-default btn-sm timeLineBtn" onClick={this.onWeekViewClick}>Week</button>
           <button type="button" className="btn btn-default btn-sm timeLineBtn" onClick={this.onMonthsViewClick}>Month</button>
         </div> 
-          <div className="timelineMainDiv">
+          <div className="timelineMainDiv" id="timelineMainDiv">
             <div className="row">
               <div className="col-md-2 col-6">
               <div className="timelineProjectNameDiv"> Project Name </div>

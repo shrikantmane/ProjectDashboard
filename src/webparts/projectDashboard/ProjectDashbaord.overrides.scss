@@ -193,6 +193,10 @@ body, html{
     border-top-color: rgba(0, 0, 0, 0.8);
   }
 
+  svg.gantt {
+    pointer-events: none;
+  }
+
   .timelineProjectName{
     margin-top: 13px;
     font-weight: 500;

@@ -1,4 +1,5 @@
 import * as React from 'react';
+import * as ReactDom from 'react-dom';
 import GanttJS from "frappe-gantt";
 import styles from './CEOProjectTimeLine.module.scss';
 import { ICEOProjectTimeLineProps } from './ICEOProjectTimeLineProps';
@@ -11,7 +12,8 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
     super(props);
     this.onDayViewClick = this.onDayViewClick.bind(this);
     this.onWeekViewClick = this.onWeekViewClick.bind(this);
-    this.onMonthsViewClick = this.onMonthsViewClick.bind(this);  
+    this.onMonthsViewClick = this.onMonthsViewClick.bind(this);
+    this.onScroll = this.onScroll.bind(this);
   }
 
   private gantt: any;
@@ -25,12 +27,22 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
   componentDidMount() {
     this.renderFrappeGanttDOM();
     document.getElementById('timelineMainDiv').scrollLeft = 1000;   
+    const node = ReactDom.findDOMNode(this);
+    const mainElement = node.querySelector('.timelineMainDiv');
+    mainElement.addEventListener('scroll', this.onScroll);
   }
 
   componentDidUpdate(){
     this.renderFrappeGanttDOM();
   }
 
+
+  onScroll({ currentTarget }) {
+    const node = ReactDom.findDOMNode(this);
+    const asideElement = node.querySelector('.timelineProjectName');
+    const mainElement = node.querySelector('.timelineMainDiv');   
+    asideElement.scrollTop = mainElement.scrollTop;
+  }
   private renderFrappeGanttDOM(): void { 
     this.gantt = new GanttJS(this.target, this.props.tasks, {
       on_click: this.props.onClick,
@@ -67,8 +79,8 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
         </div> 
           <div className="timelineMainDiv" id="timelineMainDiv">
             <div className="row">
-              <div className="col-md-2 col-6">
-              <div className="timelineProjectNameDiv"> Project Name </div>
+              <div className="col-md-2 col-6 projectSideBar">
+              {/* <div className="timelineProjectNameDiv"> Project Name </div> */}
                 <div className="timelineProjectName">
                   { 
                         this.props.tasks.map(function(item, index){

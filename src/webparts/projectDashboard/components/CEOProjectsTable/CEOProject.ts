@@ -13,6 +13,7 @@ export class Status {
 
 export class CEOProjects {
     public Project_x0020_ID: string;
+    public ID: number;
     public Project: string;
     public Body:string;
     public Priority: string;

@@ -14,7 +14,7 @@ import {
 } from "./CEOProject";
 import CEOProjectTimeLine from "../CEOProjectTimeLine/CEOProjectTimeLine";
 import ProjectTimeLine from "../CEOProjectTimeLine/ProjectTimeLine";
-import { find, filter } from "lodash";
+import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 
 export default class CEOProjectTable extends React.Component<
@@ -220,18 +220,21 @@ export default class CEOProjectTable extends React.Component<
                               <div>{item.Status0 ? item.Status0.Status : ""}</div>
                           </td> */}
                       <td>
+                       { item.Status0 && item.Status0.Status != "" ? 
                         <div className={styles.statusDetail}>
                           <div
                             className={
                               styles.statusPill + " " + styles.completeStatus
                             }
                             style={{
-                              backgroundColor: item.Status0 ? item.Status0.Status_x0020_Color : ""
+                              backgroundColor: item.Status0.Status_x0020_Color
                             }}
                           >
-                            {item.Status0 ? item.Status0.Status : ""}
+                            { item.Status0.Status }
                           </div>
-                        </div>
+                        </div> :
+                        null
+                       }
                       </td>
                     </tr>
                   );
@@ -493,6 +496,14 @@ export default class CEOProjectTable extends React.Component<
       />
     );
 
+    var milstoneFilter = (
+      <input
+        type="text"
+        className={styles.filterCustom}
+        style={{ width: "100%", visibility:"hidden", margin:"-5px" }}       
+      />
+    );
+
     return (
       <div className={styles.CEOProjectDashboard}>
         {this.state.projectTimeLine.length > 0 ? (
@@ -507,7 +518,7 @@ export default class CEOProjectTable extends React.Component<
             globalFilter={this.state.globalFilter}
             header={header}
             value={this.state.projectList}
-            // responsive={true}
+            responsive={true}
             className={styles.datatablePosition}
             expandedRows={this.state.expandedRows}
             onRowToggle={this.onRowToggle.bind(this)}
@@ -541,6 +552,8 @@ export default class CEOProjectTable extends React.Component<
               header="Mildstone"
               body={this.mildstoneTemplate}
               style={{ width: "30%" }}
+              filter={true}
+              filterElement={milstoneFilter}
             />
             <Column
               field="StatusText"
@@ -621,17 +634,20 @@ export default class CEOProjectTable extends React.Component<
           });
           let mildstone = null;
           let mildstones = [];
-          let currentDate = new Date().getTime();
-          for (let count = 0; count < filteredMilestones.length; count++) {
-            let startDate = new Date(
-              filteredMilestones[count].StartDate
-            ).getTime();
-            let dueDate = new Date(filteredMilestones[count].DueDate).getTime();
+          let currentDate = new Date(new Date().setHours(0,0,0,0));
+          let lastDueDate = new Date(new Date().setHours(0,0,0,0));
 
-            if (currentDate <= startDate && currentDate >= dueDate) {
+          filteredMilestones = sortBy(filteredMilestones, function(dateObj) {
+            return new Date(dateObj.StartDate);
+          });
+          for (let count = 0; count < filteredMilestones.length; count++) {
+            let mStartDate = new Date(new Date(filteredMilestones[count].StartDate).setHours(0,0,0,0));
+            let mDueDate = new Date(new Date(filteredMilestones[count].DueDate).setHours(0,0,0,0));
+            
+            if (currentDate >= mStartDate && currentDate <= mDueDate) {
               mildstone = filteredMilestones[count];
             } else {
-              if (startDate > currentDate) {
+              if (currentDate < mStartDate) {
                 mildstones.push(filteredMilestones[count]);
               }
             }
@@ -654,7 +670,7 @@ export default class CEOProjectTable extends React.Component<
           item.MildStone =
             mildstone == null && mildstones.length > 0
               ? mildstones[0]
-              : mildstone;
+              : mildstone;       
             if (item.AssignedTo && item.AssignedTo.length > 0){
                   item.AssignedTo.forEach(element => {
                     if (element.EMail != null) {

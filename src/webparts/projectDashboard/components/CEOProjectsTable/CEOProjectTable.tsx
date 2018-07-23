@@ -29,7 +29,13 @@ export default class CEOProjectTable extends React.Component<
       projectName: null,
       ownerName: null,
       status: null,
-      priority: null
+      priority: null,
+      isLoading : true,
+      isTeamMemberLoaded : false,
+      isKeyDocumentLoaded :false,
+      isTagLoaded :false,
+      expandedRowID: -1,
+      expandedRows :[]
     };
     this.handleGlobalSearchChange = this.handleGlobalSearchChange.bind(this);
     this.onProjectNameChange = this.onProjectNameChange.bind(this);
@@ -131,6 +137,9 @@ export default class CEOProjectTable extends React.Component<
   }
 
   private rowExpansionTemplate(data: CEOProjects) {
+    if (!this.state.isTeamMemberLoaded && !this.state.isTagLoaded && !this.state.isKeyDocumentLoaded && data.ID == this.state.expandedRowID){
+      return <div><i className="fas fa-spinner"></i></div>
+    }
     return (
       <div className={styles.milestoneExpand}>
       <div className={styles.expandIndicator}>
@@ -331,9 +340,12 @@ export default class CEOProjectTable extends React.Component<
       // this.getMildStonesByProject(event.data[event.data.length - 1]);
       this.getKeyDocumentsByProject(event.data[event.data.length - 1]);
       this.getTaggingByProject(event.data[event.data.length - 1]);
-      this.getTeamMembersByProject(event.data[event.data.length - 1]);
+      this.getTeamMembersByProject(event.data[event.data.length - 1]);      
+      if(this.state.expandedRows <  event.data){
+        this.setState({ isTeamMemberLoaded :false ,isKeyDocumentLoaded: false, isTagLoaded:false, expandedRowID : event.data[event.data.length - 1].ID });
+      }
     }
-    this.setState({ expandedRows: event.data });
+    this.setState({ expandedRows: event.data}); 
   }
 
   private handleGlobalSearchChange(event) {
@@ -506,6 +518,9 @@ export default class CEOProjectTable extends React.Component<
 
     return (
       <div className={styles.CEOProjectDashboard}>
+      {
+        !this.state.isLoading ?
+       <div>
         {this.state.projectTimeLine.length > 0 ? (
           <CEOProjectTimeLine tasks={this.state.projectTimeLine} />
         ) : null}
@@ -575,6 +590,9 @@ export default class CEOProjectTable extends React.Component<
             />
           </DataTable>
         </div>
+        </div>
+        : <div style={{textAlign : "center", fontSize:"25px"}}><i className="fas fa-spinner"></i></div>
+        }
       </div>
     );
   }
@@ -699,7 +717,7 @@ export default class CEOProjectTable extends React.Component<
             end: item.DueDate,
           });
         });
-        this.setState({ projectList: projectList, projectTimeLine: timeline });
+        this.setState({ projectList: projectList, projectTimeLine: timeline, isLoading:false });
       });
   }
 
@@ -737,7 +755,7 @@ export default class CEOProjectTable extends React.Component<
         let projects = this.state.projectList;
         let project = find(projects, { ID: currentProject.ID });
         project.TeamMemberList = response;
-        this.setState({ projectList: projects });
+        this.setState({ projectList: projects,  isTeamMemberLoaded : true  });
       });
   }
   private getMildStonesByProject(currentProject :CEOProjects): void {
@@ -797,7 +815,7 @@ export default class CEOProjectTable extends React.Component<
         let projects = this.state.projectList;
         let project = find(projects, { ID: currentProject.ID });
         project.DocumentList = response;
-        this.setState({ projectList: projects });
+        this.setState({ projectList: projects, isKeyDocumentLoaded : true });
       });
   }
 
@@ -813,7 +831,7 @@ export default class CEOProjectTable extends React.Component<
           let projects = this.state.projectList;
           let project = find(projects, { ID: currentProject.ID });
           project.TagList = response;
-          this.setState({ projectList: projects });
+          this.setState({ projectList: projects, isTagLoaded : true  });
         }
       });
   }

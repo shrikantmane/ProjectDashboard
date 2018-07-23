@@ -69,6 +69,7 @@ export class TeamMembers {
 export class File {
     public Name : string;
     public LinkingUri : string;
+    public ServerRelativeUrl : string;
 }
 export class Documents {
     public File : File;

@@ -310,7 +310,7 @@ export default class CEOProjectTable extends React.Component<
                                 className={iconClass}
                                 style={{ marginRight: "5px" }}
                               />
-                              <a href={item.File.LinkingUri} target="_blank">
+                              <a href={window.location.origin  + item.File.ServerRelativeUrl} target="_blank">
                                 {item.File.Name}
                               </a>
                             </div>

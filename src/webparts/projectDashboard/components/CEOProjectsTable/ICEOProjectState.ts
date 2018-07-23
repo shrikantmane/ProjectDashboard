@@ -9,5 +9,10 @@ export interface ICEOProjectState {
   projectName: string,
   ownerName: string,
   status: string,
-  priority: string
+  priority: string,
+  isLoading: boolean,
+  isTeamMemberLoaded : boolean,
+  isKeyDocumentLoaded :boolean,
+  isTagLoaded :boolean,
+  expandedRowID : number
 }

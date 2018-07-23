@@ -9,10 +9,19 @@
           "manifest": "./src/webparts/projectDashboard/ProjectDashboardWebPart.manifest.json"
         }
       ]
+    },
+    "project-management-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/projectManagement/ProjectManagementWebPart.js",
+          "manifest": "./src/webparts/projectManagement/ProjectManagementWebPart.manifest.json"
+        }
+      ]
     }
   },
   "externals": {},
   "localizedResources": {
-    "ProjectDashboardWebPartStrings": "lib/webparts/projectDashboard/loc/{locale}.js"
+    "ProjectDashboardWebPartStrings": "lib/webparts/projectDashboard/loc/{locale}.js",
+    "ProjectManagementWebPartStrings": "lib/webparts/projectManagement/loc/{locale}.js"
   }
 }

@@ -138,7 +138,7 @@ export default class CEOProjectTable extends React.Component<
 
   private rowExpansionTemplate(data: CEOProjects) {
     if (!this.state.isTeamMemberLoaded && !this.state.isTagLoaded && !this.state.isKeyDocumentLoaded && data.ID == this.state.expandedRowID){
-      return <div><i className="fas fa-spinner"></i></div>
+      return <div className={styles.spinnerStyling}><i className="fas fa-spinner"></i></div>
     }
     return (
       <div className={styles.milestoneExpand}>

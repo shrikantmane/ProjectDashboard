@@ -114,9 +114,9 @@ export default class ProjectListTable extends React.Component<
             "Status0/Status_x0020_Color",
             "AssignedTo/Title",
             "AssignedTo/ID",
-            "Priority")
+            "Priority",
+            "ID")
             .expand("Status0", "AssignedTo")
-            .filter("Project eq 'AlphaServe'")
             .getAll()
             .then((response) => {
                 console.log('Project by name', response);
@@ -135,7 +135,6 @@ export default class ProjectListTable extends React.Component<
             .then((response) => {
                 console.log(' all Project tag -', response);
                 if (response != null && response.length > 0) {
-                    debugger;
                     let projects: any = this.state.projectList;
                     projects.forEach(element => {
                         let tagData: any = find(response, function (o) { return o.Project.Title === element.Project; })

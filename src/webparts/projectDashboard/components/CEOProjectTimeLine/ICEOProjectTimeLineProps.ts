@@ -1,11 +1,7 @@
-import Task , { ViewMode }  from "./ProjectTimeLine";
+import  { ViewMode , Groups, TimeLineItems }  from "./ProjectTimeLine";
+import { Items } from "@pnp/sp";
 
 export interface ICEOProjectTimeLineProps {
-  tasks: Array<Task>;
-  viewMode?: ViewMode;
-  onClick?: () => void;
-  onDateChange ?: () => void;
-  onProgressChange ?: () => void;
-  onViewChange?: () => void;
-  customPopupHtml?: any
-}
+    groups : Array<Groups>,
+    items :  Array<TimeLineItems>
+  }

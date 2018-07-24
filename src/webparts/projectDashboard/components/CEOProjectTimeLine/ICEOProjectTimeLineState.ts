@@ -1,3 +1,3 @@
 export interface ICEOProjectTimeLineState {
-    description: string;
+  description?: string;
   }

@@ -35,6 +35,7 @@ export class Project {
     public ID :number;   
 }
 export class MildStones {
+    public ID : number;
     public Title: string;   
     public StartDate :string;
     public DueDate: string;

@@ -385,3 +385,90 @@ div[class^="pageTitle_"]{
   color: #fff;
   font-size: 1.5rem;
 }
+.ui-sortable-column-icon.pi-fw{
+  color: #696d80;
+  font-size: 12px;
+}
+
+.react-calendar-timeline .rct-item.item-weekend {
+  background: #21F32C;
+  border-color: #29B31A;
+}
+.react-calendar-timeline .rct-header .rct-label-group{
+background: #2d314c;
+border-bottom: 1px solid #151529;
+border-left: 2px solid #151529;
+}
+.react-calendar-timeline .rct-horizontal-lines .rct-hl-even, .react-calendar-timeline .rct-horizontal-lines .rct-hl-odd{
+  border-bottom: 1px solid #151529;
+}
+.react-calendar-timeline .rct-vertical-lines .rct-vl{
+border-left: 1px solid #151529;
+background:#1e213a;
+}
+.react-calendar-timeline .rct-header .rct-label{
+border-left: 1px solid #151529;
+color: #fff;
+background: #1e213a;
+border-bottom: 1px solid #151529;
+}
+.react-calendar-timeline .rct-vertical-lines .rct-vl.rct-day-6, .react-calendar-timeline .rct-vertical-lines .rct-vl.rct-day-0{
+background:#252842;
+}
+.react-calendar-timeline .rct-outer{
+background: #24273f;
+}
+.react-calendar-timeline .rct-today{
+background: #838cce;
+opacity: .5;
+width:2rem
+}
+.react-calendar-timeline .rct-items .rct-item{
+background: #238ef1;
+border: 1px solid #238ef1;
+border-radius:3rem;
+-webkit-box-shadow: 0px 0px 104px -9px rgba(35,141,241,0.96);
+-moz-box-shadow: 0px 0px 104px -9px rgba(35,141,241,0.96);
+box-shadow: 0px 0px 104px -9px rgba(35,141,241,0.96);
+text-align: center;
+font-size: 11px;
+}
+.react-calendar-timeline .rct-sidebar{
+border-right: 1px solid #151529;
+}
+.react-calendar-timeline .rct-sidebar-header{
+background:#181a2d;
+border: 0px;
+text-align:center;
+font-size:18px;
+padding-top: 1rem;
+color: #24def1;
+}
+.react-calendar-timeline .rct-sidebar .rct-sidebar-row{
+border:0px !important;
+color:#fff;
+text-align:left;
+font-size: 12px;
+}
+.react-calendar-timeline .rct-vertical-lines .rct-vl.rct-vl-first{
+border-left: 2px solid #151529;
+}
+.react-calendar-timeline .rct-header .rct-label.rct-first-of-type{
+border-left: 2px solid #151529;
+}
+.react-calendar-timeline .rct-header .bottom-header, .react-calendar-timeline .rct-header .top-header {
+ background: #1e213a;
+}
+.react-calendar-timeline {
+  height: 300px;
+  overflow: auto;
+}
+.ui-dropdown-panel .ui-dropdown-list {
+  background-color: #fff;
+}
+.react-calendar-timeline .rct-items .rct-item.selected {
+  background: #FFC107;
+  border: 1px solid #FF9800;
+  z-index: 999;
+  color:#2d2306;
+}

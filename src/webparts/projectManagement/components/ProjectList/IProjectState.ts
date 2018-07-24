@@ -15,4 +15,5 @@ export interface IProjectListState {
     //   isKeyDocumentLoaded :boolean,
     //   isTagLoaded :boolean,
     //   expandedRowID : number,
+    showComponent: boolean
 }

@@ -6,12 +6,20 @@ export enum ViewMode {
     Month = "Month"
 }
 
-export default class ProjectTimeLine {     
-    id: number;
-    name: string;
-    start: string;
-    end: string;
-    progress?: number;
-    custom_class?: string;
-    dependencies? :string;      
+export class ProjectTimeLine {     
+    groups: Array<Groups>;
+    items: Array<TimeLineItems>;  
 }
+
+export class Groups {     
+  id: number;
+  title: string;
+}
+
+export class TimeLineItems {     
+    id: number;
+    group: number;
+    title: string;
+    start_time: Date;
+    end_time: Date;
+  }

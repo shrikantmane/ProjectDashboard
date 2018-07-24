@@ -13,9 +13,10 @@ import {
   Documents
 } from "./CEOProject";
 import CEOProjectTimeLine from "../CEOProjectTimeLine/CEOProjectTimeLine";
-import ProjectTimeLine from "../CEOProjectTimeLine/ProjectTimeLine";
+import { ProjectTimeLine, Groups, TimeLineItems }from "../CEOProjectTimeLine/ProjectTimeLine";
 import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
+import moment from 'moment/src/moment';
 
 export default class CEOProjectTable extends React.Component<
   ICEOProjectProps,
@@ -25,7 +26,7 @@ export default class CEOProjectTable extends React.Component<
     super(props);
     this.state = {
       projectList: new Array<CEOProjects>(),
-      projectTimeLine: new Array<ProjectTimeLine>(),
+      projectTimeLine: new ProjectTimeLine,
       projectName: null,
       ownerName: null,
       status: null,
@@ -58,10 +59,10 @@ export default class CEOProjectTable extends React.Component<
     return (
       <div>
         <div className={styles.projectName}>{rowData.Project}</div>
-        <div>
-          {" "}
+        <div>    
+        <b>Active Mildstone:</b>      
           {rowData.MildStone
-            ? "Active Mildstone: " + rowData.MildStone.Title
+            ?  rowData.MildStone.Title
             : ""}
         </div>
       </div>
@@ -261,7 +262,10 @@ export default class CEOProjectTable extends React.Component<
                     ? data.TeamMemberList.map((item, key) => {
                         return (
                           <div className={styles.memberImg}>
+                          { item.Team_x0020_Member ? 
                             <img src={item.Team_x0020_Member.ImgUrl} title={item.Team_x0020_Member.Title} />
+                            :null
+                          }                           
                             {/* <span className={styles.badgeLight}>17</span> */}
                           </div>
                         );
@@ -357,19 +361,30 @@ export default class CEOProjectTable extends React.Component<
         item.StatusText.toLowerCase().match(event.target.value.toLowerCase())
       );
     });
-    let timeLines = [];
-    filterdRecords.forEach(project => {
-      timeLines.push({
-        id: project.Project_x0020_ID,
-        name: project.Project,
-        start: project.StartDate,
-        end: project.DueDate,
-      });
-    });
+        let timeLine = new ProjectTimeLine();
+        let groups = new Array<Groups>();
+        let timeLineItems =new Array<TimeLineItems>();
+        filterdRecords.forEach(element => {
+          groups.push({
+            id : element.ID,
+            title : element.Project
+          });
+          element.MildStoneList.forEach(mildstone => {
+            timeLineItems.push({
+              id: mildstone.ID,
+              group: element.ID,
+              title: mildstone.Title,
+              start_time: moment(mildstone.StartDate),
+              end_time: moment(mildstone.DueDate)
+            })
+          });         
+        });
+        timeLine.groups = groups;
+        timeLine.items = timeLineItems;
 
     this.setState({
       globalFilter: event.target.value,
-      projectTimeLine: timeLines
+      projectTimeLine: timeLine
     });
   }
 
@@ -379,18 +394,30 @@ export default class CEOProjectTable extends React.Component<
       return item.Project.toLowerCase().match(event.target.value.toLowerCase());
     });
 
-    let timeLines = new Array<ProjectTimeLine>();
-    filterdRecords.forEach(project => {
-      timeLines.push({
-        id: project.ID,
-        name: project.Project,
-        start: project.StartDate,
-        end: project.DueDate,
+    let timeLine = new ProjectTimeLine();
+    let groups = new Array<Groups>();
+    let timeLineItems =new Array<TimeLineItems>();
+    filterdRecords.forEach(element => {
+      groups.push({
+        id : element.ID,
+        title : element.Project
       });
+      element.MildStoneList.forEach(mildstone => {
+        timeLineItems.push({
+          id: mildstone.ID,
+          group: element.ID,
+          title: mildstone.Title,
+          start_time: moment(mildstone.StartDate),
+          end_time: moment(mildstone.DueDate)
+        })
+      });         
     });
+    timeLine.groups = groups;
+    timeLine.items = timeLineItems;
+
     this.setState({
       projectName: event.target.value,
-      projectTimeLine: timeLines
+      projectTimeLine: timeLine
     });
   }
 
@@ -400,18 +427,30 @@ export default class CEOProjectTable extends React.Component<
       return item.OwnerTitle.toLowerCase().match(event.target.value.toLowerCase());
     });
 
-    let timeLines = new Array<ProjectTimeLine>();
-    filterdRecords.forEach(project => {
-      timeLines.push({
-        id: project.ID,
-        name: project.Project,
-        start: project.StartDate,
-        end: project.DueDate,
+    let timeLine = new ProjectTimeLine();
+    let groups = new Array<Groups>();
+    let timeLineItems =new Array<TimeLineItems>();
+    filterdRecords.forEach(element => {
+      groups.push({
+        id : element.ID,
+        title : element.Project
       });
+      element.MildStoneList.forEach(mildstone => {
+        timeLineItems.push({
+          id: mildstone.ID,
+          group: element.ID,
+          title: mildstone.Title,
+          start_time: moment(mildstone.StartDate),
+          end_time: moment(mildstone.DueDate)
+        })
+      });         
     });
+    timeLine.groups = groups;
+    timeLine.items = timeLineItems;
+
     this.setState({
       ownerName: event.target.value,
-      projectTimeLine: timeLines
+      projectTimeLine: timeLine
     });
   }
 
@@ -420,17 +459,32 @@ export default class CEOProjectTable extends React.Component<
     let filterdRecords = this.state.projectList.filter(item => {
       return item.StatusText.toLowerCase().match(event.target.value.toLowerCase());
     });
-
-    let timeLines = new Array<ProjectTimeLine>();
-    filterdRecords.forEach(project => {
-      timeLines.push({
-        id: project.ID,
-        name: project.Project,
-        start: project.StartDate,
-        end: project.DueDate,
+    
+    let timeLine = new ProjectTimeLine();
+    let groups = new Array<Groups>();
+    let timeLineItems =new Array<TimeLineItems>();
+    filterdRecords.forEach(element => {
+      groups.push({
+        id : element.ID,
+        title : element.Project
       });
+      element.MildStoneList.forEach(mildstone => {
+        timeLineItems.push({
+          id: mildstone.ID,
+          group: element.ID,
+          title: mildstone.Title,
+          start_time: moment(mildstone.StartDate),
+          end_time: moment(mildstone.DueDate)
+        })
+      });         
     });
-    this.setState({ status: event.target.value, projectTimeLine: timeLines });
+    timeLine.groups = groups;
+    timeLine.items = timeLineItems;
+
+    this.setState({
+      status: event.target.value,
+      projectTimeLine: timeLine
+    });
   }
   onPrioritychange(event) {
     this.dt.filter(event.target.value, "Priority", "contains");
@@ -438,16 +492,31 @@ export default class CEOProjectTable extends React.Component<
       return item.Priority.toLowerCase().match(event.target.value.toLowerCase());
     });
 
-    let timeLines = new Array<ProjectTimeLine>();
-    filterdRecords.forEach(project => {
-      timeLines.push({
-        id: project.ID,
-        name: project.Project,
-        start: project.StartDate,
-        end: project.DueDate,
+    let timeLine = new ProjectTimeLine();
+    let groups = new Array<Groups>();
+    let timeLineItems =new Array<TimeLineItems>();
+    filterdRecords.forEach(element => {
+      groups.push({
+        id : element.ID,
+        title : element.Project
       });
+      element.MildStoneList.forEach(mildstone => {
+        timeLineItems.push({
+          id: mildstone.ID,
+          group: element.ID,
+          title: mildstone.Title,
+          start_time: moment(mildstone.StartDate),
+          end_time: moment(mildstone.DueDate)
+        })
+      });         
     });
-    this.setState({ priority: event.target.value, projectTimeLine: timeLines });
+    timeLine.groups = groups;
+    timeLine.items = timeLineItems;
+
+    this.setState({
+      priority: event.target.value,
+      projectTimeLine: timeLine
+    });
   }
   /* Html UI */
 
@@ -521,8 +590,8 @@ export default class CEOProjectTable extends React.Component<
       {
         !this.state.isLoading ?
        <div>
-        {this.state.projectTimeLine.length > 0 ? (
-          <CEOProjectTimeLine tasks={this.state.projectTimeLine} />
+        {this.state.projectTimeLine &&  this.state.projectTimeLine.groups.length > 0 ? (
+          <CEOProjectTimeLine groups={this.state.projectTimeLine.groups} items ={this.state.projectTimeLine.items} />
         ) : null}
         <div style={{ marginTop: "10px" }}>
           <DataTable
@@ -628,6 +697,7 @@ export default class CEOProjectTable extends React.Component<
     sp.web.lists
       .getByTitle("Tasks List")
       .items.select(
+        "ID",
         "Title",
         "StartDate",
         "DueDate",
@@ -645,8 +715,16 @@ export default class CEOProjectTable extends React.Component<
       .filter("Duration eq 0")
       .get()
       .then((milestones: Array<MildStones>) => {
-        let timeline = new Array<ProjectTimeLine>();
+        let timeline = new ProjectTimeLine() ;
+        let groups =  Array<Groups>();
+        let timeLineItems = Array<TimeLineItems>();
         projectList.forEach(item => {
+
+          groups.push({
+            id : item.ID,
+            title : item.Project
+          });
+
           let filteredMilestones = filter(milestones, function(milstoneItem) {
             return milstoneItem.Project.ID == item.ID;
           });
@@ -659,6 +737,15 @@ export default class CEOProjectTable extends React.Component<
             return new Date(dateObj.StartDate);
           });
           for (let count = 0; count < filteredMilestones.length; count++) {
+
+            timeLineItems.push({
+              id: filteredMilestones[count].ID,
+              group: item.ID,
+              title: filteredMilestones[count].Title,
+              start_time: moment(filteredMilestones[count].StartDate),
+              end_time: moment(filteredMilestones[count].DueDate)
+            })
+
             let mStartDate = new Date(new Date(filteredMilestones[count].StartDate).setHours(0,0,0,0));
             let mDueDate = new Date(new Date(filteredMilestones[count].DueDate).setHours(0,0,0,0));
             
@@ -715,14 +802,9 @@ export default class CEOProjectTable extends React.Component<
               ? item.AssignedTo[0].Title
               : "";
 
-          // Time Line
-          timeline.push({
-            id: item.ID,
-            name: item.Project,
-            start: item.StartDate,
-            end: item.DueDate,
-          });
-        });
+        });      
+        timeline.groups = groups;
+        timeline.items = timeLineItems;
         this.setState({ projectList: projectList, projectTimeLine: timeline, isLoading:false });
       });
   }

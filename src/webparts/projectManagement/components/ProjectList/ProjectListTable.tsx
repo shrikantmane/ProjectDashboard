@@ -10,6 +10,7 @@ import {
 } from "./ProjectList";
 import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
+import AddProject from '../AddProject/AddProject';
 
 export default class ProjectListTable extends React.Component<
     IProjectListProps,
@@ -32,8 +33,10 @@ export default class ProjectListTable extends React.Component<
         //     expandedRows: []
         // };
         this.state = {
-            projectList: new Array<Project>()
+            projectList: new Array<Project>(),
+            showComponent: false
         };
+        this.onAddProject = this.onAddProject.bind(this);
     }
     dt: any;
     componentDidMount() {
@@ -75,15 +78,25 @@ export default class ProjectListTable extends React.Component<
     editTemplate(rowData, column) {
         return <a href="#"> Edit </a>;
     }
+    onAddProject() {
+        console.log('button clicked');
+        this.setState({
+            showComponent: true,
+        });
+    }
     public render(): React.ReactElement<IProjectListProps> {
         return (
             <div>
                 {/* <DataTableSubmenu /> */}
 
                 <div className="content-section implementation">
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }}>
+                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
                         Add Project
                     </button>
+                    {this.state.showComponent ?
+                        <AddProject /> :
+                        null
+                    }
                     <DataTable value={this.state.projectList} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
                         <Column header="Action" body={this.editTemplate} />
                         <Column field="Project" header="Project" />
@@ -121,14 +134,14 @@ export default class ProjectListTable extends React.Component<
             .then((response) => {
                 console.log('Project by name', response);
                 this.setState({ projectList: response });
-                this.getprojecttag();
+                this.getProjectTag();
             }).catch((e: Error) => {
                 alert(`There was an error : ${e.message}`);
             });
 
     }
 
-    getprojecttag() {
+    getProjectTag() {
         sp.web.lists.getByTitle("Project Tags").items
             .select("Project/Title", "Project/ID", "Tag").expand("Project")
             .get()

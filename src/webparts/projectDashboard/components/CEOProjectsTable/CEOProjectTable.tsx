@@ -760,13 +760,13 @@ export default class CEOProjectTable extends React.Component<
             if(filteredMilestones[count].AssignedTo && filteredMilestones[count].AssignedTo.length > 0){
               filteredMilestones[count].AssignedTo.forEach(element => {
                 if (element.EMail != null) {
-                  // element.imgURL =
-                  //       "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-                  //       element.EMail +
-                  //       "&UA=0&size=HR64x64&sc=1531997060853";
-                    element.imgURL = "/_layouts/15/userphoto.aspx?size=S&username=" + element.EMail;       
+                  element.imgURL =
+                        "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                        element.EMail +
+                        "&UA=0&size=HR64x64&sc=1531997060853";
+                   // element.imgURL = "/_layouts/15/userphoto.aspx?size=S&username=" + element.EMail;       
                 } else {
-                  element.imgURL = "";
+                 element.imgURL = "";               
                 }
               });
             }
@@ -778,21 +778,20 @@ export default class CEOProjectTable extends React.Component<
               : mildstone;       
             if (item.AssignedTo && item.AssignedTo.length > 0){
                   item.AssignedTo.forEach(element => {
-                    // if (element.EMail != null) {
-                    //   element.imgURL =
-                    //   "//outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-                    //   element.EMail +
-                    //   "&UA=0&size=HR64x64&sc=1531997060853";                     
-                    // } else {
-                    //   element.imgURL =
-                    //     "https://esplrms.sharepoint.com/sites/projects/SiteAssets/default.jpg";
-                    // }
-
                     if (element.EMail != null) {
-                      element.imgURL = "/_layouts/15/userphoto.aspx?size=S&username=" + element.EMail                     
+                      element.imgURL =
+                      "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                      element.EMail +
+                      "&UA=0&size=HR64x64&sc=1531997060853";                     
                     } else {
                       element.imgURL = "";
                     }
+
+                    // if (element.EMail != null) {
+                    //   element.imgURL = "/_layouts/15/userphoto.aspx?size=S&username=" + element.EMail                     
+                    // } else {
+                    //   element.imgURL = "";
+                    // }
                   });
             }
 
@@ -830,13 +829,15 @@ export default class CEOProjectTable extends React.Component<
         response.forEach(item => {        
           if (item.Team_x0020_Member) {
             if (item.Team_x0020_Member.EMail) {             
-                // item.Team_x0020_Member.ImgUrl =
-                // "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-                // item.Team_x0020_Member.EMail +
-                // "&UA=0&size=HR64x64&sc=1531997060853";
-                item.Team_x0020_Member.ImgUrl = "/_layouts/15/userphoto.aspx?size=S&username=" + item.Team_x0020_Member.EMail     
+                item.Team_x0020_Member.ImgUrl =
+                "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                item.Team_x0020_Member.EMail +
+                "&UA=0&size=HR64x64&sc=1531997060853";
+               // item.Team_x0020_Member.ImgUrl = "/_layouts/15/userphoto.aspx?size=S&username=" + item.Team_x0020_Member.EMail     
             } else {
+              //item.Team_x0020_Member.ImgUrl = "";
               item.Team_x0020_Member.ImgUrl = "";
+                       
             }
           }
         });
@@ -873,11 +874,11 @@ export default class CEOProjectTable extends React.Component<
           if(item.AssignedTo && item.AssignedTo.length > 0){
             item.AssignedTo.forEach(element => {
               if (element.EMail != null) {
-                // element.imgURL =
-                //       "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-                //       element.EMail +
-                //       "&UA=0&size=HR64x64&sc=1531997060853";
-                element.imgURL ="/_layouts/15/userphoto.aspx?size=S&username=" + element.EMail  
+                element.imgURL =
+                      "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                      element.EMail +
+                      "&UA=0&size=HR64x64&sc=1531997060853";
+               // element.imgURL ="/_layouts/15/userphoto.aspx?size=S&username=" + element.EMail  
               } else {
                 element.imgURL ="";
               }

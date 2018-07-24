@@ -374,8 +374,8 @@ export default class CEOProjectTable extends React.Component<
               id: mildstone.ID,
               group: element.ID,
               title: mildstone.Title,
-              start_time: moment(mildstone.StartDate),
-              end_time: moment(mildstone.DueDate)
+              start_time: moment(new Date(mildstone.StartDate).setHours(0,0,0,0)),
+              end_time: moment(new Date(mildstone.DueDate).setHours(0,0,0,0)) 
             })
           });         
         });
@@ -407,8 +407,8 @@ export default class CEOProjectTable extends React.Component<
           id: mildstone.ID,
           group: element.ID,
           title: mildstone.Title,
-          start_time: moment(mildstone.StartDate),
-          end_time: moment(mildstone.DueDate)
+          start_time: moment(new Date(mildstone.StartDate).setHours(0,0,0,0)),
+          end_time: moment(new Date(mildstone.DueDate).setHours(0,0,0,0)) 
         })
       });         
     });
@@ -440,8 +440,8 @@ export default class CEOProjectTable extends React.Component<
           id: mildstone.ID,
           group: element.ID,
           title: mildstone.Title,
-          start_time: moment(mildstone.StartDate),
-          end_time: moment(mildstone.DueDate)
+          start_time: moment(new Date(mildstone.StartDate).setHours(0,0,0,0)),
+          end_time: moment(new Date(mildstone.DueDate).setHours(0,0,0,0)) 
         })
       });         
     });
@@ -473,8 +473,8 @@ export default class CEOProjectTable extends React.Component<
           id: mildstone.ID,
           group: element.ID,
           title: mildstone.Title,
-          start_time: moment(mildstone.StartDate),
-          end_time: moment(mildstone.DueDate)
+          start_time: moment(new Date(mildstone.StartDate).setHours(0,0,0,0)),
+          end_time: moment(new Date(mildstone.DueDate).setHours(0,0,0,0)) 
         })
       });         
     });
@@ -505,8 +505,8 @@ export default class CEOProjectTable extends React.Component<
           id: mildstone.ID,
           group: element.ID,
           title: mildstone.Title,
-          start_time: moment(mildstone.StartDate),
-          end_time: moment(mildstone.DueDate)
+          start_time: moment(new Date(mildstone.StartDate).setHours(0,0,0,0)),
+          end_time: moment(new Date(mildstone.DueDate).setHours(0,0,0,0)) 
         })
       });         
     });
@@ -742,8 +742,8 @@ export default class CEOProjectTable extends React.Component<
               id: filteredMilestones[count].ID,
               group: item.ID,
               title: filteredMilestones[count].Title,
-              start_time: moment(filteredMilestones[count].StartDate),
-              end_time: moment(filteredMilestones[count].DueDate)
+              start_time: moment(new Date(filteredMilestones[count].StartDate).setHours(0,0,0,0)),
+              end_time: moment(new Date(filteredMilestones[count].DueDate).setHours(0,0,0,0)) 
             })
 
             let mStartDate = new Date(new Date(filteredMilestones[count].StartDate).setHours(0,0,0,0));

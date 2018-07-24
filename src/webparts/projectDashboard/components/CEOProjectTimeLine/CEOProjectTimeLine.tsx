@@ -17,7 +17,7 @@ export default class CEOProjectTimeLine extends React.Component<ICEOProjectTimeL
 
   public render(): React.ReactElement<ICEOProjectTimeLineProps> {
     return (
-       <div>
+       <div className="react-calendar-timeline-div">
         <Timeline
         sidebarWidth={200}
         canMove = {false}

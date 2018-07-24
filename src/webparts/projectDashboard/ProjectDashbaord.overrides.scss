@@ -420,8 +420,16 @@ background: #24273f;
 }
 .react-calendar-timeline .rct-today{
 background: #838cce;
-opacity: .5;
-width:2rem
+}
+.react-calendar-timeline .rct-today::before {
+  position: absolute;
+  content: "";
+  top: 0;
+  bottom: 0;
+  left: -8px;
+  width: .5rem;
+  height: 100%;
+  background: #838cce;
 }
 .react-calendar-timeline .rct-items .rct-item{
 background: #238ef1;
@@ -460,8 +468,9 @@ border-left: 2px solid #151529;
  background: #1e213a;
 }
 .react-calendar-timeline-div {
-  height: 300px;
+  height: 241px;
   overflow: auto;
+  min-height: 241px;
 }
 .ui-dropdown-panel .ui-dropdown-list {
   background-color: #fff;
@@ -471,4 +480,12 @@ border-left: 2px solid #151529;
   border: 1px solid #FF9800;
   z-index: 999;
   color:#2d2306;
+}
+
+div[name="Recycle bin"]{
+  display: none !important;
+}
+
+div[class^="footerBar_"]{
+  display: none !important;
 }

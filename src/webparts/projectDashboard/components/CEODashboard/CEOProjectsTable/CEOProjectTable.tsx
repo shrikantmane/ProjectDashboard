@@ -2,7 +2,7 @@ import * as React from "react";
 import { sp, ItemAddResult } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
-import styles from "../ProjectDashboard.module.scss";
+import styles from "../../ProjectDashboard.module.scss";
 import { ICEOProjectProps } from "./ICEOProjectProps";
 import { ICEOProjectState } from "./ICEOProjectState";
 import {
@@ -185,7 +185,7 @@ export default class CEOProjectTable extends React.Component<
               <th>Milestone Name</th>
               <th>Owner</th>
               <th>Description</th>
-              <th>Start Date</th>
+              <th>Due Date</th>
               <th>Status</th>
             </tr>
           </thead>
@@ -221,8 +221,8 @@ export default class CEOProjectTable extends React.Component<
                       </td>
                       <td>
                         <div>
-                          {item.StartDate
-                            ? new Date(item.StartDate).toDateString()
+                          {item.DueDate
+                            ? new Date(item.DueDate).toDateString()
                             : ""}
                         </div>
                       </td>
@@ -707,9 +707,9 @@ export default class CEOProjectTable extends React.Component<
           }
           item.MildStoneList = filteredMilestones;
           item.MildStone =
-            mildstone == null && mildstones.length > 0
-              ? mildstones[0]
-              : mildstone;       
+            mildstone == null ? mildstones.length > 0 ?
+               mildstones[0] : filteredMilestones.length > 0  ? filteredMilestones[filteredMilestones.length -1] : null :
+               mildstone;       
             if (item.AssignedTo && item.AssignedTo.length > 0){
                   item.AssignedTo.forEach(element => {
                     if (element.EMail != null) {

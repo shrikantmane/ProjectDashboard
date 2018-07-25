@@ -640,6 +640,24 @@ table.unitTable{
 table.table-striped h4{
     margin: 0px;
 }
+.error{
+    color: red;
+}
+.btn-sec {
+    margin: 10px 0;
+}
+.btn-style {
+    padding: 6px 32px;
+    border-radius: 30px;
+}
+.form-group label {
+    font-size: 13px;
+    color: #666;
+    font-weight: 600;
+}
+.classError{
+    border-color: red !important;
+}
 
 
 /*------------------------ Mobile View -----------------------------*/

@@ -2,4 +2,5 @@
 
 export interface IAddProjectProps {
   // projectList: Array<CEOProjects>,
+  parentMethod: any
 }

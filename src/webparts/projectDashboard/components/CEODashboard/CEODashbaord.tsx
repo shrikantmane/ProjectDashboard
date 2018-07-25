@@ -9,7 +9,7 @@ export default class CEODashboard extends React.Component<ICEODashboardProps, IC
     public render(): React.ReactElement<ICEODashboardProps> {
     return (
       <div>
-        <CEOProjectTable></CEOProjectTable>
+        <CEOProjectTable webPartTitle={this.props.webPartTitle}></CEOProjectTable>
       </div>
     );
   }

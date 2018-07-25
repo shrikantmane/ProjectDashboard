@@ -31,7 +31,7 @@ export default class ProjectDashboard extends React.Component<
     if (this.state.userType != UserType.Unknow) {
       switch (this.state.userType) {
         case UserType.CEO:
-          dashboard = <CEODashboard />;
+          dashboard = <CEODashboard webPartTitle = {this.props.webPartTitle} />;
           break;
         case UserType.DepartmentHead:
           dashboard = <DepartmentHeadDashboard />;

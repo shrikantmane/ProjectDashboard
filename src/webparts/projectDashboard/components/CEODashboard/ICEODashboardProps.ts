@@ -1,3 +1,3 @@
 export interface ICEODashboardProps {
-  description?: string;
+  webPartTitle?: string;
 }

@@ -34,7 +34,8 @@ export default class ProjectDashboardWebPart extends BaseClientSideWebPart<IProj
       ProjectDashboard,
       {
         list: this.properties.list,
-        context: this.context
+        context: this.context,
+        webPartTitle: this.properties,
       }
     );
 

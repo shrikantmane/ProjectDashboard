@@ -10,7 +10,7 @@ import {
 import * as strings from 'ProjectManagementWebPartStrings';
 import ProjectManagement from './components/ProjectManagement';
 import { IProjectManagementProps } from './components/IProjectManagementProps';
-// require('./ProjectManagement.overide.scss');
+require('./ProjectManagement.overide.scss');
 
 export interface IProjectManagementWebPartProps {
   description: string;

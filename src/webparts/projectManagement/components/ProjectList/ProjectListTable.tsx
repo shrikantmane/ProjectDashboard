@@ -11,6 +11,8 @@ import {
 import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 import AddProject from '../AddProject/AddProject';
+import "bootstrap/dist/css/bootstrap.min.css";
+
 
 export default class ProjectListTable extends React.Component<
     IProjectListProps,
@@ -37,6 +39,7 @@ export default class ProjectListTable extends React.Component<
             showComponent: false
         };
         this.onAddProject = this.onAddProject.bind(this);
+        this.refreshGrid = this.refreshGrid.bind(this);
     }
     dt: any;
     componentDidMount() {
@@ -84,31 +87,35 @@ export default class ProjectListTable extends React.Component<
             showComponent: true,
         });
     }
+
+    refreshGrid (){
+        this.getProjectList()
+    }
     public render(): React.ReactElement<IProjectListProps> {
         return (
             <div>
                 {/* <DataTableSubmenu /> */}
-
-                <div className="content-section implementation">
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
-                        Add Project
-                    </button>
-                    {this.state.showComponent ?
-                        <AddProject /> :
-                        null
-                    }
-                    <DataTable value={this.state.projectList} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
-                        <Column header="Action" body={this.editTemplate} />
-                        <Column field="Project" header="Project" />
-                        <Column field="DueDate" header="Due Date" body={this.duedateTemplate} />
-                        <Column field="Status0" header="Status" body={this.statusTemplate} />
-                        <Column field="AssignedTo" header="Owner" body={this.ownerTemplate} />
-                        <Column field="Priority" header="Priority" />
-                        <Column field="Tag" header="Tags" />
-                        <Column header="Project Details" body={this.actionTemplate} />
-                    </DataTable>
+                <div className="PanelContainer">
+                    <div className="content-section implementation">
+                        <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                            Add Project
+                        </button>
+                        {this.state.showComponent ?
+                            <AddProject parentMethod={this.refreshGrid}/> :
+                            null
+                        }
+                        <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
+                            <Column header="Action" body={this.editTemplate} />
+                            <Column field="Project" sortable={true} header="Project" />
+                            <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} />
+                            <Column field="Status0" sortable={true} header="Status" body={this.statusTemplate} />
+                            <Column field="AssignedTo" sortable={true} header="Owner" body={this.ownerTemplate} />
+                            <Column field="Priority" sortable={true} header="Priority" />
+                            <Column field="Tag" header="Tags" />
+                            <Column header="Project Details" body={this.actionTemplate} />
+                        </DataTable>
+                    </div>
                 </div>
-
                 {/* <DataTableDoc></DataTableDoc> */}
             </div>
         );

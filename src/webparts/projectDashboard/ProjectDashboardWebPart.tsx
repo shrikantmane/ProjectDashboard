@@ -8,9 +8,11 @@ import {
 } from '@microsoft/sp-webpart-base';
 
 require('./ProjectDashbaord.overrides.scss');
+import { BrowserRouter, Route, Switch, DefaultRoute  } from 'react-router-dom';
 import * as strings from 'ProjectDashboardWebPartStrings';
 import ProjectDashboard from './components/ProjectDashboard';
 import { IProjectDashboardProps } from './components/IProjectDashboardProps';
+import RouteComponent from './components/route';
 
 import { sp } from '@pnp/sp';
 
@@ -18,9 +20,25 @@ export interface IProjectDashboardWebPartProps {
   list: string;
 }
 
+let spCurrentPageUrl : string;
+
 export default class ProjectDashboardWebPart extends BaseClientSideWebPart<IProjectDashboardWebPartProps> {
 
   public onInit(): Promise<void> {
+
+    // if(Environment.type == EnvironmentType.ClassicSharePoint){   //Classic SharePoint page
+
+    // }else if(Environment.type === EnvironmentType.Local){        //Workbenck page
+    //   spCurrentPageUrl = window.location.pathname       
+    //   return Promise.resolve();
+    // }else if(Environment.type === EnvironmentType.SharePoint){   //Modern SharePoint page 
+    //   spCurrentPageUrl= "/sites/rms/SitePages/ModernDashboard.aspx";
+    //   return Promise.resolve();
+    // }else if(Environment.type === EnvironmentType.Test){         //Running on Unit test enveironment 
+    //   return Promise.resolve();
+    // }
+
+    spCurrentPageUrl = window.location.pathname;
     return super.onInit().then(_ => {
       // establish SPFx context
       sp.setup({
@@ -39,7 +57,20 @@ export default class ProjectDashboardWebPart extends BaseClientSideWebPart<IProj
       }
     );
 
-    ReactDom.render(element, this.domElement);
+   ReactDom.render(element, this.domElement);
+
+    // const element: React.ReactElement<any > = React.createElement(
+      
+    //   RouteComponent,
+    //   {
+    //     list: this.properties.list,
+    //     context: this.context
+    //   }
+    // );    
+    // ReactDom.render( 
+    //   <BrowserRouter>
+    //     {element}
+    //   </BrowserRouter>, this.domElement);
   }
 
   protected onDispose(): void {

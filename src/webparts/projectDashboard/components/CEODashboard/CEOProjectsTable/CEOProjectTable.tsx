@@ -260,15 +260,14 @@ export default class CEOProjectTable extends React.Component<
                 <div className={styles.memberList}>
                   {data.TeamMemberList != null
                     ? data.TeamMemberList.map((item, key) => {
-                        return (
+                      if( item.Team_x0020_Member){
+                        return(
                           <div className={styles.memberImg}>
-                          { item.Team_x0020_Member ? 
-                            <img src={item.Team_x0020_Member.ImgUrl} title={item.Team_x0020_Member.Title} />
-                            :null
-                          }                           
-                            {/* <span className={styles.badgeLight}>17</span> */}
+                              <img src={item.Team_x0020_Member.ImgUrl} title={item.Team_x0020_Member.Title} />
+                              <span className={styles.badgeLight}>{item.Team_x0020_Member.TaskCount}</span>
                           </div>
-                        );
+                        )
+                      }                       
                       })
                     : null}
                 </div>
@@ -773,6 +772,7 @@ export default class CEOProjectTable extends React.Component<
               item.Team_x0020_Member.ImgUrl = "";
                        
             }
+            item.Team_x0020_Member.TaskCount = currentProject.MildStoneList.filter(a => a.AssignedTo[0] && a.AssignedTo[0].ID == item.Team_x0020_Member.ID).length;
           }
         });
         let projects = this.state.projectList;

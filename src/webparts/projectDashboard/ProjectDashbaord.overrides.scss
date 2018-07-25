@@ -389,7 +389,14 @@ div[class^="pageTitle_"]{
   color: #696d80;
   font-size: 12px;
 }
-
+.react-calendar-timeline .rct-canvas {
+  position: relative;
+  z-index: 0;
+}
+.react-calendar-timeline .rct-header-container {
+  z-index: auto;
+  display: flex;
+}
 .react-calendar-timeline .rct-item.item-weekend {
   background: #21F32C;
   border-color: #29B31A;

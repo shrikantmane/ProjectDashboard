@@ -40,6 +40,8 @@ export default class ProjectListTable extends React.Component<
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
+        this.reopenPanel = this.reopenPanel.bind(this);
+        this.editTemplate = this.editTemplate.bind(this);
     }
     dt: any;
     componentDidMount() {
@@ -48,7 +50,9 @@ export default class ProjectListTable extends React.Component<
         );
         this.getProjectList();
     }
-    componentWillReceiveProps(nextProps) { }
+    componentWillReceiveProps(nextProps) {
+
+    }
 
     /* Private Methods */
 
@@ -79,7 +83,7 @@ export default class ProjectListTable extends React.Component<
         return <a href="#"> View Details </a>;
     }
     editTemplate(rowData, column) {
-        return <a href="#"> Edit </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}> Edit </a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -87,9 +91,26 @@ export default class ProjectListTable extends React.Component<
             showComponent: true,
         });
     }
-
-    refreshGrid (){
+    private onEditProject(rowData, e): any {
+        e.preventDefault();
+        console.log('Edit :' + rowData);
+        this.setState({
+            showComponent: true,
+            projectID: rowData.ID
+        });
+    }
+    refreshGrid() {
+        this.setState({
+            showComponent: false,
+            projectID: null
+        })
         this.getProjectList()
+    }
+    reopenPanel() {
+        this.setState({
+            showComponent: false,
+            projectID: null
+        })
     }
     public render(): React.ReactElement<IProjectListProps> {
         return (
@@ -101,7 +122,7 @@ export default class ProjectListTable extends React.Component<
                             Add Project
                         </button>
                         {this.state.showComponent ?
-                            <AddProject parentMethod={this.refreshGrid}/> :
+                            <AddProject id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} /> :
                             null
                         }
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>

@@ -11,8 +11,9 @@ import { IAddProjectProps } from './IAddProjectProps';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
 import "bootstrap/dist/css/bootstrap.min.css";
-import ProjectListTable from '../ProjectList/ProjectListTable';
 import { Button, Modal } from 'react-bootstrap';
+import ProjectListTable from '../ProjectList/ProjectListTable';
+
 
 
 export default class AddProject extends React.Component<IAddProjectProps, {

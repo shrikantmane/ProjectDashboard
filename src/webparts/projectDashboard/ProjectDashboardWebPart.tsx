@@ -12,8 +12,6 @@ import { BrowserRouter, Route, Switch, DefaultRoute  } from 'react-router-dom';
 import * as strings from 'ProjectDashboardWebPartStrings';
 import ProjectDashboard from './components/ProjectDashboard';
 import { IProjectDashboardProps } from './components/IProjectDashboardProps';
-import RouteComponent from './components/route';
-
 import { sp } from '@pnp/sp';
 
 export interface IProjectDashboardWebPartProps {
@@ -48,29 +46,17 @@ export default class ProjectDashboardWebPart extends BaseClientSideWebPart<IProj
   }
 
   public render(): void {
-    const element: React.ReactElement<IProjectDashboardProps > = React.createElement(
+    const element: React.ReactElement<IProjectDashboardProps > = React.createElement(      
       ProjectDashboard,
       {
         list: this.properties.list,
-        context: this.context,
-        webPartTitle: this.properties,
+        context: this.context
       }
-    );
-
-   ReactDom.render(element, this.domElement);
-
-    // const element: React.ReactElement<any > = React.createElement(
-      
-    //   RouteComponent,
-    //   {
-    //     list: this.properties.list,
-    //     context: this.context
-    //   }
-    // );    
-    // ReactDom.render( 
-    //   <BrowserRouter>
-    //     {element}
-    //   </BrowserRouter>, this.domElement);
+    );    
+    ReactDom.render( 
+      <BrowserRouter basename={spCurrentPageUrl}>
+        {element}
+      </BrowserRouter>, this.domElement);
   }
 
   protected onDispose(): void {

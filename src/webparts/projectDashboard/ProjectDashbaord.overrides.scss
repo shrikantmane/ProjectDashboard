@@ -475,9 +475,8 @@ border-left: 2px solid #151529;
  background: #1e213a;
 }
 .react-calendar-timeline-div {
-  height: 241px;
-  overflow: auto;
-  min-height: 241px;
+    overflow: auto;
+    max-height: 241px;
 }
 .ui-dropdown-panel .ui-dropdown-list {
   background-color: #fff;

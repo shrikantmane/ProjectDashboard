@@ -146,10 +146,10 @@ IDocumentState
                         Add Document
                     </button>
                    
-                    {this.state.showComponent ?
+                    {/* {this.state.showComponent ?
                         <AddProject parentMethod={this.refreshGrid}/> :
                         null
-                    }
+                    } */}
                     <DataTable value={this.state.projectList} paginator={true} rows={10} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
                     <Column header="Edit" body={this.editTemplate} />
                         <Column field="Title" header="Attachment" body={this.fileTemplate} 

@@ -1,3 +1,6 @@
+import { Project, Tag } from './Project';
 export interface IProjectLevelDashboardState {
-    description: string;
+    description?: string;
+    project: Project;
+    tagList : Array<Tag>
   }

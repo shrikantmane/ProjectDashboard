@@ -1,5 +1,5 @@
 export class AssignedTo {
-    public ID: string;
+    public ID: number;
     public Title: string;
     public EMail: string;
     public imgURL: string; 
@@ -54,9 +54,11 @@ export class Tags {
 }
 
 export class Team_x0020_Member {
+    ID: number;
     EMail : string;
     ImgUrl: string;
     Title: string;
+    TaskCount: number;
 }
 export class TeamMembers {
     public ID: number;
@@ -64,7 +66,7 @@ export class TeamMembers {
     public Start_x0020_Date: string;
     public End_x0020_Date: Status;
     public Status :string;
-    public Team_x0020_Member: Team_x0020_Member;
+    public Team_x0020_Member: Team_x0020_Member;    
 }
 
 export class File {

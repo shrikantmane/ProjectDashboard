@@ -14,6 +14,8 @@ import DocumentListTable from './ProjectDocuments/DocumentListTable'
 import ScheduleListTable from './ProjectSchedule/ScheduleListTable'
 import FullCalendar from 'fullcalendar-reactwrapper';
 import { SPComponentLoader } from "@microsoft/sp-loader";
+import ProjectViewDetails from './ViewProject/ProjectViewDetails';
+import { Switch, Route } from 'react-router-dom';
 
 export default class ProjectManagement extends React.Component<IProjectManagementProps, {}> {
   componentDidMount() {
@@ -25,6 +27,7 @@ export default class ProjectManagement extends React.Component<IProjectManagemen
     
 }
   public render(): React.ReactElement<IProjectManagementProps> {
+
     // return (
     //   <div className={ styles.projectManagement }>
     //     <div className={ styles.container }>
@@ -41,87 +44,95 @@ export default class ProjectManagement extends React.Component<IProjectManagemen
     //     </div>
     //   </div>
     // );
-    this.state = {
-      events:[
-                  {
-                      title: 'All Day Event',
-                      start: '2018-07-01'
-                  },
-                  {
-                      title: 'Long Event',
-                      start: '2018-08-07',
-                      end: '2018-08-10'
-                  },
-                  {
-                      id: 999,
-                      title: 'Repeating Event',
-                      start: '2018-07-09T16:00:00'
-                  },
-                  {
-                      id: 999,
-                      title: 'Repeating Event',
-                      start: '2018-07-16T16:00:00'
-                  },
-                  {
-                      title: 'Conference',
-                      start: '2018-08-11',
-                      end: '2018-08-13'
-                  },
-                  {
-                      title: 'Meeting',
-                      start: '2018-07-12T10:30:00',
-                      end: '2018-07-12T12:30:00'
-                  },
-                  {
-                      title: 'Birthday Party',
-                      start: '2018-07-27T07:00:00'
-                  },
-                  {
-                      title: 'Click for Google',
-                     // url: 'http://google.com/',
-                      start: '2018-07-30'
-                  }
-              ],		
-      }
-    return (
-      <div>
-         <div >
-        <FullCalendar
+    // this.state = {
+    //   events:[
+    //               {
+    //                   title: 'All Day Event',
+    //                   start: '2018-07-01'
+    //               },
+    //               {
+    //                   title: 'Long Event',
+    //                   start: '2018-08-07',
+    //                   end: '2018-08-10'
+    //               },
+    //               {
+    //                   id: 999,
+    //                   title: 'Repeating Event',
+    //                   start: '2018-07-09T16:00:00'
+    //               },
+    //               {
+    //                   id: 999,
+    //                   title: 'Repeating Event',
+    //                   start: '2018-07-16T16:00:00'
+    //               },
+    //               {
+    //                   title: 'Conference',
+    //                   start: '2018-08-11',
+    //                   end: '2018-08-13'
+    //               },
+    //               {
+    //                   title: 'Meeting',
+    //                   start: '2018-07-12T10:30:00',
+    //                   end: '2018-07-12T12:30:00'
+    //               },
+    //               {
+    //                   title: 'Birthday Party',
+    //                   start: '2018-07-27T07:00:00'
+    //               },
+    //               {
+    //                   title: 'Click for Google',
+    //                   start: '2018-07-30'
+    //               }
+    //           ],		
+    //   }
+    // return (
+    //   <div>
+    //      <div >
+    //     <FullCalendar
             
-         header = {{
-            left: 'prev,next today myCustomButton',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay,listWeek'
-        }}
-         //defaultDate={'2018-07-26'}
-        navLinks= {true} // can click day/week names to navigate views
-        editable= {true}
-        eventLimit= {true} // allow "more" link when too many events
-       events={this.state}
-    />
+    //      header = {{
+    //         left: 'prev,next today myCustomButton',
+    //         center: 'title',
+    //         right: 'month,agendaWeek,agendaDay,listWeek'
+    //     }}
+    //     navLinks= {true} // can click day/week names to navigate views
+    //     editable= {true}
+    //     eventLimit= {true} // allow "more" link when too many events
+    //    events={this.state}
+    // />
 
-      </div>
+    //   </div>
       
-        <DocumentListTable></DocumentListTable>
-         <div>
-        <InformationListTable></InformationListTable>
-          </div> 
-          <div>
-        <RequirementListTable></RequirementListTable>
-          </div> 
-          <div>
-        <RiskListTable></RiskListTable>
-          </div>
-          <div>
-        <ScheduleListTable></ScheduleListTable>
-          </div>
-          <div>
-        <TeamListTable></TeamListTable>
-          </div>
-          <div>
-              <ProjectListTable></ProjectListTable>
-              </div>
-      </div>
+    //     <DocumentListTable></DocumentListTable>
+    //      <div>
+    //     <InformationListTable></InformationListTable>
+    //       </div> 
+    //       <div>
+    //     <RequirementListTable></RequirementListTable>
+    //       </div> 
+    //       <div>
+    //     <RiskListTable></RiskListTable>
+    //       </div>
+    //       <div>
+    //     <ScheduleListTable></ScheduleListTable>
+    //       </div>
+    //       <div>
+    //     <TeamListTable></TeamListTable>
+    //       </div>
+    //       <div>
+    //           <ProjectListTable></ProjectListTable>
+    //           </div>
+    //   </div>
+    // )
+    return (
+      // <div>
+      //   <ProjectListTable></ProjectListTable>
+      // </div>
+      <Switch>
+        <Route exact path='/' component={ProjectListTable} />
+        <Route path='/viewProjectDetails/:id' component={ProjectViewDetails} />
+      </Switch>
+
     );
   }
 }

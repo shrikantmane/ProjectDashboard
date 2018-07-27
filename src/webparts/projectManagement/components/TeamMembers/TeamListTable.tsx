@@ -104,10 +104,10 @@ ITeamState
                     <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
                         Add Team Members
                     </button>
-                    {this.state.showComponent ?
+                    {/* {this.state.showComponent ?
                             <AddProject parentMethod={this.refreshGrid}/>  :
                         null
-                    }
+                    } */}
                     <DataTable value={this.state.projectList} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
                         <Column field="AssignedTo" header="Owner" body={this.ownerTemplate} />
                        

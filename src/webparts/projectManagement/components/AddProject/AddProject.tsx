@@ -11,8 +11,11 @@ import { IAddProjectProps } from './IAddProjectProps';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
 import "bootstrap/dist/css/bootstrap.min.css";
-import ProjectListTable from '../ProjectList/ProjectListTable';
 import { Button, Modal } from 'react-bootstrap';
+
+import ProjectListTable from '../ProjectList/ProjectListTable';
+
+
 import { Project } from "../ProjectList/ProjectList";
 import { IPersonaProps, Persona, PersonaPresence } from 'office-ui-fabric-react/lib/Persona';
 import { BaseComponent, assign } from 'office-ui-fabric-react/lib/Utilities';
@@ -25,6 +28,7 @@ import {
     ValidationState
 } from 'office-ui-fabric-react/lib/Pickers';
 import { IPersonaWithMenu } from 'office-ui-fabric-react/lib/components/pickers/PeoplePicker/PeoplePickerItems/PeoplePickerItem.types';
+
 
 const suggestionProps: IBasePickerSuggestionsProps = {
     suggestionsHeaderText: 'Suggested People',

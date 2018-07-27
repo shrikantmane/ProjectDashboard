@@ -36,9 +36,9 @@ const suggestionProps: IBasePickerSuggestionsProps = {
     suggestionsContainerAriaLabel: 'Suggested contacts'
 };
 const limitedSearchAdditionalProps: IBasePickerSuggestionsProps = {
-  searchForMoreText: 'Load all Results',
-  resultsMaximumNumber: 10,
-  searchingText: 'Searching...'
+    searchForMoreText: 'Load all Results',
+    resultsMaximumNumber: 10,
+    searchingText: 'Searching...'
 };
 const limitedSearchSuggestionProps: IBasePickerSuggestionsProps = assign(limitedSearchAdditionalProps, suggestionProps);
 export default class AddProject extends React.Component<IAddProjectProps, {
@@ -51,6 +51,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     projectList: any,
     peopleList: any[],
     delayResults: false,
+    isDataSaved: boolean;
 }> {
     private _picker: IBasePicker<IPersonaProps>;
     constructor(props) {
@@ -67,6 +68,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             projectList: new Array<Project>(),
             peopleList: peopleList,
             delayResults: false,
+            isDataSaved: false
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -91,7 +93,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     private _getAllSiteUsers = (): void => {
         var reactHandler = this;
         sp.web.siteUsers.get().then(function (data) {
-            debugger;
             const peopleList: IPersonaWithMenu[] = [];
             data.forEach((persona) => {
                 const target: IPersonaWithMenu = {};
@@ -281,10 +282,10 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                 }).then((response) => {
                     console.log('Item adding-', response);
+                    this.setState({ isDataSaved: true });
                     this._closePanel();
                     this._showModal();
-                    //this.props.parentMethod();
-                    //this.props.parentReopen();
+
                 });
             }
         } else {
@@ -296,78 +297,15 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     };
     _closeModal() {
         this.setState({ showModal: false });
-    };
-    // private _listContainsPersona(persona: any, personas: any) {
-    //     if (!personas || !personas.length || personas.length === 0) {
-    //         return false;
-    //     }
-    //     return personas.filter(item => item.text === persona.text).length > 0;
-    // }
-    // private _removeDuplicates(personas: IPersonaProps[], possibleDupes: IPersonaProps[]) {
-    //     return personas.filter(persona => !this._listContainsPersona(persona, possibleDupes));
-    // }
-    // private _doesTextStartWith(text: string, filterText: string): boolean {
-    //     return text.toLowerCase().indexOf(filterText.toLowerCase()) === 0;
-    // }
-    // private _filterPersonasByText(filterText: string): IPersonaProps[] {
-    //     return this.state.peopleList.filter(item => this._doesTextStartWith(item.text as string, filterText));
-    // }
-    // private _onFilterChanged = (
-    //     filterText: string,
-    //     currentPersonas: IPersonaProps[],
-    //     limitResults?: number
-    // ): IPersonaProps[] | Promise<IPersonaProps[]> => {
-    //     if (filterText) {
-    //         let filteredPersonas: IPersonaProps[] = this._filterPersonasByText(filterText);
-
-    //         filteredPersonas = this._removeDuplicates(filteredPersonas, currentPersonas);
-    //         filteredPersonas = limitResults ? filteredPersonas.splice(0, limitResults) : filteredPersonas;
-    //         return this._filterPromise(filteredPersonas);
-    //     } else {
-    //         return [];
-    //     }
-    // };
-    // private _convertResultsToPromise(results: IPersonaProps[]): Promise<IPersonaProps[]> {
-    //     return new Promise<IPersonaProps[]>((resolve, reject) => setTimeout(() => resolve(results), 2000));
-    // }
-    // private _filterPromise(personasToReturn: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> {
-    //     if (this.state.delayResults) {
-    //         return this._convertResultsToPromise(personasToReturn);
-    //     } else {
-    //         return personasToReturn;
-    //     }
-    // }
-    // private _returnMostRecentlyUsed = (currentPersonas: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> => {
-    //     let { mostRecentlyUsed } = this.state;
-    //     mostRecentlyUsed = this._removeDuplicates(mostRecentlyUsed, currentPersonas);
-    //     return this._filterPromise(mostRecentlyUsed);
-    // };
-    private _closePanel = (): void => {
-        this.setState({ showPanel: false });
+        this.props.parentMethod();
         this.props.parentReopen();
     };
-    // private _getTextFromItem(persona: any): string {
-    //     return persona.text as string;
-    // }
-    // private _onRemoveSuggestion = (item: IPersonaProps): void => {
-    //     const { peopleList, mostRecentlyUsed: mruState } = this.state;
-    //     const indexPeopleList: number = peopleList.indexOf(item);
-    //     const indexMostRecentlyUsed: number = mruState.indexOf(item);
-
-    //     if (indexPeopleList >= 0) {
-    //         const newPeople: IPersonaProps[] = peopleList
-    //             .slice(0, indexPeopleList)
-    //             .concat(peopleList.slice(indexPeopleList + 1));
-    //         this.setState({ peopleList: newPeople });
-    //     }
-
-    //     if (indexMostRecentlyUsed >= 0) {
-    //         const newSuggestedPeople: IPersonaProps[] = mruState
-    //             .slice(0, indexMostRecentlyUsed)
-    //             .concat(mruState.slice(indexMostRecentlyUsed + 1));
-    //         this.setState({ mostRecentlyUsed: newSuggestedPeople });
-    //     }
-    // };
+    private _closePanel = (): void => {
+        this.setState({ showPanel: false });
+        if (!this.state.isDataSaved) {
+             this.props.parentReopen();
+        }
+    };
     private _validateInput = (input: string): ValidationState => {
         if (input.indexOf('@') !== -1) {
             return ValidationState.valid;
@@ -387,11 +325,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         return input;
     }
-    private _onItemSelected(item: IPersonaProps): void {
-        // const processedItem = Object.assign({}, item);
-        // processedItem.text = `${item.text} (selected)`;
-        // return new Promise<IPersonaProps>((resolve, reject) => setTimeout(() => resolve(processedItem), 250));
-    };
     public render(): React.ReactElement<IAddProjectProps> {
         let formControl = 'form-control';
         let paddingInputStyle = 'padding-input-style';
@@ -442,6 +375,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         return (
             // className="PanelContainer"
             <div>
+
                 <Panel
                     isOpen={this.state.showPanel}
                     onDismiss={this._closePanel}
@@ -490,11 +424,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
                                                                         <label>Owner</label>
-                                                                        {/* <span className="calendar-style"><i className="fas fa-user icon-style"></i> 
-                                                                         <input ref="ownername" type="text" className={paddingInputStyle + " " + formControl + " " + (this.state.errorClass["ownername"] ? this.state.errorClass["ownername"] : '')} placeholder="Enter owners name"
+                                                                        <span className="calendar-style"><i className="fas fa-user icon-style"></i>
+                                                                            <input ref="ownername" type="text" className={paddingInputStyle + " " + formControl + " " + (this.state.errorClass["ownername"] ? this.state.errorClass["ownername"] : '')} placeholder="Enter owners name"
                                                                                 onChange={this.handleChange.bind(this, "ownername")} value={this.state.fields["ownername"]}>
-                                                                            </input>  */}
-                                                                        <CompactPeoplePicker
+                                                                            </input>
+                                                                            {/* <CompactPeoplePicker
                                                                             onResolveSuggestions={this._onFilterChangedWithLimit}
                                                                             getTextFromItem={this._getTextFromItem}
                                                                             className={'ms-PeoplePicker'}
@@ -506,8 +440,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                                                 'aria-label': 'People Picker'
                                                                             }}
                                                                             resolveDelay={300}
-                                                                        />
-                                                                        {/* </span>  */}
+                                                                        /> */}
+                                                                        </span>
                                                                         <span className="error">{this.state.errors["ownername"]}</span>
                                                                     </div>
                                                                 </div>
@@ -749,7 +683,7 @@ Schedule and Project Team now?
         return personas.filter(persona => !this._listContainsPersona(persona, possibleDupes));
     }
 
-    private _listContainsPersona(persona: IPersonaProps, personas: IPersonaProps[]) {
+    private _listContainsPersona(persona: any, personas: any) {
         if (!personas || !personas.length || personas.length === 0) {
             return false;
         }
@@ -777,7 +711,7 @@ Schedule and Project Team now?
     //     return this._filterPromise(mostRecentlyUsed);
     // };
 
-    private _getTextFromItem(persona: IPersonaProps): string {
+    private _getTextFromItem(persona: any): string {
         return persona.text as string;
     }
 

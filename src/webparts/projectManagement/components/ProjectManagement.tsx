@@ -6,29 +6,19 @@ import styles from './ProjectManagement.module.scss';
 import { IProjectManagementProps } from './IProjectManagementProps';
 import { escape } from '@microsoft/sp-lodash-subset';
 import ProjectListTable from './ProjectList/ProjectListTable';
+import ProjectViewDetails from './ViewProject/ProjectViewDetails';
+import { Switch, Route } from 'react-router-dom';
 
 export default class ProjectManagement extends React.Component<IProjectManagementProps, {}> {
   public render(): React.ReactElement<IProjectManagementProps> {
-    // return (
-    //   <div className={ styles.projectManagement }>
-    //     <div className={ styles.container }>
-    //       <div className={ styles.row }>
-    //         <div className={ styles.column }>
-    //           <span className={ styles.title }>Welcome to SharePoint!</span>
-    //           <p className={ styles.subTitle }>Customize SharePoint experiences using Web Parts.</p>
-    //           <p className={ styles.description }>{escape(this.props.description)}</p>
-    //           <a href="https://aka.ms/spfx" className={ styles.button }>
-    //             <span className={ styles.label }>Learn more</span>
-    //           </a>
-    //         </div>
-    //       </div>
-    //     </div>
-    //   </div>
-    // );
     return (
-      <div>
-        <ProjectListTable></ProjectListTable>
-      </div>
+      // <div>
+      //   <ProjectListTable></ProjectListTable>
+      // </div>
+      <Switch>
+        <Route exact path='/' component={ProjectListTable} />
+        <Route path='/viewProjectDetails/:id' component={ProjectViewDetails} />
+      </Switch>
     );
   }
 }

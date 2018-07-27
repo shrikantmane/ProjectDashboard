@@ -2,6 +2,7 @@ import * as React from "react";
 import { sp, ItemAddResult } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
+import { Link, Redirect } from 'react-router-dom';
 import styles from "../ProjectManagement.module.scss";
 import { IProjectListProps } from "./IProjectListProps";
 import { IProjectListState } from "./IProjectState";
@@ -80,7 +81,7 @@ export default class ProjectListTable extends React.Component<
             );
     }
     actionTemplate(rowData, column) {
-        return <a href="#"> View Details </a>;
+        return <Link to={`/viewProjectDetails/${rowData.ID}`}>View Details</Link>
     }
     editTemplate(rowData, column) {
         return <a href="#" onClick={this.onEditProject.bind(this, rowData)}> Edit </a>;

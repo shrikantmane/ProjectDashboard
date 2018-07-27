@@ -15,8 +15,8 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
 
 
   componentDidMount() {
-  // console.log('componentDidUpdate',this.props.projectRoleResponsibility);
-      this.getRoleResponsibility(this.props.projectRoleResponsibility);
+    // console.log('componentDidUpdate',this.props.projectRoleResponsibility);
+    this.getRoleResponsibility(this.props.projectRoleResponsibility);
   }
 
   // componentWillReceiveProps(nextProps) {
@@ -28,31 +28,70 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
 
   private getRoleResponsibility(projectRoleResponsibility: string) {
     sp.web.lists.getByTitle(projectRoleResponsibility).items
-      .select("Owner/ID", "Owner/Title", "Owner/Department", "Roles_Responsibility").expand("Owner")
+      .select("Owner/ID", "Owner/Title", "Owner/EMail", "Owner/Department", "Roles_Responsibility").expand("Owner")
       .get()
       .then((response: Array<RoleResponsibility>) => {
         console.log('Responsibility -', response);
-        this.setState({ roleResponsibilityList: response });
+        let currentScope = this;
+        let count = 1;
+        response.forEach(item => {
+          let loginName = "i:0#.f|membership|" + item.Owner.EMail;
+          sp.profiles.getPropertiesFor(loginName).then(function (result) {
+            item.Owner.Department = result.UserProfileProperties[13].Value;
+            item.Owner.PictureURL = result.UserProfileProperties[16].Value;
+            item.Owner.JobTitle = result.UserProfileProperties[21].Value;
+            if (count == response.length) {
+              currentScope.setState({ roleResponsibilityList: response });
+            }
+            count ++;
+          });
+        });
       });
   }
 
+
   public render(): React.ReactElement<IProjectRoleResponsibilityProps> {
     return (
-      <div>
-        {this.state.roleResponsibilityList != null
-          ? this.state.roleResponsibilityList.map((item, key) => {
-            return (
-              <div>
-                <div>
-                  <span >{item.Owner ? item.Owner.Title : ""}</span>
-                </div>
-                <div>
-                  <span >{item.Roles_Responsibility}</span>
-                </div>
+      <div className="col-xs-12 col-sm-4">
+        <div className="well recommendedProjects userFeedback">
+          <div className="row">
+            <div className="col-sm-12 cardHeading">
+              <h5>Roles and Responsibility</h5>
+            </div>
+            <div className="col-sm-12">
+              <div className="profileDetails-container">
+                {this.state.roleResponsibilityList != null
+                  ? this.state.roleResponsibilityList.map((item, key) => {
+                    return (
+                      <div className="row">
+                        <div className="col-sm-12">
+                          <div className="row">
+                            <div className="col-sm-2">
+                              <img className="img-responsive image-style" src="assets/img/user_profile.png" alt="" />
+                            </div>
+                            <div className="col-sm-5">
+                              <div className="profileDetail">
+                                <div className="profileName">
+                                  <h4>{item.Owner ? item.Owner.Title : ""}</h4>
+                                </div>
+                                <ul className="profileRoles">
+                                  <li>{item.Roles_Responsibility}</li>
+                                </ul>
+                              </div>
+                            </div>
+                            <div className="col-sm-3 pull-right">
+                              <h5 className="deptName">{item.Owner ? item.Owner.Department : ""}</h5>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )
+                  })
+                  : null}
               </div>
-            )
-          })
-          : null}
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

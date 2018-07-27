@@ -41,7 +41,11 @@ export class Document {
 
 export class Owner {
     public ID: number;
-    public Title: string;    
+    public Title: string;
+    public Department : string;
+    public EMail: string;
+    public PictureURL :string;
+    public JobTitle :string;
 }
 
 export class Team_x0020_Member {
@@ -51,7 +55,7 @@ export class Team_x0020_Member {
 }
 
 export class TeamMember {
-   public Team_x0020_Member : Team_x0020_Member
+   public Team_x0020_Member : Owner;
 }
 
 export class RoleResponsibility {

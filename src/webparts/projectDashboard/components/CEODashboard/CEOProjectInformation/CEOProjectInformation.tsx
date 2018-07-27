@@ -5,6 +5,7 @@ import { Column } from "primereact/components/column/Column";
 import styles from "../../ProjectDashboard.module.scss";
 import { ICEOProjectProps } from "./ICEOProjectProps";
 import { ICEOProjectState } from "./ICEOProjectState";
+import "bootstrap/dist/css/bootstrap.min.css";
 import {
   CEOProjects,
   MildStones,
@@ -12,13 +13,14 @@ import {
   Tags,
   Documents
 } from "./CEOProject";
+import { Link, Redirect } from 'react-router-dom';
 import CEOProjectTimeLine from "../CEOProjectTimeLine/CEOProjectTimeLine";
 import { ProjectTimeLine, Groups, TimeLineItems }from "../CEOProjectTimeLine/ProjectTimeLine";
 import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 import moment from 'moment/src/moment';
 
-export default class CEOProjectTable extends React.Component<
+export default class CEOProjectInformation extends React.Component<
   ICEOProjectProps,
   ICEOProjectState
 > {
@@ -36,13 +38,15 @@ export default class CEOProjectTable extends React.Component<
       isKeyDocumentLoaded :false,
       isTagLoaded :false,
       expandedRowID: -1,
-      expandedRows :[]
+      expandedRows :[],
+      redirectToProjectDetails : false
     };
     this.handleGlobalSearchChange = this.handleGlobalSearchChange.bind(this);
     this.onProjectNameChange = this.onProjectNameChange.bind(this);
     this.onOwnerNameChange = this.onOwnerNameChange.bind(this);
     this.onStatusChange = this.onStatusChange.bind(this);
     this.onPrioritychange = this.onPrioritychange.bind(this);
+    this.redirectToProjectPage = this.redirectToProjectPage.bind(this);
   }
   dt: any;
   componentDidMount() {
@@ -142,7 +146,7 @@ export default class CEOProjectTable extends React.Component<
       return <div className={styles.spinnerStyling}><i className="fas fa-spinner"></i></div>
     }
     return (
-      <div className={styles.milestoneExpand}>
+      <div className={styles.milestoneExpand}>     
       <div className={styles.expandIndicator}>
             <i className="fas fa-caret-down"></i>
         </div>
@@ -328,7 +332,7 @@ export default class CEOProjectTable extends React.Component<
               <div className={styles.projectPageLink}>
                 <h5>For Detailed Overview Go To</h5>
                 <button type="button" className="btn btn-white btn-sm">
-                  Project Page
+                  <Link to={`/projectDetailInformation/${data.ID}`}>Project Page</Link>
                 </button>
               </div>
             </div>
@@ -338,6 +342,9 @@ export default class CEOProjectTable extends React.Component<
     );
   }
 
+  private redirectToProjectPage (){
+    this.setState({ redirectToProjectDetails : true })
+  }
   private onRowToggle(event) {
     if (event.data && event.data.length > 0) {
       // this.getMildStonesByProject(event.data[event.data.length - 1]);
@@ -354,10 +361,10 @@ export default class CEOProjectTable extends React.Component<
   private handleGlobalSearchChange(event) {
     let filterdRecords = this.state.projectList.filter(item => {
       return (
-        item.Project.toLowerCase().match(event.target.value.toLowerCase()) ||
-        item.OwnerTitle.toLowerCase().match(event.target.value.toLowerCase()) ||
-        item.Priority.toLowerCase().match(event.target.value.toLowerCase()) ||
-        item.StatusText.toLowerCase().match(event.target.value.toLowerCase())
+        (item.Project && item.Project.toLowerCase().match(event.target.value.toLowerCase())) ||
+        (item.OwnerTitle && item.OwnerTitle.toLowerCase().match(event.target.value.toLowerCase())) ||
+        (item.Priority && item.Priority.toLowerCase().match(event.target.value.toLowerCase())) ||
+        (item.StatusText && item.StatusText.toLowerCase().match(event.target.value.toLowerCase()))
       );
     });
         let timeLine = new ProjectTimeLine();
@@ -396,8 +403,8 @@ export default class CEOProjectTable extends React.Component<
   onProjectNameChange(event) {
     this.dt.filter(event.target.value, "Project", "contains");
     let filterdRecords = this.state.projectList.filter(item => {
-      return item.Project.toLowerCase().match(event.target.value.toLowerCase());
-    });    
+      return item.Project && item.Project.toLowerCase().match(event.target.value.toLowerCase());
+    });  
 
     let timeLine = new ProjectTimeLine();
         timeLine = this.getProjectTimeLineData(filterdRecords);
@@ -411,7 +418,7 @@ export default class CEOProjectTable extends React.Component<
   onOwnerNameChange(event) {
     this.dt.filter(event.target.value, "OwnerTitle", "contains");
     let filterdRecords = this.state.projectList.filter(item => {
-      return item.OwnerTitle.toLowerCase().match(event.target.value.toLowerCase());
+      return item.OwnerTitle && item.OwnerTitle.toLowerCase().match(event.target.value.toLowerCase());
     });
 
     let timeLine = new ProjectTimeLine();
@@ -426,8 +433,8 @@ export default class CEOProjectTable extends React.Component<
   onStatusChange(event) {
     this.dt.filter(event.target.value, "StatusText", "contains");
     let filterdRecords = this.state.projectList.filter(item => {
-      return item.StatusText.toLowerCase().match(event.target.value.toLowerCase());
-    });    
+      return item.StatusText && item.StatusText.toLowerCase().match(event.target.value.toLowerCase());
+    }); 
     
     let timeLine = new ProjectTimeLine();
         timeLine = this.getProjectTimeLineData(filterdRecords);
@@ -440,7 +447,7 @@ export default class CEOProjectTable extends React.Component<
   onPrioritychange(event) {
     this.dt.filter(event.target.value, "Priority", "contains");
     let filterdRecords = this.state.projectList.filter(item => {
-      return item.Priority.toLowerCase().match(event.target.value.toLowerCase());
+      return item.Priority && item.Priority.toLowerCase().match(event.target.value.toLowerCase());
     });
     
     let timeLine = new ProjectTimeLine();
@@ -454,6 +461,9 @@ export default class CEOProjectTable extends React.Component<
   /* Html UI */
 
   public render(): React.ReactElement<ICEOProjectProps> {
+    if(this.state.redirectToProjectDetails){
+         return  <Redirect to="/project" />
+    }
     var header = (
       <div>
       <label className={styles.globalHeading}>CEO Dashboard</label>

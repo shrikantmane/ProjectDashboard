@@ -14,5 +14,6 @@ export interface ICEOProjectState {
   isTeamMemberLoaded : boolean,
   isKeyDocumentLoaded :boolean,
   isTagLoaded :boolean,
-  expandedRowID : number
+  expandedRowID : number,
+  redirectToProjectDetails : boolean,
 }

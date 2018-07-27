@@ -332,7 +332,7 @@ export default class CEOProjectInformation extends React.Component<
               <div className={styles.projectPageLink}>
                 <h5>For Detailed Overview Go To</h5>
                 <button type="button" className="btn btn-white btn-sm">
-                  <Link to={`/projectDetailInformation/${data.ID}`}>Project Page</Link>
+                  <Link to={`/projectDetails/${data.ID}`}>Project Page</Link>
                 </button>
               </div>
             </div>

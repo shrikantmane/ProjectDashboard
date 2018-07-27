@@ -6,27 +6,55 @@ import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-webpart-base';
-
+import { BrowserRouter, Route, Switch, DefaultRoute } from 'react-router-dom';
 import * as strings from 'ProjectManagementWebPartStrings';
 import ProjectManagement from './components/ProjectManagement';
 import { IProjectManagementProps } from './components/IProjectManagementProps';
+import { sp } from '@pnp/sp';
 require('./ProjectManagement.overide.scss');
 
 export interface IProjectManagementWebPartProps {
   description: string;
 }
 
+let spCurrentPageUrl: string;
+
 export default class ProjectManagementWebPart extends BaseClientSideWebPart<IProjectManagementWebPartProps> {
+  public onInit(): Promise<void> {
+
+    // if(Environment.type == EnvironmentType.ClassicSharePoint){   //Classic SharePoint page
+
+    // }else if(Environment.type === EnvironmentType.Local){        //Workbenck page
+    //   spCurrentPageUrl = window.location.pathname       
+    //   return Promise.resolve();
+    // }else if(Environment.type === EnvironmentType.SharePoint){   //Modern SharePoint page 
+    //   spCurrentPageUrl= "/sites/rms/SitePages/ModernDashboard.aspx";
+    //   return Promise.resolve();
+    // }else if(Environment.type === EnvironmentType.Test){         //Running on Unit test enveironment 
+    //   return Promise.resolve();
+    // }
+
+    spCurrentPageUrl = window.location.pathname;
+    return super.onInit().then(_ => {
+      // establish SPFx context
+      sp.setup({
+        spfxContext: this.context
+      });
+    });
+  }
 
   public render(): void {
-    const element: React.ReactElement<IProjectManagementProps > = React.createElement(
+    const element: React.ReactElement<IProjectManagementProps> = React.createElement(
       ProjectManagement,
       {
         description: this.properties.description
       }
     );
 
-    ReactDom.render(element, this.domElement);
+    ReactDom.render(
+      <BrowserRouter basename={spCurrentPageUrl}>
+        {element}
+      </BrowserRouter>, this.domElement);
   }
 
   protected onDispose(): void {

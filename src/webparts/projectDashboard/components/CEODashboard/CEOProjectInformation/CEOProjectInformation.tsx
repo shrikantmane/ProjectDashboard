@@ -63,7 +63,7 @@ export default class CEOProjectInformation extends React.Component<
     return (
       <div>
         <div className={styles.projectName}>{rowData.Project}</div>
-        <div>    
+        <div className={styles.acitveMilestone}>    
         <b>Active Mildstone:</b>      
           {rowData.MildStone
             ?  rowData.MildStone.Title

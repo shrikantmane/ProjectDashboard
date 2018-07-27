@@ -12,6 +12,9 @@ import ProjectManagement from './components/ProjectManagement';
 import { IProjectManagementProps } from './components/IProjectManagementProps';
 import { sp } from '@pnp/sp';
 require('./ProjectManagement.overide.scss');
+import 'core-js/es6/symbol';
+import 'core-js/es6/number'; 
+import 'core-js/es6/array';
 
 export interface IProjectManagementWebPartProps {
   description: string;

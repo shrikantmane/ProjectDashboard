@@ -30,7 +30,7 @@ export default class ProjectTaskList extends React.Component<IProjectTaskListPro
 
   public render(): React.ReactElement<IProjectTaskListProps> {
     return (
-      <div className="col-lg-6 col-md-6 col-sm-12">
+      <div className="col-md-7 col-xs-12">
         <div className="well recommendedProjects  ">
           <div className="row">
             <div className="col-sm-12 cardHeading">

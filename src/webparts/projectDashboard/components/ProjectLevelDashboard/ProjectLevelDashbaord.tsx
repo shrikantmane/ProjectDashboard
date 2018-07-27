@@ -87,7 +87,7 @@ export default class ProjectLevelDashboard extends React.Component<
               <div className="row conversationTasks">
                 <div className="project-tabs col-xs-12 col-sm-12 col-md-12 col-lg-12">
                   <div className="projectName">{this.state.project.Project}
-                <span className="due-date-style">{this.state.project.DueDate}</span>
+                <span className="due-date-style">{ new Date(this.state.project.DueDate).toDateString()}</span>
                     <div className="tagList">
                       <span className="delayedStatus priority-btn">{this.state.project.Priority}</span>
                     </div>
@@ -109,15 +109,17 @@ export default class ProjectLevelDashboard extends React.Component<
                             </div>
                           </div>
                         </div>
-                        <ProjectMildstone scheduleList={this.state.project.Schedule_x0020_List}></ProjectMildstone>
-                        <ProjectTaskList scheduleList={this.state.project.Schedule_x0020_List}></ProjectTaskList>
-                        <ProjectDocument projectDocument={this.state.project.Project_x0020_Document}></ProjectDocument>
-                        <ProjectTeamMembers projectTeamMembers={this.state.project.Project_x0020_Team_x0020_Members}></ProjectTeamMembers>
-                        <ProjectProjectRoleResponsibility projectRoleResponsibility ={"Project Information"} ></ProjectProjectRoleResponsibility>
+                        <ProjectMildstone scheduleList={this.state.project.Schedule_x0020_List}></ProjectMildstone>                      
                       </div>
                     </div>
                   </div>
                 </div>
+
+                  <ProjectTaskList scheduleList={this.state.project.Schedule_x0020_List}></ProjectTaskList>
+                  <ProjectDocument projectDocument={this.state.project.Project_x0020_Document}></ProjectDocument>
+                  <div className="clearfix"></div>
+                  <ProjectTeamMembers projectTeamMembers={this.state.project.Project_x0020_Team_x0020_Members}></ProjectTeamMembers>
+                  <ProjectProjectRoleResponsibility projectRoleResponsibility ={"Project Information"} ></ProjectProjectRoleResponsibility>
 
                 {/* row conversationTasks */}
               </div>

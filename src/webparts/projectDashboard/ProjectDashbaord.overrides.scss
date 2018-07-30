@@ -497,15 +497,29 @@ div[class^="footerBar_"]{
 }
 
 .ProjectLevelDashboard{
- /*img[alt=""],
-img:not([alt]){
-border: 5px dashed #c00;
-}*/
+::-webkit-scrollbar {
+    width: 0.85em;
+    height: 0.85em;
+  }
+  ::-webkit-scrollbar-track{
+    background-color: transparent;
+  }
+   ::-webkit-scrollbar-button, ::-webkit-scrollbar-corner{
+       display: none;
+  }     
+  ::-webkit-scrollbar-thumb {
+    background-color: #d6d6d8;
+    outline: 0px;
+    border: 1px solid #d6d6d6;
+    border-radius: 3rem;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #393b51; 
+  }
 
 body{
     background:#eff3f6;
     color: #454545;
-    /*font-family: 'Montserrat', sans-serif;*/
     font-family: AvenirLTStd-Book_3;
     overflow-x: auto;
 }
@@ -538,10 +552,6 @@ padding: 7px 20px;
 section.main-content-section section:first-child {
     display: block;
 }
-
-.cardHeading h5{
-    color: #002441;
-}
 .table th{
     color: #696d80;
 }
@@ -558,13 +568,13 @@ section.main-content-section section:first-child {
     margin: 4px 0;
     border-radius: 3rem;
     color: #fff;
-    width: 8rem;
-    height: 2.5rem;
+    width: 5rem;
+    height: 1.5rem;
     display: inline-block;
     font-size: 12px;
     text-align: center;
-    padding-top: 0.2rem;
-    line-height: 2rem;
+    padding-top: 0;
+    line-height: 1.5rem;
 }
 
 .project-tabs .projectName {
@@ -589,7 +599,7 @@ section.main-content-section section:first-child {
 
 .title-bullet{
     border-radius: 50%;
-    /*background: #fcab47;*/
+    display: inline-block;
     height: 10px;
     width: 10px;
     margin-top: 5px;
@@ -600,13 +610,21 @@ section.main-content-section section:first-child {
     font-size: 18px;
     font-weight: 200;
 }
-
+.mid-text h5{
+    font-size: 12px;
+}
+.mid-text div  h5{ 
+    position:relative; 
+    top:0.5rem;
+}
 .status-title{
     font-weight: normal;
+    width: 100%;
 }
 .status-title .activityStatus {
     font-size: 1.1rem;
     font-weight: 200;
+    float: right;
 }
 .statusPill {
     border-radius: 3rem;
@@ -648,6 +666,7 @@ section.main-content-section section:first-child {
     border-radius: 0px;
     box-shadow: 0px 0px 8px rgba(168, 214, 248, 0.3);
     margin-bottom: 3%;
+    padding: 1rem;
 }
 
 .well h4 {
@@ -1038,11 +1057,10 @@ input[type=radio]:checked ~ label, input[type=checkbox]:checked ~ label {
 }
 
 .cardHeading{
-    margin-bottom:5px;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    margin-bottom:0.1rem;
+    padding-top: 0;
+    padding-bottom: 0.5rem;
     border-bottom: 1px solid #ccc;
-
 }
 .cardHeading .dropdown > .dropdown-menu > li{
     display: inline-block;
@@ -1058,9 +1076,10 @@ input[type=radio]:checked ~ label, input[type=checkbox]:checked ~ label {
     background: #343948;
 }
 .cardHeading h5 {
-    margin-bottom: 10px;
     font-weight: 600;
     margin-top: 0;
+    color: #002441;
+    font-size: 0.7rem;
 }
 .well .cardHeading + .form-group {
     padding: 0 15px;
@@ -1097,10 +1116,10 @@ input[type=radio]:checked ~ label, input[type=checkbox]:checked ~ label {
     color: #0a9a13;
     font-size: 16px !important;
 }
-.well h5{
-    margin-top: 0px;
-    margin-bottom: 10px;
-}
+// .well h5{
+//     margin-top: 0px;
+//     margin-bottom: 10px;
+// }
 .recommendedProjects{
     max-height:615px;
     margin-bottom:20px;
@@ -1198,18 +1217,6 @@ input[type=radio]:checked ~ label, input[type=checkbox]:checked ~ label {
     border-color:#ccc;
     margin-top:8px;
 }
-/*.assingment-container
-{
-padding:30px 40px 30px 30px;
-}*/
-/*.assingment-sec{
-padding: 10px;
-flex: 1.5;
-margin-top: 5px;
-border-top: 1px solid #f5f5f5;
-margin-right: 10px;
-margin-left: 10px;
-}*/
 .assingment-sec {
     margin-top: 5px;
     padding: 0;
@@ -1225,13 +1232,36 @@ margin-left: 10px;
     font-style:italic;
     margin-left:15px !important;
 }
-/*----------------------------------- CRE Customer Dashboard ----------------------------------------*/
+
 .cardStats .customerProfile{
     padding: 0px;
 }
 .profileDetails-container > .row{
     border-bottom: 1px solid #eaeaea;
     margin-bottom: 10px;
+}
+.profileDetails-container .ui-datatable .ui-datatable-thead>tr>th {
+    font-weight: 600;
+    background-color: #002541;
+    color: #fff;
+    font-size: 0.79rem;
+    border-right: 0;
+    border-left: 0;
+}
+.profileDetails-container .ui-datatable tr.ui-widget-content>td:first-child {
+    background-color:#fff;
+}
+.profileDetails-container .ui-datatable tr.ui-widget-content>td {
+    padding: 0.5rem 0;
+    color: #696d80;
+    border-left: 0;
+    border-right: 0;
+    font-weight: 600;
+}
+.profileDetails-container .ui-datatable tr.ui-widget-content>td a{
+    font-size: 12px;
+    font-weight: 600;
+    color: #1431bd;
 }
 .image-style{
     border-radius: 50%;
@@ -1402,8 +1432,7 @@ border-bottom:1px solid #e2e2e2;
     font-size: 35px;
     color: #238ef1;
 }
-.all-milestones
-{
+.all-milestones{
     border-bottom: 2px solid #002441;
     border-right: 2px solid #002441;
     border-top: 2px solid #002441;
@@ -1414,32 +1443,38 @@ border-bottom:1px solid #e2e2e2;
     overflow:hidden;
     overflow-y:auto;
 }
-.all-milestones row >div
-{
+.all-milestones row >div{
     border-right:1px solid #f5f5f5;
 }
-.all-milestones  td:first-child
-{
+.all-milestones thead{
+    display: none;
+}
+.all-milestones .table td{
+    padding: 0px;
+}
+.all-milestones  td:first-child{
     color:#333;
     font-size:12px;
     font-weight:800;
-    display:contents;
+    border: none;
+    vertical-align: middle;
 }
-.all-milestones td:last-child
-{
+.all-milestones td:last-child{
     font-weight:800;
     color:#ccc;
     font-size:12px;
-    display:contents;
+    border: none;
+    vertical-align: middle;
 }
-
+.milestoneList {
+    border-bottom: 1px solid #dcdcdc;
+}
 .priority-btn
 {
     position:absolute;
     top:3px;	
     left:300px;
 }
-
 .search-container
 {
     margin-top:10px;
@@ -1520,9 +1555,8 @@ span.clock-sidetime {
     top: -1px;
     position: relative;
 }
-.milestoneHeader
-{
-    margin-bottom:12px;
+.milestoneHeader{
+    margin-bottom:0;
 }
 .milestoneExpand {
     background-color: #1d203a;
@@ -1559,18 +1593,14 @@ span.clock-sidetime {
 
 }
 
-#skill .progress-bar-outline 
+#skill .progress 
 { 
     height:20px; 
     border-radius:10px; 
-    border: 1px solid #fcab47;  
+    border: 1px solid #fcab47;
+    background-color: transparent;
 }
 
-#skill .progress-bar-outline h5
-{ 
-    position:relative; 
-    top:30px;
-}
 .milestones-title
 {
     font-size: large !important;

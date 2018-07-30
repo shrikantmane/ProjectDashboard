@@ -23,6 +23,7 @@ export default class ProjectLevelDashboard extends React.Component<
       tagList: new Array<Tag>()
     };
   }
+
   componentDidMount() {
     const {
       match: { params }
@@ -94,7 +95,7 @@ export default class ProjectLevelDashboard extends React.Component<
                   </div>
                 </div>
                 <div className="col-lg-12 col-md-12 col-sm-12">
-                  <div className="well recommendedProjects">
+                  <div className="card well recommendedProjects">
                     <div className="row">
                       <div className="Status-block col-xs-12 col-sm-12 col-md-12 col-lg-12">
                         <div className="milestoneHeader">

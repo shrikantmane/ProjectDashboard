@@ -17,7 +17,6 @@ import { Link, Redirect } from 'react-router-dom';
 import CEOProjectTimeLine from "../CEOProjectTimeLine/CEOProjectTimeLine";
 import { ProjectTimeLine, Groups, TimeLineItems }from "../CEOProjectTimeLine/ProjectTimeLine";
 import { find, filter, sortBy } from "lodash";
-import { SPComponentLoader } from "@microsoft/sp-loader";
 import moment from 'moment/src/moment';
 
 export default class CEOProjectInformation extends React.Component<
@@ -46,13 +45,9 @@ export default class CEOProjectInformation extends React.Component<
     this.onOwnerNameChange = this.onOwnerNameChange.bind(this);
     this.onStatusChange = this.onStatusChange.bind(this);
     this.onPrioritychange = this.onPrioritychange.bind(this);
-    this.redirectToProjectPage = this.redirectToProjectPage.bind(this);
   }
   dt: any;
-  componentDidMount() {
-    SPComponentLoader.loadCss(
-      "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
-    );
+  componentDidMount() {  
     this.getProjectList();
   }
   componentWillReceiveProps(nextProps) {}
@@ -342,9 +337,6 @@ export default class CEOProjectInformation extends React.Component<
     );
   }
 
-  private redirectToProjectPage (){
-    this.setState({ redirectToProjectDetails : true })
-  }
   private onRowToggle(event) {
     if (event.data && event.data.length > 0) {
       // this.getMildStonesByProject(event.data[event.data.length - 1]);

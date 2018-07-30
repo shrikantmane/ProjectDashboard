@@ -2,6 +2,7 @@ import * as React from "react";
 import { sp, ItemAddResult } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
+
 import { Link, Redirect } from 'react-router-dom';
 import styles from "../ProjectManagement.module.scss";
 import { IProjectListProps } from "./IProjectListProps";
@@ -114,6 +115,7 @@ export default class ProjectListTable extends React.Component<
         })
     }
     public render(): React.ReactElement<IProjectListProps> {
+        
         return (
             <div>
                 {/* <DataTableSubmenu /> */}
@@ -126,7 +128,7 @@ export default class ProjectListTable extends React.Component<
                             <AddProject id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} /> :
                             null
                         }
-                        <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
+                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
                             <Column header="Action" body={this.editTemplate} />
                             <Column field="Project" sortable={true} header="Project" />
                             <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} />
@@ -135,7 +137,8 @@ export default class ProjectListTable extends React.Component<
                             <Column field="Priority" sortable={true} header="Priority" />
                             <Column field="Tag" header="Tags" />
                             <Column header="Project Details" body={this.actionTemplate} />
-                        </DataTable>
+                        </DataTable> 
+
                     </div>
                 </div>
                 {/* <DataTableDoc></DataTableDoc> */}

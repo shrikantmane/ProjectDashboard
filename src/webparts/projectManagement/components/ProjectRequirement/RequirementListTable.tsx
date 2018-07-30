@@ -44,12 +44,12 @@ IRequirementState
         SPComponentLoader.loadCss(
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
-        this.GetRequirements();
+        this.getproject();
      
         
     }
     refreshGrid (){
-        this.GetRequirements();
+        this.getproject();
     }
     componentWillReceiveProps(nextProps) { }
 
@@ -149,15 +149,45 @@ IRequirementState
 
     
    
-    GetRequirements() {
-        sp.web.lists.getByTitle("Requirements").items
-          .select("Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created").expand("Approver", "Author")
-          .getAll().then((response) => {
-            console.log('member by name', response);
-            this.setState({ projectList: response });
-          });
-     
-      }
+    
+////////////
+      getproject() {
+        var teamList:string;
+        
+        var last_part:string;
+         var url =window.location.href ;
+          var parts = url.split("/");
+         last_part = parts[parts.length-1];
+         
+            var projectid=Number(last_part);
+      // get Project Documents list items for all projects
+      sp.web.lists.getByTitle("Project").items
+        .select("Project", "DueDate", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "Priority","Task_x0020_List","Project_x0020_Team_x0020_Members","Project_x0020_Document","Requirements","ID").expand("Status0", "AssignedTo")
+        .filter('ID eq \'' + projectid + '\'')
+        .getAll()
+        .then((response) => {
+          console.log('Project by names', response);
+          teamList=response[0].Requirements;
+
+          this.getScheduleList(teamList,projectid);
+      }).catch((e: Error) => {
+          alert(`There was an error : ${e.message}`);
+        });
+
+
+
+    }
+   getScheduleList(ListName,id){
+      sp.web.lists.getByTitle(ListName).items.select("Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created")
+      .expand("Approver", "Author")
+      .filter('Project/ID eq \'' + id + '\'')
+      .get().
+      then((response) => {
+          console.log('member by list', response);
+          this.setState({ projectList: response });
+
+      });
+   }
      
      
      

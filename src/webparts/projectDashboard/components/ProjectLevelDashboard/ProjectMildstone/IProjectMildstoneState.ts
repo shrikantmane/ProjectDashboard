@@ -1,6 +1,6 @@
-import { Mildstone} from '../Project';
+import { Milestone} from '../Project';
 
 export interface IProjectMildstoneState {
     description?: string;
-    milstoneList?: Array<Mildstone>
+    milstoneList?: Array<Milestone>
   }

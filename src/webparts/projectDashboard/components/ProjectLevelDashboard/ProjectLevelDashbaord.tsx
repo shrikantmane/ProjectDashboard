@@ -110,7 +110,7 @@ export default class ProjectLevelDashboard extends React.Component<
                             </div>
                           </div>
                         </div>
-                        <ProjectMildstone scheduleList={this.state.project.Schedule_x0020_List}></ProjectMildstone>                      
+                        <ProjectMildstone scheduleList={this.state.project.Schedule_x0020_List}></ProjectMildstone> 
                       </div>
                     </div>
                   </div>
@@ -121,8 +121,6 @@ export default class ProjectLevelDashboard extends React.Component<
                   <div className="clearfix"></div>
                   <ProjectTeamMembers projectTeamMembers={this.state.project.Project_x0020_Team_x0020_Members}></ProjectTeamMembers>
                   <ProjectProjectRoleResponsibility projectRoleResponsibility ={"Project Information"} ></ProjectProjectRoleResponsibility>
-
-                {/* row conversationTasks */}
               </div>
             </div>
           </section>

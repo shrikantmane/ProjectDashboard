@@ -1149,6 +1149,9 @@ input[type=radio]:checked ~ label, input[type=checkbox]:checked ~ label {
     color: #c4c7ca;
     margin-right: 10px;
 }
+.profileDetails-container .ReactTable .pagination-bottom {
+    display: none;
+}
 .overlayTag{
     background-color: rgba(35,45,60,0.9);
     padding: 8px 20px;

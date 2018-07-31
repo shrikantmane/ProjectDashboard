@@ -110,7 +110,7 @@ export default class ProjectTaskList extends React.Component<
                     const id = filter.pivotId || filter.id
                     return row[id] !== undefined ? String(row[id]).toLocaleLowerCase().match(filter.value.toLocaleLowerCase()) : true
                   }}
-                  // onExpandedChange={(newExpanded, index, event) => this.handleRowExpanded(newExpanded, index)}                 
+                  onExpandedChange={(newExpanded, index, event) => this.handleRowExpanded(newExpanded, index)}                 
                   columns={[
                     {
                       Header: "Duration",

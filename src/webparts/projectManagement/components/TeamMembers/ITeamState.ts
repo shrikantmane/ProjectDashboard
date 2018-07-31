@@ -1,4 +1,5 @@
 import { TeamMembers } from "./TeamList";
+import { IPersonaProps, Persona } from 'office-ui-fabric-react/lib/Persona';
 //import { TeamMembers } from "../../../../../lib/webparts/projectDashboard/components/CEOProjectsTable/CEOProject";
 // import ProjectTimeLine  from "../CEOProjectTimeLine/ProjectTimeLine";
 
@@ -16,5 +17,11 @@ export interface ITeamState {
     //   isKeyDocumentLoaded :boolean,
     //   isTagLoaded :boolean,
     //   expandedRowID : number,
-    showComponent: boolean
+    showComponent: boolean,
+    currentPicker?: number | string;
+    delayResults?: boolean;
+    peopleList: IPersonaProps[];
+    mostRecentlyUsed: IPersonaProps[];
+    currentSelectedItems?: IPersonaProps[];
+
 }

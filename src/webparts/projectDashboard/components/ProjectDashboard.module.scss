@@ -634,4 +634,54 @@
         table.milestoneList td:nth-of-type(4):before { content: "Start Date"; font-weight: 600; color: #6168b6;}
         table.milestoneList td:nth-of-type(5):before { content: "Status"; font-weight: 600; color: #6168b6;}
     }
+    @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) { 
+        .ui-datatable .ui-datatable-data>tr>td{
+            padding: .25em 0em;
+        }
+        .projectName{
+            font-size: 14px;
+        }
+        .acitveMilestone{
+            font-size: 10px;
+        }
+        .acitveMilestone b{
+            display: block;
+        }
+        .ownerImg > div{
+            font-size: 12px;
+        }
+       .stepMilestone {
+            width: 55%;
+        }
+        .milestoneStatus {
+            width: 40%;
+        }
+        .statusDetail {
+            width: 54px;
+            height: 1.6rem;
+            margin: 0 auto;
+            color: #fff;
+            font-size: 10px;
+            font-weight: 400;
+        }
+        .priorityDetail {
+            font-size: 12px;
+        }
+     }
+     @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+        .projectName{
+            font-size: 14px;
+        }
+        .acitveMilestone{
+            font-size: 12px;
+        }
+        .acitveMilestone b{
+            display: block;
+        }
+        .statusDetail {
+            width: 4rem;
+            font-size: 11px;
+        }
+      }
 }
+

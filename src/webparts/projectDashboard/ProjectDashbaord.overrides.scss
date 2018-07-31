@@ -1280,14 +1280,14 @@ input[type=radio]:checked ~ label, input[type=checkbox]:checked ~ label {
     border-radius: 10%;
 }
 .profileName, .profileDesignation{
-    display: inline-block;
+    display: block;
 }
 .profileName h4{
     display: flex;
     font-weight: 600;
     margin: 0px 0 10px 0;
     color: #1e62df;
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     text-decoration: underline;
     display: inline-block;
 }
@@ -1313,43 +1313,36 @@ ul.profileRoles{
 ul.profileRoles li{
     font-style: italic;
 }
-.card-shadow
-{
+.card-shadow{
     box-shadow: 0 0 4px 1px #eee;
     padding: 12px 6px;
     margin: 0;
 }
-.detail-box
-{
+.detail-box{
     display:inline-flex;
 }
-.detail-box p
-{
+.detail-box p{
     color: #777;
     font-weight: bold;
 }
-.department-title
-{
+.department-title{
     color: #777;
     font-weight: bold;
     margin: 6px 0 !important;
 }
-.profileImg p
-{
+.profileImg p{
     color:#c7c5c5;
 }
-.responsibilty-div
-{
+.responsibilty-div{
     border-left: 2px solid #eee;
     padding-bottom:20px;
     line-height: 1.5;
 }
-.responsibilty-div h6
-{
+.responsibilty-div h6{
     font-size:14px;
     font-weight:bold;
 }
-.crechartSection .well {
+.crechartSection .well{
     min-height: 376px;
     margin-bottom: 0px;
 }

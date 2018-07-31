@@ -90,14 +90,14 @@ export default class ProjectTaskList extends React.Component<
       <div className="col-md-7 col-xs-12">
         <div className="well recommendedProjects  ">
           <div className="row">
-            <div className="col-sm-12 cardHeading">
+            <div className="col-sm-12 col-12 cardHeading">
               <div className="tasklist-div">
                 <h5>Task List</h5>
               </div>
             </div>
 
             <div className="clearfix" />
-            <div className="profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>
+            <div className="col-sm-12 col-12 profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>
               <div>
                 <ReactTable
                   collapseOnSortingChange={false}
@@ -142,7 +142,7 @@ export default class ProjectTaskList extends React.Component<
                         if (original && original.Status0 && original.Status0.Status != "") {
                           return (
                             <div>
-                              <div
+                              <div className="statusPill"
                                 style={{
                                   backgroundColor: original.Status0.Status_x0020_Color
                                 }}

@@ -6,6 +6,9 @@ import {
   IPropertyPaneConfiguration,
   PropertyPaneTextField
 } from '@microsoft/sp-webpart-base';
+import 'core-js/es6/number'; 
+import 'core-js/es6/array';
+import 'core-js/es6/symbol';
 
 require('./ProjectDashbaord.overrides.scss');
 import { BrowserRouter, Route, Switch, DefaultRoute  } from 'react-router-dom';

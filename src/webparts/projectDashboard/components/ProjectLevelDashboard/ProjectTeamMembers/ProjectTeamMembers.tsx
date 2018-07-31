@@ -32,7 +32,6 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
           item.Team_x0020_Member.Department = result.UserProfileProperties[13].Value;
           item.Team_x0020_Member.PictureURL = result.UserProfileProperties[16].Value;
           item.Team_x0020_Member.JobTitle = result.UserProfileProperties[21].Value;
-          console.log('count', count);
           if (count == response.length) {
             currentScope.setState({ teamMemberList: response });
           }

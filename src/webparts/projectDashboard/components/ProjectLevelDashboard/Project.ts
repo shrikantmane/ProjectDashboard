@@ -46,6 +46,7 @@ export class Owner {
     public EMail: string;
     public PictureURL :string;
     public JobTitle :string;
+    public ImgURL : string;
 }
 
 export class Team_x0020_Member {
@@ -66,4 +67,20 @@ export class RoleResponsibility {
 
 export class Task {
     public ID: number;
+    public Week : Week;
+    public StartDate : string;
+    public EndDate : string;
+    public Title : string;
+    public OwnerName : string;
+    public Status : string;
+    public AssignedTo : Array<Owner>;
+    public Status0: Status;
+}
+
+
+export enum Week {
+    CurrentWeek = "Current Week",
+    NextWeek = "Next Week",
+    Future = "Future",
+    Past = "Past",
 }

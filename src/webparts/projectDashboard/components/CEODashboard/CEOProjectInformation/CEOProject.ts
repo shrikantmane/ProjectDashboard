@@ -22,19 +22,22 @@ export class CEOProjects {
     public DueDate: string;
     public StatusText: string;
     public OwnerTitle: string;
-    public MildStone : MildStones;
+    public MileStone : MileStones;
     public AssignedTo: Array<AssignedTo>;
-    public MildStoneList: Array<MildStones>;
+    public MildStoneList: Array<MileStones>;
     public TagList: Array<Tags>;
     public TeamMemberList: Array<TeamMembers>;
     public DocumentList: Array<Documents>;
+    public Schedule_x0020_List: string;
+    public Project_x0020_Team_x0020_Members: string;
+    public Project_x0020_Document: string;
 }
 
 export class Project {
     public Title: string;   
     public ID :number;   
 }
-export class MildStones {
+export class MileStones {
     public ID : number;
     public Title: string;   
     public StartDate :string;

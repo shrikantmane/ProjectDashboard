@@ -14,37 +14,37 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
   }
 
 
-  componentDidMount() {
-    // console.log('componentDidUpdate',this.props.projectRoleResponsibility);
-    this.getRoleResponsibility(this.props.projectRoleResponsibility);
+  componentWillReceiveProps(nextProps) {
+    if (this.props.projectRoleResponsibility != nextProps.projectRoleResponsibility)
+      this.getRoleResponsibility(nextProps.projectRoleResponsibility);
   }
-
-  // componentWillReceiveProps(nextProps) {
-  //   console.log('componentWillReceiveProps',this.props.projectRoleResponsibility);
-  //   console.log("roleResponsibilityList", this.state.roleResponsibilityList);
-  //   if (this.props.projectRoleResponsibility != nextProps.projectRoleResponsibility)
-  //     this.getRoleResponsibility(nextProps.projectRoleResponsibility);
-  // }
 
   private getRoleResponsibility(projectRoleResponsibility: string) {
     sp.web.lists.getByTitle(projectRoleResponsibility).items
-      .select("Owner/ID", "Owner/Title", "Owner/EMail", "Owner/Department", "Roles_Responsibility").expand("Owner")
+      .select("Owner/ID", "Owner/Title", "Owner/EMail", "Roles_Responsibility").expand("Owner")
       .get()
       .then((response: Array<RoleResponsibility>) => {
         console.log('Responsibility -', response);
         let currentScope = this;
         let count = 1;
         response.forEach(item => {
-          let loginName = "i:0#.f|membership|" + item.Owner.EMail;
-          sp.profiles.getPropertiesFor(loginName).then(function (result) {
-            item.Owner.Department = result.UserProfileProperties[13].Value;
-            item.Owner.PictureURL = result.UserProfileProperties[16].Value;
-            item.Owner.JobTitle = result.UserProfileProperties[21].Value;
+          if (item.Owner) {
+            let loginName = "i:0#.f|membership|" + item.Owner.EMail;
+            sp.profiles.getPropertiesFor(loginName).then(function (result) {
+              item.Owner.Department = result.UserProfileProperties[13].Value;
+              item.Owner.PictureURL = result.UserProfileProperties[16].Value;
+              item.Owner.JobTitle = result.UserProfileProperties[21].Value;
+              if (count == response.length) {
+                currentScope.setState({ roleResponsibilityList: response });
+              }
+              count++;
+            });
+          } else {
             if (count == response.length) {
               currentScope.setState({ roleResponsibilityList: response });
             }
-            count ++;
-          });
+            count++;
+          }
         });
       });
   }
@@ -67,7 +67,7 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
                         <div className="col-sm-12">
                           <div className="row">
                             <div className="col-sm-2">
-                              <img className="img-responsive image-style" src="assets/img/user_profile.png" alt="" />
+                              <img className="img-responsive image-style" src={item.Owner.PictureURL} alt="" />
                             </div>
                             <div className="col-sm-5">
                               <div className="profileDetail">

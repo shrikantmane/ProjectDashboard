@@ -3,7 +3,7 @@ import { sp, ItemAddResult } from "@pnp/sp";
 import { ProgressBar } from 'react-bootstrap';
 import { IProjectMildstoneProps } from './IProjectMildstoneProps';
 import { IProjectMildstoneState } from './IProjectMildstoneState';
-import { Mildstone } from '../Project';
+import { Milestone } from '../Project';
 import styles from "../../ProjectDashboard.module.scss";
 
 export default class ProjectMildstone extends React.Component<IProjectMildstoneProps, IProjectMildstoneState> {
@@ -11,7 +11,7 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
   constructor(props) {
     super(props);
     this.state = {
-      milstoneList: new Array<Mildstone>()
+      milstoneList: new Array<Milestone>()
     };
   }
   // componentDidMount() {
@@ -21,15 +21,15 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
 
   componentWillReceiveProps(nextProps) {
     if (this.props.scheduleList != nextProps.scheduleList)
-      this.getAllMildstones(nextProps.scheduleList);
+      this.getAllMilestones(nextProps.scheduleList);
   }
 
-  private getAllMildstones(scheduleList: string) {
+  private getAllMilestones(scheduleList: string) {
     sp.web.lists.getByTitle(scheduleList).items
       .select('Title', 'DueDate', 'Status0/ID', 'Status0/Status', 'Status0/Status_x0020_Color', 'Priority').expand('Status0')
       .filter("Duration eq 0")
       .get()
-      .then((mildstones: Array<Mildstone>) => {
+      .then((mildstones: Array<Milestone>) => {
         console.log("mildstones -", mildstones);
         this.setState({ milstoneList: mildstones })
       });

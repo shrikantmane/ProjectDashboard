@@ -658,7 +658,7 @@ export default class CEOProjectInformation extends React.Component<
           "AssignedTo/EMail"
         )
         .expand("Project", "Status0", "AssignedTo")
-        .filter("Duration eq 0")
+        .filter("Duration eq '0 days'")
         .get()
         .then((milestones: Array<MileStones>) => {
           milestones.forEach(mileStone => {

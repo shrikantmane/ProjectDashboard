@@ -109,7 +109,7 @@ export default class Gantt extends React.Component<any, any>{
 
   initGanttChart() {
     gantt.config.columns = [
-      { name: "text", label: "Task name", tree: true, width: 80 },
+      { name: "text", label: "Task name", tree: true, width: 100 },
       { name: "start_date", label: "Start time", align: "center", width: 80 },
       {
         name: "attachment1", label: "Attachment", width: 80,
@@ -118,19 +118,20 @@ export default class Gantt extends React.Component<any, any>{
         }
       },
       {
+        name: "actualDuration", label: "Duration", align: "center", width: 80,
+        template: function (obj) {
+          return ("<span style='background:#ccc;'>" + obj.actualDuration + "</span>")
+        }
+      },
+      {
         name: "status", label: "Status", width: 80,
         template: function (obj) {
           return ("<span style='background:#ccc;'>" + obj.status + "</span>")
         }
-      },
-      {
-        name: "duration", label: "Duration", align: "center", width: 80,
-        template: function (obj) {
-          console.log('duration', obj.duration);
-          return ("<span style='background:#ccc;'>" + obj.duration + "</span>")
-        }
-      },
+      }
+
     ];
+    gantt.config.readonly = true;
     gantt.config.layout = {
       css: "gantt_container",
       cols: [
@@ -154,15 +155,11 @@ export default class Gantt extends React.Component<any, any>{
         { view: "scrollbar", id: "scrollVer" }
       ]
     };
-    //   gantt.templates.task_class  = function(start, end, task){
-    //     switch (task.duration){
-    //         case 1:
-    //             return "test";
-    //         case 2:
-    //             return "test1";
-
-    //     }
-    // };
+      gantt.templates.task_class  = function(start, end, task){       
+        if(task.actualDuration == 0){
+          return "milestone";
+        }
+    };
   }
 
   render() {

@@ -35,24 +35,47 @@ IInformationState
         // };
         this.state = {
             projectList: new Array<Information>(),
-            showComponent: false
+            showComponent: false,
+            itemID:""
         };
         this.onAddProject = this.onAddProject.bind(this);
+        this.reopenPanel = this.reopenPanel.bind(this);
+        this.editTemplate = this.editTemplate.bind(this);
+        this.refreshGrid = this.refreshGrid.bind(this);
+        this.actionTemplate=this.actionTemplate.bind(this);
     }
     dt: any;
     componentDidMount() {
         SPComponentLoader.loadCss(
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
-        this.getProjectInformation();
-        this.refreshGrid = this.refreshGrid.bind(this);
+        if(this.props.list!="" || this.props.list!=null){
+            this.getProjectInformation(this.props.list);
+        }
+     
+        
      
         
     }
+    
     refreshGrid (){
-        this.getProjectInformation()
+        this.setState({
+            showComponent: false,
+            informationID: null
+        })
+        this.getProjectInformation(this.props.list);
     }
-    componentWillReceiveProps(nextProps) { }
+    reopenPanel() {
+        this.setState({
+            showComponent: false,
+            informationID: null
+        })
+    }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.list!="" || nextProps.list!=null){
+            this.getProjectInformation(nextProps.list);
+        }
+     }
 
     /* Private Methods */
 
@@ -78,10 +101,10 @@ IInformationState
             );
     }
     actionTemplate(rowData, column) {
-        return <a href="#"> Remove</a>;
+        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}> Remove</a>;
     }
     editTemplate(rowData, column) {
-        return <a href="#"> Edit </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}> Edit </a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -89,6 +112,26 @@ IInformationState
             showComponent: true,
         });
     }
+    private onEditProject(rowData, e): any {
+        e.preventDefault();
+        console.log('Edit :' + rowData);
+        this.setState({
+            showComponent: true,
+            informationID: rowData.ID
+        });
+    }
+    private deleteListItem(rowData,e):any {
+        e.preventDefault();
+        console.log('Edit :' + rowData);
+        this.setState({
+            showComponent: true,
+            itemID: rowData.ID
+        });
+        sp.web.lists.getByTitle(this.props.list).
+        items.getById(this.state.itemID).delete().then(i => {
+          console.log(this.props.list + ` item deleted`);
+        });
+      }
     public render(): React.ReactElement<IInformationState> {
         return (
             <div>
@@ -96,10 +139,10 @@ IInformationState
 
                 <div className="content-section implementation">
                     <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
-                        Add Information
+                        Add Role/Responsibility
                     </button>
                     {this.state.showComponent ?
-                         <AddInformation parentMethod={this.refreshGrid}/> :
+                         <AddInformation id={this.state.informationID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid}  list={this.props.list} projectId={this.props.projectId}/> :
                         null
                     }
                     <DataTable value={this.state.projectList} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
@@ -120,15 +163,17 @@ IInformationState
 
     /* Api Call*/
 
-      getProjectInformation(){
-        sp.web.lists.getByTitle("Project Information").items
-          .select("Roles_Responsibility","Owner/ID","Owner/Title","Owner/FirstName","Owner/Department").expand("Owner/ID")
+      getProjectInformation(list){
+        if((list)!=""){
+        sp.web.lists.getByTitle(list).items
+          .select("ID","Roles_Responsibility","Owner/ID","Owner/Title").expand("Owner")
          .get()
        .then((response) => {
-            console.log('member by name', response);
+            console.log('infor by name', response);
             this.setState({ projectList: response });
             
         });
+    }
       }
     //   private GetUserProperties(): void {  
     //     sp.profiles.myProperties.get().then(function(result) {  
@@ -143,19 +188,7 @@ IInformationState
     //         console.log("Error: " + error);  
     //     });  
     // }  
-    getprofile(){
-    sp.profiles.getPropertiesFor("i:0#.f|membership|LeeG@esplrms.onmicrosoft.com").then(function(result) {
-        var props = result.UserProfileProperties;
-        var propValue = "";
-        props.forEach(function(prop) {
-            propValue += prop.Key + " - " + prop.Value + "<br/>";
-        });
-        
-        console.log("hie",props[12])
-    }).catch(function(err) {
-        console.log("Error: " + err);
-    });
-}
+  
 
  
     }

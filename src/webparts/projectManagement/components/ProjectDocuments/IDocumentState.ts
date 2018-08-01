@@ -17,4 +17,6 @@ export interface IDocumentState {
     //   isTagLoaded :boolean,
     //   expandedRowID : number,
     showComponent: boolean
+    selectedFile:any
+    documentID:any
 }

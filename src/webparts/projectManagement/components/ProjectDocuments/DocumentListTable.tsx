@@ -34,24 +34,42 @@ IDocumentState
         // };
         this.state = {
             projectList: new Array<Document>(),
-            showComponent: false
+            showComponent: false,
+            selectedFile:"",
+            documentID:""
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
+        this.UploadFiles=this.UploadFiles.bind(this);
+        this.deleteListItem=this.deleteListItem.bind(this);
+       
     }
     dt: any;
     componentDidMount() {
         SPComponentLoader.loadCss(
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
-        this.getProjectDocuments();
+        if(this.props.list!="" || this.props.list!=null){
+            this.getProjectDocuments(this.props.list);
+        }
      
         
     }
     refreshGrid (){
-        this.getProjectDocuments();
+        this.getProjectDocuments(this.props.list);
     }
-    componentWillReceiveProps(nextProps) { }
+   
+     deleteListItem(listName, itemID):any {
+        sp.web.lists.getByTitle(listName).
+          items.getById(itemID).delete().then(i => {
+            console.log(listName + ` item deleted`);
+          });
+      }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.list!="" || nextProps.list!=null){
+            this.getProjectDocuments(nextProps.list);
+        }
+     }
 
     /* Private Methods */
 
@@ -124,7 +142,7 @@ IDocumentState
 
     
     actionTemplate(rowData, column) {
-        return <a href="#"> Remove</a>;
+        return <a href="#"   > Remove</a>;
     }
     editTemplate(rowData, column) {
         return <a href="#"> Edit </a>;
@@ -135,6 +153,26 @@ IDocumentState
             showComponent: true,
         });
     }
+
+    UploadFiles() {
+       
+       //in case of multiple files,iterate or else upload the first file.
+       
+        var file =this.state.selectedFile;
+        if (file!=undefined || file!=null){
+    
+        //assuming that the name of document library is Documents, change as per your requirement, 
+        //this will add the file in root folder of the document library, if you have a folder named test, replace it as "/Documents/test"
+        sp.web.getFolderByServerRelativeUrl("/projects/Project Documents").files.add(file.name, file, true).then((result) => {
+            console.log(file.name + " upload successfully!");
+        })
+    }
+    
+        }
+        fileChangedHandler = (event) => {
+            const file = event.target.files[0]
+            this.setState({selectedFile: event.target.files[0]})
+          }
     public render(): React.ReactElement<IDocumentState> {
         return (
             <div>
@@ -146,12 +184,16 @@ IDocumentState
                         Add Document
                     </button>
                    
-                    {/* {this.state.showComponent ?
-                        <AddProject parentMethod={this.refreshGrid}/> :
+                     {this.state.showComponent ?
+                        <input type="file"  onChange={this.fileChangedHandler} />:
                         null
-                    } */}
+                    } 
+                     {this.state.showComponent ?
+                       <input type="button" value="Upload"  onClick={this.UploadFiles} />:
+                        null
+                    } 
                     <DataTable value={this.state.projectList} paginator={true} rows={10} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
-                    <Column header="Edit" body={this.editTemplate} />
+                   
                         <Column field="Title" header="Attachment" body={this.fileTemplate} 
                         
                         />
@@ -173,15 +215,18 @@ IDocumentState
    
    
 
-      getProjectDocuments(){
-        sp.web.lists.getByTitle("Project Documents").items
-          .select("File","Author/ID","Author/Title","Created").expand("File","Author")
+      getProjectDocuments(list){
+        if((list)!=""){
+        
+        sp.web.lists.getByTitle(list).items
+          .select("ID","File","Author/ID","Author/Title","Created").expand("File","Author")
+         
          .get()
          .then((response) => {
             console.log('member by name', response);
             this.setState({ projectList: response });
           });
-     
+        }
       }
      
      

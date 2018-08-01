@@ -65,7 +65,7 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
                       return (<div className="row">
                         <div className="col-sm-12">
                           <div className="row">
-                            <div className="col-sm-2">
+                            <div className="col-sm-4">
                               <img className="img-responsive image-style" src={item.Team_x0020_Member.PictureURL} alt="" />
                             </div>
                             <div className="col-sm-8">

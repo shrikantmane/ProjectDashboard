@@ -3,7 +3,7 @@ import { sp, ItemAddResult } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
 import styles from "../ProjectManagement.module.scss";
-import  {IProjectDocumentProps } from "./IProjectDocumentProps";
+import { IProjectDocumentProps } from "./IProjectDocumentProps";
 import { IDocumentState } from "./IDocumentState";
 import {
     Document
@@ -13,8 +13,8 @@ import { SPComponentLoader } from "@microsoft/sp-loader";
 import AddProject from '../AddProject/AddProject';
 
 export default class ProjectListTable extends React.Component<
-IProjectDocumentProps,
-IDocumentState
+    IProjectDocumentProps,
+    IDocumentState
     > {
     constructor(props) {
         super(props);
@@ -34,24 +34,42 @@ IDocumentState
         // };
         this.state = {
             projectList: new Array<Document>(),
-            showComponent: false
+            showComponent: false,
+            selectedFile: "",
+            documentID: ""
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
+        this.UploadFiles = this.UploadFiles.bind(this);
+        this.deleteListItem = this.deleteListItem.bind(this);
+
     }
     dt: any;
     componentDidMount() {
         SPComponentLoader.loadCss(
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
-        this.getProjectDocuments();
-     
-        
+        if (this.props.list != "" || this.props.list != null) {
+            this.getProjectDocuments(this.props.list);
+        }
+
+
     }
-    refreshGrid (){
-        this.getProjectDocuments();
+    refreshGrid() {
+        this.getProjectDocuments(this.props.list);
     }
-    componentWillReceiveProps(nextProps) { }
+
+    deleteListItem(listName, itemID): any {
+        sp.web.lists.getByTitle(listName).
+            items.getById(itemID).delete().then(i => {
+                console.log(listName + ` item deleted`);
+            });
+    }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.list != "" || nextProps.list != null) {
+            this.getProjectDocuments(nextProps.list);
+        }
+    }
 
     /* Private Methods */
 
@@ -64,10 +82,10 @@ IDocumentState
                 </div>
             );
     }
-    
-   
-    
-    
+
+
+
+
     ownerTemplate(rowData: Document, column) {
         if (rowData.Author)
             return (
@@ -78,53 +96,53 @@ IDocumentState
     }
 
     fileTemplate(rowData: Document, column) {
-        if (rowData.File)
-       {
-        let iconClass = "";
-        let type = "";
-        let data = rowData.File.Name.split(".");
-        if (data.length > 1) {
-          type = data[1];
-        }
-        switch (type.toLowerCase()) {
-            case "doc":
-            case "docx":
-              iconClass = "far fa-file-word";
-              break;
-            case "pdf":
-              iconClass = "far fa-file-pdf";
-              break;
-            case "xls":
-            case "xlsx":
-              iconClass = "far fa-file-excel";
-              break;
-            case "png":
-            case "jpeg":
-            case "gif":
-              iconClass = "far fa-file-image";
-              break;
-            default:
-              iconClass = "fa fa-file";
-              break;
-          }
-       
-                 
+        if (rowData.File) {
+            let iconClass = "";
+            let type = "";
+            let data = rowData.File.Name.split(".");
+            if (data.length > 1) {
+                type = data[1];
+            }
+            switch (type.toLowerCase()) {
+                case "doc":
+                case "docx":
+                    iconClass = "far fa-file-word";
+                    break;
+                case "pdf":
+                    iconClass = "far fa-file-pdf";
+                    break;
+                case "xls":
+                case "xlsx":
+                    iconClass = "far fa-file-excel";
+                    break;
+                case "png":
+                case "jpeg":
+                case "gif":
+                    iconClass = "far fa-file-image";
+                    break;
+                default:
+                    iconClass = "fa fa-file";
+                    break;
+            }
+
+
             return (
                 <div>
 
-                 <a href={rowData.File.ServerRelativeUrl} >{rowData.File.Name} </a> 
-                 <i
-                 style={{ marginRight: "5px" }}
-                                className={iconClass}/>
+                    <a href={rowData.File.ServerRelativeUrl} >{rowData.File.Name} </a>
+                    <i
+                        style={{ marginRight: "5px" }}
+                        className={iconClass} />
                 </div>
             );
-    
-}}
+
+        }
+    }
 
 
-    
+
     actionTemplate(rowData, column) {
-        return <a href="#"> Remove</a>;
+        return <a href="#"   > Remove</a>;
     }
     editTemplate(rowData, column) {
         return <a href="#"> Edit </a>;
@@ -135,31 +153,49 @@ IDocumentState
             showComponent: true,
         });
     }
+
+    UploadFiles() {
+
+        //in case of multiple files,iterate or else upload the first file.
+
+        var file = this.state.selectedFile;
+        if (file != undefined || file != null) {
+
+            //assuming that the name of document library is Documents, change as per your requirement, 
+            //this will add the file in root folder of the document library, if you have a folder named test, replace it as "/Documents/test"
+            sp.web.getFolderByServerRelativeUrl("/projects/Project Documents").files.add(file.name, file, true).then((result) => {
+                console.log(file.name + " upload successfully!");
+            })
+        }
+
+    }
+    fileChangedHandler = (event) => {
+        const file = event.target.files[0]
+        this.setState({ selectedFile: event.target.files[0] })
+    }
     public render(): React.ReactElement<IDocumentState> {
         return (
-            <div>
+            <div className="PanelContainer">
                 {/* <DataTableSubmenu /> */}
 
                 <div className="content-section implementation">
-              
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                    <h5>Documents</h5>
+                    {/* <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
                         Add Document
+                    </button> */}
+                    <input type="file" onChange={this.fileChangedHandler} />
+                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.UploadFiles}>
+                        Upload 
                     </button>
-                   
-                    {/* {this.state.showComponent ?
-                        <AddProject parentMethod={this.refreshGrid}/> :
-                        null
-                    } */}
-                    <DataTable value={this.state.projectList} paginator={true} rows={10} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
-                    <Column header="Edit" body={this.editTemplate} />
-                        <Column field="Title" header="Attachment" body={this.fileTemplate} 
-                        
-                        />
-                        
-                        <Column field="Author" header="Created By"  body={this.ownerTemplate}  />
-                        <Column field="Created" header="Created On"  body={this.duedateTemplate}  />
-                        <Column header="Remove" body={this.actionTemplate} />
-                    </DataTable>
+                    {/* <input type="button" value="Upload" className="btn btn-outline btn-sm" onClick={this.UploadFiles} /> */}
+                    <div className="project-list">
+                        <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
+                            <Column field="Title" sortable={true} header="Attachment" body={this.fileTemplate} />
+                            <Column field="Author" sortable={true} header="Created By" body={this.ownerTemplate} />
+                            <Column field="Created" sortable={true} header="Created On" body={this.duedateTemplate} />
+                            <Column header="Remove" body={this.actionTemplate} />
+                        </DataTable>
+                    </div>
                 </div>
 
                 {/* <DataTableDoc></DataTableDoc> */}
@@ -169,22 +205,25 @@ IDocumentState
 
     /* Api Call*/
 
-    
-   
-   
 
-      getProjectDocuments(){
-        sp.web.lists.getByTitle("Project Documents").items
-          .select("File","Author/ID","Author/Title","Created").expand("File","Author")
-         .get()
-         .then((response) => {
-            console.log('member by name', response);
-            this.setState({ projectList: response });
-          });
-     
-      }
-     
-     
-     
-     
+
+
+
+    getProjectDocuments(list) {
+        if ((list) != "") {
+
+            sp.web.lists.getByTitle(list).items
+                .select("ID", "File", "Author/ID", "Author/Title", "Created").expand("File", "Author")
+
+                .get()
+                .then((response) => {
+                    console.log('member by name', response);
+                    this.setState({ projectList: response });
+                });
+        }
+    }
+
+
+
+
 }

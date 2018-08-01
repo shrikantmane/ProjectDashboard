@@ -23,6 +23,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
     errorClass:{},
     cloneProjectChecked: boolean,
     showModal: boolean;
+    isDataSaved: boolean;
 }> {
 
     constructor(props) {
@@ -33,7 +34,8 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             errors: {},
             errorClass:{},
             cloneProjectChecked: false,
-            showModal: false
+            showModal: false,
+            isDataSaved: false
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -56,6 +58,19 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             let fields = this.state.fields;
             fields[field] = e.target.value;
             this.setState({ fields });
+        }
+    }
+    componentDidMount() { 
+        if (this.props.id) {
+            this.getProjectByID(this.props.id);
+            this.setState({
+                fields: {}
+            })
+            
+        } else {
+            this.setState({
+                fields: {}
+            })
         }
     }
 
@@ -114,12 +129,39 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         this.setState({ errors: errors, errorClass: errorClass });
         return formIsValid;
     }
+    private getProjectByID(id): void {
+        // get Project Documents list items for all projects
+        let filterString = "ID eq " + id;
+        sp.web.lists.getByTitle(this.props.list).items
+            .select("ID","Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created")
+            .expand("Approver", "Author")
+            .filter(filterString)
+            .get()
+            .then((response) => {
+                let fields = this.state.fields;
+                console.log('Project1 by name', response);
+                console.log('Project112 by name',  response[0].Requirement );
+                fields["projectname"] = response ? response[0].Requirement : '';
+                fields["projectdescription"] = response ? response[0].Resources : '';
+                fields["effortdescription"] = response ? response[0].Efforts : '';
+               console.log("hieee",this.state.fields["projectname"]);
+               this.setState(fields);
+            //    this.setState({
+            //     fields: response[0].Roles_Responsibility
+            //    })
+            }).catch((e: Error) => {
+                alert(`There was an error : ${e.message}`);
+            });
+            
+    }
 
     projectSubmit(e) {
         e.preventDefault();
         if (this.handleValidation()) {
+            
             let obj: any = this.state.fields;
-            sp.web.lists.getByTitle("Requirements").items.add({
+            if (this.props.id) {
+            sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
                 Requirement: obj.projectname ? obj.projectname : '',
                 //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
                 Resources: obj.projectdescription ? obj.projectdescription : '',
@@ -134,23 +176,28 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                 //DepartmentId: 2,
                 //Status0Id: 2
 
-            }).then((response) => {
-
-                console.log('Item adding-', response);
-                console.log("hello",obj.filedescription);
-                var filename = obj.filedescription.replace(/^.*[\\\/]/, '');
-                var test:string;
-                test=filename.toString();
-              console.log("hie",test);
-              response.item.attachmentFiles.add("test", "Here is some file content.");
-    
+            }).then(i => {
                 this._closePanel();
-                this._showModal();
                 this.props.parentMethod();
+                this.props.parentReopen();
             });
         } else {
-            console.log("Form has errors.")
+            sp.web.lists.getByTitle(this.props.list).items.add({
+                Requirement: obj.projectname ? obj.projectname : '',
+                //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
+                Resources: obj.projectdescription ? obj.projectdescription : '',
+                Efforts: obj.effortdescription ? obj.effortdescription : '',
+            }).then((response) => {
+                console.log('Item adding-', response);
+                this.setState({ isDataSaved: true });
+                this._closePanel();
+                this._showModal();
+
+            });
         }
+    } else {
+        console.log("Form has errors.")
+    }
     }
     _showModal() {
         this.setState({ showModal: true });
@@ -274,7 +321,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                     </div>
                                                                 </div> 
                                                                 <div className="col-lg-12">
-                                        <div className="form-group">
+                                        {/* <div className="form-group">
                                             <label className="label-color">Will It Impact Timelines</label>
 													<div className="display-line">
                                                     <span className="col-lg-6 col-sm-6 radBtn">
@@ -290,7 +337,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
 														<p className="checkbox-title">NO</p>
 													</span>
 													</div>
-									 </div>
+									 </div> */}
 									</div>
                                                              
                                                                 
@@ -308,7 +355,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                 
                                                                 <div className="col-lg-12">
                                                                     <div className="btn-sec">
-                                                                        <button id="submit" value="Submit" className="btn-style btn btn-success">Save</button>
+                                                                        <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
                                                                         <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
                                                                     </div>
                                                                 </div>
@@ -354,6 +401,9 @@ Schedule and Project Team now?
     }
     private _closePanel = (): void => {
         this.setState({ showPanel: false });
+        if (!this.state.isDataSaved) {
+             this.props.parentReopen();
+        }
     };
     /* Api Call*/
 

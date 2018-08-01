@@ -39,50 +39,54 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
     return (
       <div className="projectHealth">
         <div className="row">
-          <div className="col-sm-4 col-md-3 col-lg-3">
+          <div className="col-sm-4 col-12">
             <div className="row dark-blue">
 
               <div className="status-title">
-                <span className="title-bullet inprogressStatus pull-left"></span>Health <span className="pull-right activityStatus"><button type="button" className="btn-outline btn btn-sm">Project Outline</button></span>
+                <span className="title-bullet inprogressStatus pull-left"></span>Health <span className="activityStatus"><button type="button" className="btn-outline btn btn-sm">Project Outline</button></span>
               </div>
 
-              <div id="skill" className="mid-text">
+              <div id="skill" className="mid-text mid-text col-sm-12 col-12">
                 <h5>80% Of Project is Done</h5>
                 {/* <div className="progress-bar-outline"><span className="bar jquery"></span><h5>In Progress</h5></div> */}
-                <ProgressBar bsStyle="warning" now={80} label={`${80}%`} />;
+                <ProgressBar bsClass="bar jquery" bsStyle="warning" now={80} label="" />
               <div><h5>In Progress</h5></div>
               </div>
             </div>
           </div>
-          <div className="col-lg-9 col-md-9 col-sm-8 all-milestones">
+          <div className="col-sm-8 col-12 all-milestones">
             <div className="row">
               {this.state.milstoneList != null
                 ? this.state.milstoneList.map((item, key) => {
                   return (
-                    <div className="col-lg-2 col-md-3 col-sm-4 col-xs-6">
+                    <div className="col-sm-4 col-6">
+                    <div className="milestoneList">
                       <h4 className="milestones-title"><span className="title-bullet inprogressStatus pull-left" style={{ backgroundColor: item.Status0 ? item.Status0.Status_x0020_Color : "" }}></span>{item.Title}</h4>
-                      <table>
-                        <thead>
-                          <tr>
-                            <td></td>
-                            <td></td>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          <tr>
-                            <td><i className="far fa-calendar-check"></i></td>
-                            <td>  {item.DueDate}</td>
-                          </tr>
-                          <tr>
-                            <td>Status</td>
-                            <td>  {item.Status0 ? item.Status0.Status : ""}</td>
-                          </tr>
-                          <tr>
-                            <td>Stage</td>
-                            <td>  Devlopment</td>
-                          </tr>
-                        </tbody>
-                      </table>
+                      <div className="table-responsive-sm">
+                        <table className="table">
+                          <thead>
+                            <tr>
+                              <td></td>
+                              <td></td>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td><i className="far fa-calendar-check"></i></td>
+                              <td>{item.DueDate}</td>
+                            </tr>
+                            <tr>
+                              <td>Status</td>
+                              <td>{item.Status0 ? item.Status0.Status : ""}</td>
+                            </tr>
+                            <tr>
+                              <td>Stage</td>
+                              <td>Devlopment</td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                      </div>
                     </div>
                   );
                 })

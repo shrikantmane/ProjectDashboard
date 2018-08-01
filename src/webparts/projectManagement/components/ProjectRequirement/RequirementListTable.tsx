@@ -3,7 +3,7 @@ import { sp, ItemAddResult } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
 import styles from "../ProjectManagement.module.scss";
-import  {IProjectRequirementProps } from "./IProjectRequirementProps";
+import { IProjectRequirementProps } from "./IProjectRequirementProps";
 import { IRequirementState } from "./IRequirementState";
 import {
     Requirement
@@ -13,8 +13,8 @@ import { SPComponentLoader } from "@microsoft/sp-loader";
 //import AddProject from '../AddProject/AddProject';
 import AddRequirement from '../AddRequirement/AddRequirement';
 export default class ProjectListTable extends React.Component<
-IProjectRequirementProps,
-IRequirementState
+    IProjectRequirementProps,
+    IRequirementState
     > {
     constructor(props) {
         super(props);
@@ -38,20 +38,41 @@ IRequirementState
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
+
+        this.reopenPanel = this.reopenPanel.bind(this);
+        this.editTemplate = this.editTemplate.bind(this);
     }
     dt: any;
     componentDidMount() {
         SPComponentLoader.loadCss(
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
-        this.GetRequirements();
-     
-        
+        if (this.props.list != "" || this.props.list != null) {
+            this.getScheduleList(this.props.list);
+        }
+
+
     }
-    refreshGrid (){
-        this.GetRequirements();
+    reopenPanel() {
+        this.setState({
+            showComponent: false,
+            projectID: null
+        })
     }
-    componentWillReceiveProps(nextProps) { }
+
+    refreshGrid() {
+        this.setState({
+            showComponent: false,
+            projectID: null
+        })
+        this.getScheduleList(this.props.list);
+
+    }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.list != "" || nextProps.list != null) {
+            this.getScheduleList(nextProps.list);
+        }
+    }
 
     /* Private Methods */
 
@@ -64,8 +85,8 @@ IRequirementState
                 </div>
             );
     }
-    
-   attachmentTemplate(rowData: Requirement, Attachments) {
+
+    attachmentTemplate(rowData: Requirement, Attachments) {
         if (rowData.Attachments)
             return (
                 <div>
@@ -73,7 +94,7 @@ IRequirementState
                 </div>
             );
     }
-    
+
     impactTemplate(rowData: Requirement, Impact_x0020_on_x0020_Timelines) {
         if (rowData.Impact_x0020_on_x0020_Timelines)
             return (
@@ -82,7 +103,7 @@ IRequirementState
                 </div>
             );
     }
-    
+
     ownerTemplate(rowData: Requirement, column) {
         if (rowData.Author)
             return (
@@ -99,12 +120,12 @@ IRequirementState
                 </div>
             );
     }
-   
+
     actionTemplate(rowData, column) {
         return <a href="#"> Remove</a>;
     }
     editTemplate(rowData, column) {
-        return <a href="#"> Edit </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}> Edit </a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -112,32 +133,42 @@ IRequirementState
             showComponent: true,
         });
     }
+    private onEditProject(rowData, e): any {
+        e.preventDefault();
+        console.log('Edit :' + rowData);
+        this.setState({
+            showComponent: true,
+            projectID: rowData.ID
+        });
+    }
     public render(): React.ReactElement<IRequirementState> {
         return (
-            <div>
+            <div className="PanelContainer">
                 {/* <DataTableSubmenu /> */}
 
                 <div className="content-section implementation">
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                    <h5>Requirements</h5>
+                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px"}} onClick={this.onAddProject}>
                         Add Requirement
                     </button>
                     {this.state.showComponent ?
-                         <AddRequirement parentMethod={this.refreshGrid}/> :
+                        <AddRequirement id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
                         null
                     }
-                    <DataTable value={this.state.projectList} paginator={true} rows={10} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
-                   
-                        <Column field="Requirement" header="Requirement"  />
-                        <Column field="Resources" header="Resources" />
-                        <Column field="Impact_x0020_on_x0020_Timelines" header="Impact on Timeline?"   body={this.impactTemplate}  />
-                        <Column field="Efforts" header="Efforts" sortable={true} />
-                        <Column field="Attachments" header="Attachment"  body={this.attachmentTemplate} />
-                        <Column field="Apporval_x0020_Status" header="Approval Status" />
-                        <Column field="Approver" header="Approver"  body={this.approverTemplate}  />
-                        <Column field="Author" header="Created By"  body={this.ownerTemplate}  />
-                        <Column field="Created" header="Created On"  body={this.duedateTemplate}  />
-                        
-                    </DataTable>
+                    <div className="project-list">
+                        <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
+                            <Column header="Action" body={this.editTemplate} />
+                            <Column field="Requirement" sortable={true} header="Requirement" />
+                            <Column field="Resources" sortable={true} header="Resources" />
+                            <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timeline?" body={this.impactTemplate} />
+                            <Column field="Efforts" header="Efforts" sortable={true} />
+                            <Column field="Attachments" header="Attachment" sortable={true} body={this.attachmentTemplate} />
+                            <Column field="Apporval_x0020_Status" sortable={true} header="Approval Status" />
+                            <Column field="Approver" header="Approver" sortable={true} body={this.approverTemplate} />
+                            <Column field="Author" header="Created By" sortable={true} body={this.ownerTemplate} />
+                            <Column field="Created" header="Created On" sortable={true} body={this.duedateTemplate} />
+                        </DataTable>
+                    </div>
                 </div>
 
                 {/* <DataTableDoc></DataTableDoc> */}
@@ -147,18 +178,52 @@ IRequirementState
 
     /* Api Call*/
 
-    
-   
-    GetRequirements() {
-        sp.web.lists.getByTitle("Requirements").items
-          .select("Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created").expand("Approver", "Author")
-          .getAll().then((response) => {
-            console.log('member by name', response);
-            this.setState({ projectList: response });
-          });
-     
-      }
-     
-     
-     
+
+
+
+    ////////////
+    //   getproject() {
+    //     var teamList:string;
+
+    //     var last_part:string;
+    //      var url =window.location.href ;
+    //       var parts = url.split("/");
+    //      last_part = parts[parts.length-1];
+
+    //         var projectid=Number(last_part);
+    //   // get Project Documents list items for all projects
+    //   sp.web.lists.getByTitle("Project").items
+    //     .select("Project", "DueDate", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "Priority","Task_x0020_List","Project_x0020_Team_x0020_Members","Project_x0020_Document","Requirements","ID").expand("Status0", "AssignedTo")
+    //     .filter('ID eq \'' + projectid + '\'')
+    //     .getAll()
+    //     .then((response) => {
+    //       console.log('Project by names', response);
+    //       teamList=response[0].Requirements;
+
+    //       this.getScheduleList(teamList,projectid);
+    //   }).catch((e: Error) => {
+    //       alert(`There was an error : ${e.message}`);
+    //     });
+
+
+
+    // }
+    getScheduleList(list) {
+        if ((list) != "") {
+
+
+            sp.web.lists.getByTitle(list).items.select("ID", "Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created")
+                .expand("Approver", "Author")
+                .get().
+                then((response) => {
+                    console.log('member by list', response);
+                    this.setState({ projectList: response });
+
+                });
+            //}
+        }
+    }
+
+
+
 }

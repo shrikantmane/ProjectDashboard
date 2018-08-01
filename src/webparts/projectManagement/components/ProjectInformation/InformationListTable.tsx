@@ -3,19 +3,19 @@ import { sp, ItemAddResult } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
 import styles from "../ProjectManagement.module.scss";
-import  {IInformationProps } from "./IInformationProps";
+import { IInformationProps } from "./IInformationProps";
 
 import { IInformationState } from "./IInformationState";
 import {
-     Information
+    Information
 } from "./InformationList";
 import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 //import AddProject from '../AddProject/AddProject';
 import AddInformation from '../AddInformation/AddInformation';
 export default class ProjectListTable extends React.Component<
-IInformationProps,
-IInformationState
+    IInformationProps,
+    IInformationState
     > {
     constructor(props) {
         super(props);
@@ -35,31 +35,54 @@ IInformationState
         // };
         this.state = {
             projectList: new Array<Information>(),
-            showComponent: false
+            showComponent: false,
+            itemID: ""
         };
         this.onAddProject = this.onAddProject.bind(this);
+        this.reopenPanel = this.reopenPanel.bind(this);
+        this.editTemplate = this.editTemplate.bind(this);
+        this.refreshGrid = this.refreshGrid.bind(this);
+        this.actionTemplate = this.actionTemplate.bind(this);
     }
     dt: any;
     componentDidMount() {
         SPComponentLoader.loadCss(
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
-        this.getProjectInformation();
-        this.refreshGrid = this.refreshGrid.bind(this);
-     
-        
+        if (this.props.list != "" || this.props.list != null) {
+            this.getProjectInformation(this.props.list);
+        }
+
+
+
+
     }
-    refreshGrid (){
-        this.getProjectInformation()
+
+    refreshGrid() {
+        this.setState({
+            showComponent: false,
+            informationID: null
+        })
+        this.getProjectInformation(this.props.list);
     }
-    componentWillReceiveProps(nextProps) { }
+    reopenPanel() {
+        this.setState({
+            showComponent: false,
+            informationID: null
+        })
+    }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.list != "" || nextProps.list != null) {
+            this.getProjectInformation(nextProps.list);
+        }
+    }
 
     /* Private Methods */
 
     /* Html UI */
-    
 
-    
+
+
     // deptTemplate(rowData: Information, column) {
     //     if (rowData.Owner)
     //         return (
@@ -78,10 +101,10 @@ IInformationState
             );
     }
     actionTemplate(rowData, column) {
-        return <a href="#"> Remove</a>;
+        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}> Remove</a>;
     }
     editTemplate(rowData, column) {
-        return <a href="#"> Edit </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}> Edit </a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -89,28 +112,49 @@ IInformationState
             showComponent: true,
         });
     }
+    private onEditProject(rowData, e): any {
+        e.preventDefault();
+        console.log('Edit :' + rowData);
+        this.setState({
+            showComponent: true,
+            informationID: rowData.ID
+        });
+    }
+    private deleteListItem(rowData, e): any {
+        e.preventDefault();
+        console.log('Edit :' + rowData);
+        this.setState({
+            showComponent: true,
+            itemID: rowData.ID
+        });
+        sp.web.lists.getByTitle(this.props.list).
+            items.getById(this.state.itemID).delete().then(i => {
+                console.log(this.props.list + ` item deleted`);
+            });
+    }
     public render(): React.ReactElement<IInformationState> {
         return (
-            <div>
+            <div className="PanelContainer">
                 {/* <DataTableSubmenu /> */}
 
                 <div className="content-section implementation">
+                    <h5>Responsibilities</h5>
                     <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
-                        Add Information
+                        Add Role/Responsibility
                     </button>
                     {this.state.showComponent ?
-                         <AddInformation parentMethod={this.refreshGrid}/> :
+                        <AddInformation id={this.state.informationID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
                         null
                     }
-                    <DataTable value={this.state.projectList} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
-                    <Column header="Edit" body={this.editTemplate} />
-                        <Column field="Roles_Responsibility" header="Role/Responsibility"  />
-                       
-                        <Column field="Owner" header="Owner" body={this.ownerTemplate}  />
-                        <Column field="Department" header="Department"  /> 
-                       
-                        <Column header="Remove" body={this.actionTemplate} />
-                    </DataTable>
+                    <div className="project-list">
+                        <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
+                            <Column header="Edit" body={this.editTemplate} />
+                            <Column field="Roles_Responsibility" sortable={true} header="Role/ Responsibility" />
+                            <Column field="Owner" sortable={true} header="Owner" body={this.ownerTemplate} />
+                            <Column field="Department" sortable={true} header="Department" />
+                            <Column header="Remove" body={this.actionTemplate} />
+                        </DataTable>
+                    </div>
                 </div>
 
                 {/* <DataTableDoc></DataTableDoc> */}
@@ -120,16 +164,18 @@ IInformationState
 
     /* Api Call*/
 
-      getProjectInformation(){
-        sp.web.lists.getByTitle("Project Information").items
-          .select("Roles_Responsibility","Owner/ID","Owner/Title","Owner/FirstName","Owner/Department").expand("Owner/ID")
-         .get()
-       .then((response) => {
-            console.log('member by name', response);
-            this.setState({ projectList: response });
-            
-        });
-      }
+    getProjectInformation(list) {
+        if ((list) != "") {
+            sp.web.lists.getByTitle(list).items
+                .select("ID", "Roles_Responsibility", "Owner/ID", "Owner/Title").expand("Owner")
+                .get()
+                .then((response) => {
+                    console.log('infor by name', response);
+                    this.setState({ projectList: response });
+
+                });
+        }
+    }
     //   private GetUserProperties(): void {  
     //     sp.profiles.myProperties.get().then(function(result) {  
     //         var userProperties = result.UserProfileProperties;  
@@ -143,19 +189,7 @@ IInformationState
     //         console.log("Error: " + error);  
     //     });  
     // }  
-    getprofile(){
-    sp.profiles.getPropertiesFor("i:0#.f|membership|LeeG@esplrms.onmicrosoft.com").then(function(result) {
-        var props = result.UserProfileProperties;
-        var propValue = "";
-        props.forEach(function(prop) {
-            propValue += prop.Key + " - " + prop.Value + "<br/>";
-        });
-        
-        console.log("hie",props[12])
-    }).catch(function(err) {
-        console.log("Error: " + err);
-    });
-}
 
- 
-    }
+
+
+}

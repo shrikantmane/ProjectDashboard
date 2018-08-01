@@ -3,7 +3,7 @@ import { sp, ItemAddResult } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
 import styles from "../ProjectManagement.module.scss";
-import  {ITeamMembersProps } from "./ITeamMembersProps";
+import { ITeamMembersProps } from "./ITeamMembersProps";
 import { ITeamState } from "./ITeamState";
 import {
     TeamMembers
@@ -20,20 +20,20 @@ import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 import { IPersonaProps, Persona } from 'office-ui-fabric-react/lib/Persona';
 import {
-  CompactPeoplePicker,
-  IBasePickerSuggestionsProps,
-  IBasePicker,
-  ListPeoplePicker,
-  NormalPeoplePicker,
-  ValidationState
+    CompactPeoplePicker,
+    IBasePickerSuggestionsProps,
+    IBasePicker,
+    ListPeoplePicker,
+    NormalPeoplePicker,
+    ValidationState
 } from 'office-ui-fabric-react/lib/Pickers';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { IPersonaWithMenu } from 'office-ui-fabric-react/lib/components/pickers/PeoplePicker/PeoplePickerItems/PeoplePickerItem.types';
 //import { people, mru } from './PeoplePickerExampleData';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Promise } from 'es6-promise';
-  
-  const suggestionProps: IBasePickerSuggestionsProps = {
+
+const suggestionProps: IBasePickerSuggestionsProps = {
     //suggestionsHeaderText: 'Suggested People',
     // mostRecentlyUsedHeaderText: 'Suggested Contacts',
     // noResultsFoundText: 'No results found',
@@ -42,23 +42,23 @@ import { Promise } from 'es6-promise';
     suggestionsAvailableAlertText: 'People Picker Suggestions available',
     //suggestionsContainerAriaLabel: 'Suggested contacts',
 
-  };
-  
-  const limitedSearchAdditionalProps: IBasePickerSuggestionsProps = {
+};
+
+const limitedSearchAdditionalProps: IBasePickerSuggestionsProps = {
     searchForMoreText: 'Load all Results',
     resultsMaximumNumber: 10,
     searchingText: 'Searching...',
-  };
-  
-  const limitedSearchSuggestionProps: IBasePickerSuggestionsProps = assign(limitedSearchAdditionalProps, suggestionProps);
+};
+
+const limitedSearchSuggestionProps: IBasePickerSuggestionsProps = assign(limitedSearchAdditionalProps, suggestionProps);
 
 //End: People Picker
 
 
 
 export default class ProjectListTable extends React.Component<
-ITeamMembersProps,
-ITeamState
+    ITeamMembersProps,
+    ITeamState
     > {
     private _picker: IBasePicker<IPersonaProps>;
     constructor(props) {
@@ -87,23 +87,31 @@ ITeamState
             delayResults: false,
             peopleList: peopleList,
             mostRecentlyUsed: [],
-            currentSelectedItems: []
+            currentSelectedItems: [],
+            fields: {},
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
     }
-    refreshGrid (){
-        this.getAllProjectMemeber()
+    refreshGrid() {
+        this.getAllProjectMemeber(this.props.list);
     }
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.list != "" || nextProps.list != null) {
+            this.getAllProjectMemeber(nextProps.list);
+        }
+    }
+
     dt: any;
     componentDidMount() {
         SPComponentLoader.loadCss(
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
-        this.getAllProjectMemeber();
+        if ((this.props.list) != "" || (this.props.list) != null) {
+            this.getAllProjectMemeber(this.props.list);
+        }
         this._getAllSiteUsers();
     }
-    componentWillReceiveProps(nextProps) { }
 
 
 
@@ -125,7 +133,7 @@ ITeamState
             );
     }
 
-    
+
 
     ownerTemplate(rowData: TeamMembers, column) {
         if (rowData.Team_x0020_Member)
@@ -143,33 +151,47 @@ ITeamState
     }
     onAddProject() {
         console.log('button clicked');
-        this.setState({
-            showComponent: true,
+
+        let obj: any = this.state.fields;
+        let fields = this.state.fields;
+        let tempState: any = this.state.currentSelectedItems;
+        sp.web.lists.getByTitle(this.props.list).items.add({
+
+            Team_x0020_MemberId: tempState[0].key
+        }).then((response) => {
+            console.log('Item adding-', response);
+            this.setState(fields);
+
+
         });
     }
     public render(): React.ReactElement<ITeamState> {
         return (
-            <div>
+            <div className="PanelContainer">
                 {/* <DataTableSubmenu /> */}
-                {this._renderNormalPicker()}
                 <div className="content-section implementation">
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
-                        Add Team Members 1
-                    </button>
+                    <h5>Team Members</h5>
+                    <div className="display-line">
+                        {this._renderControlledPicker()}
+                        <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                            Add
+                        </button>
+                    </div>
                     {/* {this.state.showComponent ?
                             <AddProject parentMethod={this.refreshGrid}/>  :
                         null
                     } */}
+                    <div className="project-list">
+                        <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
+                            <Column field="AssignedTo" header="Owner" sortable={true} body={this.ownerTemplate} />
 
-                    <DataTable value={this.state.projectList} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
-                        <Column field="AssignedTo" header="Owner" body={this.ownerTemplate} />
-                       
-                        <Column field="Start_x0020_Date" header="Start Date" body={this.duedateTemplate}  />
-                        <Column field="End_x0020_Date" header="End Date" body={this.enddateTemplate} />
-                        <Column field="Status" header="Status" />
-                       
-                        <Column header="Remove" body={this.actionTemplate} />
-                    </DataTable>
+                            <Column field="Start_x0020_Date" sortable={true} header="Start Date" body={this.duedateTemplate} />
+                            <Column field="End_x0020_Date" sortable={true} header="End Date" body={this.enddateTemplate} />
+                            <Column field="Status" sortable={true} header="Status" />
+
+                            <Column header="Remove" body={this.actionTemplate} />
+                        </DataTable>
+                    </div>
                 </div>
 
                 {/* <DataTableDoc></DataTableDoc> */}
@@ -179,39 +201,43 @@ ITeamState
 
     /* Api Call*/
 
-    
 
-    getAllProjectMemeber(){
-        sp.web.lists.getByTitle("Project Team Members").items.select("Team_x0020_Member/ID", "Team_x0020_Member/Title","Start_x0020_Date", "End_x0020_Date","Status").expand("Team_x0020_Member").getAll().then((response) => {
-            console.log('member by name', response);
-            this.setState({ projectList: response });
-            
-        });
-      }
 
-          /* Private Methods */
+    getAllProjectMemeber(list) {
+        if ((list) != "") {
+            sp.web.lists.getByTitle(list).items.select("ID", "Team_x0020_Member/ID", "Team_x0020_Member/Title", "Start_x0020_Date", "End_x0020_Date", "Status")
+                .expand("Team_x0020_Member").get().then((response) => {
+                    console.log('members by name', response);
+                    this.setState({ projectList: response });
 
+                });
+        }
+    }
+
+    /* Private Methods */
+
+    /*Start: People Picker Methods */
     /*Start: People Picker Methods */
     private _getAllSiteUsers = (): void => {
         var reactHandler = this;
         sp.web.siteUsers.get().then(function (data) {
-          const peopleList: IPersonaWithMenu[] = [];
-          data.forEach((persona) => {
-              let profileUrl = "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-              persona.Email +
-          "&UA=0&size=HR64x64&sc=1531997060853";
-            const target: IPersonaWithMenu = {};
-            let tempPersona = {
-              key: persona.Id,
-              text: persona.Title,
+            const peopleList: IPersonaWithMenu[] = [];
+            data.forEach((persona) => {
+                let profileUrl = "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                    persona.Email +
+                    "&UA=0&size=HR64x64&sc=1531997060853";
+                const target: IPersonaWithMenu = {};
+                let tempPersona = {
+                    key: persona.Id,
+                    text: persona.Title,
 
-              imageUrl: persona.Email === undefined || persona.Email === '' ?  null : profileUrl
-            }
-            assign(target, tempPersona);
-            peopleList.push(target);
-    
-          });
-    
+                    imageUrl: persona.Email === undefined || persona.Email === '' ? null : profileUrl
+                }
+                assign(target, tempPersona);
+                peopleList.push(target);
+
+            });
+
             const mru: IPersonaProps[] = peopleList.slice(0, 5);
             reactHandler.setState({
                 peopleList: peopleList,
@@ -220,181 +246,205 @@ ITeamState
             //console.log('People : ' + peopleList);
         });
     };
-    
+
     private _getTextFromItem(persona: IPersonaProps): string {
         return persona.text as string;
-      }
-      
-      private _renderNormalPicker() {
-        return (
-          <NormalPeoplePicker
-            onResolveSuggestions={this._onFilterChanged}
-            onEmptyInputFocus={this._returnMostRecentlyUsed}
-            getTextFromItem={this._getTextFromItem}
-            pickerSuggestionsProps={suggestionProps}
-            className={'ms-PeoplePicker'}
-            key={'normal'}
-            onRemoveSuggestion={this._onRemoveSuggestion}
-            onValidateInput={this._validateInput}
-            removeButtonAriaLabel={'Remove'}
-            inputProps={{
-              onBlur: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onBlur called'),
-              onFocus: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onFocus called'),
-              'aria-label': 'People Picker'
-            }}
-            //componentRef={this._resolveRef('_picker')}
-            onInputChange={this._onInputChange}
-            resolveDelay={300}
-          />
-        );
-      }
+    }
 
-      private _onItemsChange = (items: any[]): void => {
-        this.setState({
-          currentSelectedItems: items
-        });
-      };
-    
-      private _onSetFocusButtonClicked = (): void => {
-        if (this._picker) {
-          this._picker.focusInput();
+    private _renderControlledPicker() {
+        const controlledItems = [];
+        for (let i = 0; i < 5; i++) {
+            const item = this.state.peopleList[i];
+            if (this.state.currentSelectedItems!.indexOf(item) === -1) {
+                controlledItems.push(this.state.peopleList[i]);
+            }
         }
-      };
-    
-      private _renderFooterText = (): JSX.Element => {
+        return (
+            <div>
+                <NormalPeoplePicker
+                    onResolveSuggestions={this._onFilterChanged}
+                    getTextFromItem={this._getTextFromItem}
+                    pickerSuggestionsProps={suggestionProps}
+                    className={'ms-PeoplePicker'}
+                    key={'controlled'}
+                    selectedItems={this.state.currentSelectedItems}
+                    onChange={this._onItemsChange}
+
+                    inputProps={{
+                        onBlur: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onBlur called'),
+                        onFocus: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onFocus called')
+                    }}
+                    itemLimit={1}
+                    //componentRef={this._resolveRef('_picker')}
+                    resolveDelay={300}
+                />
+                {/* <label> Click to Add a person </label>
+                {controlledItems.map((item, index) => (
+                    <div key={index}>
+                        <DefaultButton
+                            className="controlledPickerButton"
+                            // tslint:disable-next-line:jsx-no-lambda
+                            onClick={() => {
+                                this.setState({
+                                    currentSelectedItems: this.state.currentSelectedItems!.concat([item])
+                                });
+                            }}
+                        >
+                            <Persona {...item} />
+                        </DefaultButton>
+                    </div>
+                ))} */}
+            </div>
+        );
+    }
+
+
+    private _onItemsChange = (items: any[]): void => {
+        this.setState({
+            currentSelectedItems: items
+        });
+    };
+
+    private _onSetFocusButtonClicked = (): void => {
+        if (this._picker) {
+            this._picker.focusInput();
+        }
+    };
+
+    private _renderFooterText = (): JSX.Element => {
         return <div>No additional results</div>;
-      };
-    
-      private _onRemoveSuggestion = (item: IPersonaProps): void => {
+    };
+
+    private _onRemoveSuggestion = (item: IPersonaProps): void => {
         const { peopleList, mostRecentlyUsed: mruState } = this.state;
         const indexPeopleList: number = peopleList.indexOf(item);
         const indexMostRecentlyUsed: number = mruState.indexOf(item);
-    
+
         if (indexPeopleList >= 0) {
-          const newPeople: IPersonaProps[] = peopleList
-            .slice(0, indexPeopleList)
-            .concat(peopleList.slice(indexPeopleList + 1));
-          this.setState({ peopleList: newPeople });
+            const newPeople: IPersonaProps[] = peopleList
+                .slice(0, indexPeopleList)
+                .concat(peopleList.slice(indexPeopleList + 1));
+            this.setState({ peopleList: newPeople });
         }
-    
+
         if (indexMostRecentlyUsed >= 0) {
-          const newSuggestedPeople: IPersonaProps[] = mruState
-            .slice(0, indexMostRecentlyUsed)
-            .concat(mruState.slice(indexMostRecentlyUsed + 1));
-          this.setState({ mostRecentlyUsed: newSuggestedPeople });
+            const newSuggestedPeople: IPersonaProps[] = mruState
+                .slice(0, indexMostRecentlyUsed)
+                .concat(mruState.slice(indexMostRecentlyUsed + 1));
+            this.setState({ mostRecentlyUsed: newSuggestedPeople });
         }
-      };
-    
-      private _onItemSelected = (item: IPersonaProps): Promise<IPersonaProps> => {
+    };
+
+    private _onItemSelected = (item: IPersonaProps): Promise<IPersonaProps> => {
         const processedItem = item;//Object.assign({}, item);
         processedItem.text = `${item.text} (selected)`;
         return new Promise<IPersonaProps>((resolve, reject) => setTimeout(() => resolve(processedItem), 250));
-      };
-    
-      private _onFilterChanged = (
+    };
+
+    private _onFilterChanged = (
         filterText: string,
         currentPersonas: IPersonaProps[],
         limitResults?: number
-      ): IPersonaProps[] | Promise<IPersonaProps[]> => {
+    ): IPersonaProps[] | Promise<IPersonaProps[]> => {
         if (filterText) {
-          let filteredPersonas: IPersonaProps[] = this._filterPersonasByText(filterText);
-    
-          filteredPersonas = this._removeDuplicates(filteredPersonas, currentPersonas);
-          filteredPersonas = limitResults ? filteredPersonas.splice(0, limitResults) : filteredPersonas;
-          return this._filterPromise(filteredPersonas);
+            let filteredPersonas: IPersonaProps[] = this._filterPersonasByText(filterText);
+
+            filteredPersonas = this._removeDuplicates(filteredPersonas, currentPersonas);
+            filteredPersonas = limitResults ? filteredPersonas.splice(0, limitResults) : filteredPersonas;
+            return this._filterPromise(filteredPersonas);
         } else {
-          return [];
+            return [];
         }
-      };
-    
-      private _returnMostRecentlyUsed = (currentPersonas: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> => {
+    };
+
+    private _returnMostRecentlyUsed = (currentPersonas: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> => {
         let { mostRecentlyUsed } = this.state;
         mostRecentlyUsed = this._removeDuplicates(mostRecentlyUsed, currentPersonas);
         return this._filterPromise(mostRecentlyUsed);
-      };
-    
-      private _returnMostRecentlyUsedWithLimit = (
+    };
+
+    private _returnMostRecentlyUsedWithLimit = (
         currentPersonas: IPersonaProps[]
-      ): IPersonaProps[] | Promise<IPersonaProps[]> => {
+    ): IPersonaProps[] | Promise<IPersonaProps[]> => {
         let { mostRecentlyUsed } = this.state;
         mostRecentlyUsed = this._removeDuplicates(mostRecentlyUsed, currentPersonas);
         mostRecentlyUsed = mostRecentlyUsed.splice(0, 3);
         return this._filterPromise(mostRecentlyUsed);
-      };
-    
-      private _onFilterChangedWithLimit = (
+    };
+
+    private _onFilterChangedWithLimit = (
         filterText: string,
         currentPersonas: IPersonaProps[]
-      ): IPersonaProps[] | Promise<IPersonaProps[]> => {
+    ): IPersonaProps[] | Promise<IPersonaProps[]> => {
         return this._onFilterChanged(filterText, currentPersonas, 3);
-      };
-    
-      private _filterPromise(personasToReturn: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> {
+    };
+
+    private _filterPromise(personasToReturn: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> {
         if (this.state.delayResults) {
-          return this._convertResultsToPromise(personasToReturn);
+            return this._convertResultsToPromise(personasToReturn);
         } else {
-          return personasToReturn;
+            return personasToReturn;
         }
-      }
-    
-      private _listContainsPersona(persona: IPersonaProps, personas: IPersonaProps[]) {
+    }
+
+    private _listContainsPersona(persona: IPersonaProps, personas: IPersonaProps[]) {
         if (!personas || !personas.length || personas.length === 0) {
-          return false;
+            return false;
         }
         return personas.filter(item => item.text === persona.text).length > 0;
-      }
-    
-      private _filterPersonasByText(filterText: string): IPersonaProps[] {
+    }
+
+    private _filterPersonasByText(filterText: string): IPersonaProps[] {
         return this.state.peopleList.filter(item => this._doesTextStartWith(item.text as string, filterText));
-      }
-    
-      private _doesTextStartWith(text: string, filterText: string): boolean {
+    }
+
+    private _doesTextStartWith(text: string, filterText: string): boolean {
         return text.toLowerCase().indexOf(filterText.toLowerCase()) === 0;
-      }
-    
-      private _convertResultsToPromise(results: IPersonaProps[]): Promise<IPersonaProps[]> {
+    }
+
+    private _convertResultsToPromise(results: IPersonaProps[]): Promise<IPersonaProps[]> {
         return new Promise<IPersonaProps[]>((resolve, reject) => setTimeout(() => resolve(results), 2000));
-      }
-    
-      private _removeDuplicates(personas: IPersonaProps[], possibleDupes: IPersonaProps[]) {
+    }
+
+    private _removeDuplicates(personas: IPersonaProps[], possibleDupes: IPersonaProps[]) {
         return personas.filter(persona => !this._listContainsPersona(persona, possibleDupes));
-      }
-    
-      private _toggleDelayResultsChange = (toggleState: boolean): void => {
+    }
+
+    private _toggleDelayResultsChange = (toggleState: boolean): void => {
         this.setState({ delayResults: toggleState });
-      };
-    
-      private _dropDownSelected = (option: IDropdownOption): void => {
+    };
+
+    private _dropDownSelected = (option: IDropdownOption): void => {
         this.setState({ currentPicker: option.key });
-      };
-    
-      private _validateInput = (input: string): ValidationState => {
+    };
+
+    private _validateInput = (input: string): ValidationState => {
         if (input.indexOf('@') !== -1) {
-          return ValidationState.valid;
+            return ValidationState.valid;
         } else if (input.length > 1) {
-          return ValidationState.warning;
+            return ValidationState.warning;
         } else {
-          return ValidationState.invalid;
+            return ValidationState.invalid;
         }
-      };
-    
-      /**
-       * Takes in the picker input and modifies it in whichever way
-       * the caller wants, i.e. parsing entries copied from Outlook (sample
-       * input: "Aaron Reid <aaron>").
-       *
-       * @param input The text entered into the picker.
-       */
-      private _onInputChange(input: string): string {
+    };
+
+    /**
+     * Takes in the picker input and modifies it in whichever way
+     * the caller wants, i.e. parsing entries copied from Outlook (sample
+     * input: "Aaron Reid <aaron>").
+     *
+     * @param input The text entered into the picker.
+     */
+    private _onInputChange(input: string): string {
         const outlookRegEx = /<.*>/g;
         const emailAddress = outlookRegEx.exec(input);
-    
+
         if (emailAddress && emailAddress[0]) {
-          return emailAddress[0].substring(1, emailAddress[0].length - 1);
+            return emailAddress[0].substring(1, emailAddress[0].length - 1);
         }
-    
+
         return input;
-      }
-    /*End: People Picker Methods */
-     
     }
+    /*End: People Picker Methods */
+
+}

@@ -1,3 +1,8 @@
+div#workbenchPageContent {
+    max-width: 10000px !important;
+    padding-left: 400px !important;
+    padding-right: 2px !important;
+  }
 .PanelContainer{
     /*img[alt=""],
 img:not([alt]){
@@ -659,9 +664,52 @@ table.table-striped h4{
     border-color: red !important;
 }
 
+/*------------------------ Project List View -----------------------------*/
+.implementation{
+    button.btn.btn-outline.btn-sm{
+        border-radius: 30px;
+    background-color: #0078d7;
+    border: 1px solid #0078d7;
+    padding: 4px 10px 6px;
+    margin-bottom: 10px;
+    color: white;
+    // float: right;
+    margin-left: 20px;
+    }
+    h5 {
+    font-weight: 600;
+    float: left;
+    margin-right: 10px;
+    margin-top: 5px;
+    margin-bottom: 22px;
+    }
+    .display-line {
+    display: flex;
+    margin: 0 8px 8px 0;
+    }
+}
+.project-list{
+    thead.ui-datatable-thead {
+        background-color: #1b2431;
+        color: #fff;
+    }
+    th.ui-state-default.ui-unselectable-text{
+        border-color: inherit;
+        box-sizing: border-box;
+        padding: .25em .5em;
+        border-style: none;
+        border-width: 0px;
+        text-align: left;
+    }
+    td{
+        border-style: none !important;
+        border-width: 0px;
+    }
+}
+/*------------------------ END: Project List View -----------------------------*/
+
 
 /*------------------------ Mobile View -----------------------------*/
-
 @media only screen and (max-width: 768px) {
     .main-content-section {
         padding-left: 0px;
@@ -686,5 +734,13 @@ table.table-striped h4{
     .conversationTasks .well{
         max-height: 300px;
     }
+}
+}
+
+/*------------------------ View Project Details --------------------*/
+.viewProject {
+    .main-content-section {
+    padding: 0px 30px 5px 30px;
+    height: 100vh;
 }
 }

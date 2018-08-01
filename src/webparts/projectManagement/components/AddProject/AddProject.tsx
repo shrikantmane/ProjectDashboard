@@ -1,5 +1,5 @@
 import * as React from "react";
-import { sp, ItemAddResult } from "@pnp/sp";
+import { sp, ItemAddResult, Web } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
 import styles from "../ProjectManagement.module.scss";
@@ -13,7 +13,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Modal } from 'react-bootstrap';
 
 import ProjectListTable from '../ProjectList/ProjectListTable';
-
+import { Link, Redirect } from 'react-router-dom';
 
 import { Project } from "../ProjectList/ProjectList";
 
@@ -37,6 +37,8 @@ import { IPersonaWithMenu } from 'office-ui-fabric-react/lib/components/pickers/
 //import { people, mru } from './PeoplePickerExampleData';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Promise } from 'es6-promise';
+//code from ashwini
+
 
 
 //for react select
@@ -74,6 +76,54 @@ const limitedSearchAdditionalProps: IBasePickerSuggestionsProps = {
 const limitedSearchSuggestionProps: IBasePickerSuggestionsProps = assign(limitedSearchAdditionalProps, suggestionProps);
 
 //End: People Picker
+export interface IHBCOwner {
+    OwnerId: string | number;
+    OwnerName: string;
+    LoginName: string;
+}
+export interface ICloneProjectData {
+    ID: string | number;
+    Department: string;
+    Status0: {
+        ID: string | number;
+        Status: string;
+        StatusColor: string;
+    }
+    PercentComplete: string;
+    AssignedTo: {
+        ID: string | number;
+        Title: string;
+    }
+    StartDate: string;
+    DueDate: string;
+    Body: string;
+    Priority: string;
+    ProjectTag: string;
+    ProTypeDeptSpecific: boolean;
+    RecurringProject: boolean;
+    Occurance: string;
+    Parent: string;
+    IsActive: boolean;
+    OnHoldStatus: boolean;
+    OnHoldDate: boolean;
+    ScheduleList: string;
+    // Requirements: string;
+    // ProjectDocument: string;
+    // ProjectCalender: string;
+    CalendarList: string;
+    DocumentList: string;
+    RequirementsList: string;
+}
+// export interface IListIDs {
+//     ProjectList: string;
+//     ProjectStatusColor: string;
+//     TaskStatusColor: string;
+//     Departments: string;
+// }
+export interface IRoleAssignments {
+    RoleId: string;
+    RoleName: string;
+}
 
 export default class AddProject extends React.Component<IAddProjectProps, {
     showPanel: boolean;
@@ -93,9 +143,37 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     selectedOption: null,
     inputValue: any,
     value: any,
-    tagOptions: any
+    tagOptions: any,
+    // added code from ashwini
+    // ViewersGroupId: string,
+    // ContributersGroupId: string,
+    // OwnersGroupId: string,
+    HBCOwner: IHBCOwner[],
+    CloneProjectData: ICloneProjectData[],
+    ProjectList: string;
+    TaskStatusColor: string;
+    roleAssignments: IRoleAssignments[];
+    savedProjectID: any;
 }> {
     private _picker: IBasePicker<IPersonaProps>;
+    public ViewersGroupId: string | number;
+    public ContributersGroupId: string | number;
+    public OwnersGroupId: string | number;
+    //for permission
+    public TaskObj: any;
+    public ScheduleObj: any;
+    public TaskCommentObj: any;
+    public TaskCommentHisObj: any;
+    public ProjectCommentObj: any;
+    public ProjectCommentHisObj: any;
+    public DocumentObj: any;
+    public TeamMemberObj: any;
+    public RequirementObj: any;
+    public ProjectInfoObj: any;
+    public ProjectCalendarObj: any;
+
+
+
     constructor(props) {
         super(props);
         const peopleList: IPersonaWithMenu[] = [];
@@ -118,12 +196,23 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             selectedOption: null,
             inputValue: '',
             value: [],
-            tagOptions: []
+            tagOptions: [],
+            // added code from ashwini
+            // ViewersGroupId: '',
+            // ContributersGroupId: '',
+            // OwnersGroupId: '',
+            HBCOwner: [],
+            CloneProjectData: [],
+            ProjectList: '',
+            TaskStatusColor: '',
+            roleAssignments: [],
+            savedProjectID:0
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
     }
     componentDidMount() {
+
         this._getAllSiteUsers();
         this.getAllProject();
         this.getAllProjectTags();
@@ -138,9 +227,74 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 fields: {}
             })
         }
+
+        // Added by Ashwini
+        this.GetRoleDefinations();
+        this.GetUsersFromHBCOwnerGroup();
+        this.getListIDs();
     }
     componentWillReceiveProps(nextProps) {
 
+    }
+
+    private getListIDs() {
+
+        sp.web.lists.getByTitle('Project').get()
+            .then(result => {
+                this.setState({
+                    ProjectList: "'{" + result.Id + "}'"
+                });
+
+                sp.web.lists.getByTitle('Task Status Color').get()
+                    .then(result => {
+                        this.setState({
+                            TaskStatusColor: "'{" + result.Id + "}'"
+                        });
+
+                    }).catch(err => {
+                        console.log("Error while getting ID of Task Status Color List.", err);
+                    });
+
+            }).catch(err => {
+                console.log("Error while getting ID of Project List.", err);
+            });
+
+    }
+
+    // Get All Role Definations  
+    private GetRoleDefinations() {
+        let reactHandler = this;
+
+        sp.web.roleDefinitions.get().then(result => {
+            for (let i = 0; i < result.length; i++) {
+                let id = result[i].Id;
+                let name = result[i].Name;
+
+                reactHandler.setState(prevState => ({
+                    roleAssignments: [...prevState.roleAssignments, { RoleId: id, RoleName: name }]
+                }));
+            }
+        }).catch(function (err) {
+            console.log("Error: " + err);
+        });
+    }
+
+    // Get Users Form HBC Owners Group
+    private GetUsersFromHBCOwnerGroup() {
+        let reactHandler = this;
+        sp.web.siteGroups.getByName('HBC Owners').users.get().then(function (result) {
+            for (var i = 0; i < result.length; i++) {
+                let ownerName = result[i].Title;
+                let ownerId = result[i].Id;
+                let loginName = result[i].LoginName;
+
+                reactHandler.setState(prevState => ({
+                    HBCOwner: [...prevState.HBCOwner, { OwnerName: ownerName, OwnerId: ownerId, LoginName: loginName }]
+                }));
+            }
+        }).catch(function (err) {
+            console.log("Group not found: " + err);
+        });
     }
     getAllProjectTags() {
         sp.web.lists.getByTitle("Project Tags").items
@@ -385,42 +539,1491 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     });
                 });
             } else {
-                sp.web.lists.getByTitle("Project").items.add({
-                    Project: obj.projectname ? obj.projectname : '',
-                    StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
-                    DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
-                    AssignedToId: { results: obj.ownername },
-                    Priority: obj.priority ? obj.priority : 'Low',
-                    Body: obj.projectdescription ? obj.projectdescription : '',
-                    ProTypeDeptSpecific: obj.departmentspecific ? obj.departmentspecific : false,
-                    Recurring_x0020_Project: obj.requringproject ? obj.requringproject : false,
-                    Occurance: obj.occurance ? obj.occurance : 'Daily',
-                    Clone_x0020_Project: obj.cloneproject ? obj.cloneproject : false,
-                    Clone_x0020_Documents: obj.clonedocuments ? obj.clonedocuments : false,
-                    Clone_x0020_Requirements: obj.clonerequirements ? obj.clonerequirements : false,
-                    Clone_x0020_Schedule: obj.cloneschedule ? obj.cloneschedule : false,
-                    Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
-                    //DepartmentId: 2,
-                    //Status0Id: 2
+                // sp.web.lists.getByTitle("Project").items.add({
+                //     Project: obj.projectname ? obj.projectname : '',
+                //     StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
+                //     DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
+                //     AssignedToId: { results: obj.ownername },
+                //     Priority: obj.priority ? obj.priority : 'Low',
+                //     Body: obj.projectdescription ? obj.projectdescription : '',
+                //     ProTypeDeptSpecific: obj.departmentspecific ? obj.departmentspecific : false,
+                //     Recurring_x0020_Project: obj.requringproject ? obj.requringproject : false,
+                //     Occurance: obj.occurance ? obj.occurance : 'Daily',
+                //     Clone_x0020_Project: obj.cloneproject ? obj.cloneproject : false,
+                //     Clone_x0020_Documents: obj.clonedocuments ? obj.clonedocuments : false,
+                //     Clone_x0020_Requirements: obj.clonerequirements ? obj.clonerequirements : false,
+                //     Clone_x0020_Schedule: obj.cloneschedule ? obj.cloneschedule : false,
+                //     Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
+                //     //DepartmentId: 2,
+                //     //Status0Id: 2
 
-                }).then((response) => {
-                    console.log('Item adding-', response);
-                    this.setState({ isDataSaved: true });
-                    this.state.fields['tags'].forEach(element => {
-                        this.addProjectTagByTagName(element.value, response.data.Id);
-                    });
-                    // this._closePanel();
-                    // this._showModal();
-                });
+                // }).then((response) => {
+                //     console.log('Item adding-', response);
+                //     this.setState({ isDataSaved: true });
+                //     this.state.fields['tags'].forEach(element => {
+                //         this.addProjectTagByTagName(element.value, response.data.Id);
+                //     });
+                //     // this._closePanel();
+                //     // this._showModal();
+                // });
+
+                this.CreateProjectGroup();
+                // this._closePanel();
+                // this._showModal();
             }
         } else {
             console.log("Form has errors.")
         }
     }
+    // Added new Code from Ashwini
+
+    private CreateProjectGroup() {
+        // let ProName = this.state.value;
+        let ProName = this.state.fields['projectname'];
+        let OwnersGroup = ProName + " Owners";
+        let ContributersGroup = ProName + " Contributers";
+        let ViewersGroup = ProName + " Viewers";
+        let reactHandler = this;
+        // Viewers
+        sp.web.siteGroups.add({
+            Title: ViewersGroup
+        }).then(function (result) {
+            console.log(ViewersGroup, " created !");
+            // reactHandler.setState({
+            //     ViewersGroupId: result.data.Id
+            // });
+            reactHandler.ViewersGroupId = result.data.Id;
+            // Contributers
+            sp.web.siteGroups.add({
+                Title: ContributersGroup
+            }).then(function (result) {
+                console.log(ContributersGroup, " created !");
+                // reactHandler.setState({
+                //     ContributersGroupId: result.data.Id
+                // });
+                reactHandler.ContributersGroupId = result.data.Id;
+                // Owners
+                sp.web.siteGroups.add({
+                    Title: OwnersGroup
+                }).then(function (result) {
+                    console.log(OwnersGroup, " created !");
+                    // reactHandler.setState({
+                    //     OwnersGroupId: result.data.Id
+                    // });
+                    reactHandler.OwnersGroupId = result.data.Id;
+                    //Add User to group
+                    reactHandler.AddHBCUsersToGroup(OwnersGroup, ProName);
+                    // Add Item to project list & other list creation
+                    //if (reactHandler.state.isClone != true) {
+                    if (reactHandler.state.fields['cloneproject'] !== true) {
+                        reactHandler.CreateNewProject(ProName);
+                    }
+                    else {
+                        reactHandler.getProjectDetails(ProName);
+                    }
+                }).catch(e => {
+                    console.log("Error while creating " + OwnersGroup + " group: " + e);
+                });
+            }).catch(e => {
+                console.log("Error while creating " + ContributersGroup + " group: " + e);
+            });
+        }).catch(e => {
+            console.log("Error while creating " + ViewersGroup + " group: " + e);
+        });
+    }
+
+    private AddHBCUsersToGroup(groupName, ProName) {
+        let reactHandler = this;
+        // add HBCOwner
+        for (var i = 0; i < this.state.HBCOwner.length; i++) {
+            let loginName = this.state.HBCOwner[i].LoginName
+
+            sp.web.siteGroups.getByName(groupName).users.add(loginName)
+                .then(function (d) {
+                    console.log("HBCOwner added");
+
+                }).catch(e => {
+                    console.log("error while adding HBCOwner " + loginName + " to owner group");
+                });
+        }
+    }
+    private AddPermissionsToTaskList(ListName, ProName) {
+
+        this.TaskObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.TaskObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TaskObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TaskObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToScheduleList(ListName, ProName) {
+
+        this.ScheduleObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ScheduleObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ScheduleObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ScheduleObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+    private AddPermissionsToTaskCommentList(ListName, ProName) {
+
+        this.TaskCommentObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.TaskCommentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TaskCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TaskCommentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+    private AddPermissionsToTaskCommentHisList(ListName, ProName) {
+
+        this.TaskCommentHisObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.TaskCommentHisObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TaskCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TaskCommentHisObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToProjectCommentList(ListName, ProName) {
+
+        this.ProjectCommentObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectCommentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectCommentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+    private AddPermissionsToProjectCommentHisList(ListName, ProName) {
+        let reactHandler = this;
+
+        this.ProjectCommentHisObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectCommentHisObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectCommentHisObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        reactHandler.cloneListItems(ProName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+    private AddPermissionsToDocumentList(ListName, ProName) {
+
+        this.DocumentObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.DocumentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.DocumentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.DocumentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+
+    private AddPermissionsToTeamMemberList(ListName, ProName) {
+
+        this.TeamMemberObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.TeamMemberObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TeamMemberObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TeamMemberObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToRequirementList(ListName, ProName) {
+
+        this.RequirementObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.RequirementObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.RequirementObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.RequirementObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToProjectInfoList(ListName, ProName) {
+
+        this.ProjectInfoObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectInfoObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectInfoObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectInfoObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToProjectCalendarList(ListName, ProName) {
+
+        this.ProjectCalendarObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectCalendarObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectCalendarObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectCalendarObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                    }).catch(err => {
+                        console.log("Error while creating ", ProName, " View Only ");
+                    });// View Only
+
+                }).catch(err => {
+                    console.log("Error while creating ", ProName, " Contributers ");
+                });// Contribute
+
+            }).catch(err => {
+                console.log("Error while creating ", ProName, " Owners ");
+            });; // Owners
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private getProjectDetails(ProName) {
+        // let filter = "ID eq 175";
+        let filter = "Project eq " + "'" + this.state.fields['project'] + "'";
+
+        let ScheduleList;
+        let DocumentList;
+        let RequirementsList;
+        let CalendarList;
+        let reactHandler = this;
+
+        sp.web.lists.getByTitle("Project").items
+            .filter(filter)
+            //.select("ID", "Project", "Schedule_x0020_List", "Requirements", "Project_x0020_Document", "Project_x0020_Calender")
+            //  "Department",
+            .select("ID", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "PercentComplete", "AssignedTo/ID", "AssignedTo/Title",
+            "StartDate", "DueDate", "Body", "Priority", "ProTypeDeptSpecific", "Recurring_x0020_Project", "Occurance", "Parent",
+            "IsActive", "On_x0020_Hold_x0020_Status", "On_x0020_Hold_x0020_Date", "Schedule_x0020_List", "Requirements", "Project_x0020_Document",
+            "Project_x0020_Calender")
+            .expand("Status0", "AssignedTo")
+            .filter(filter)
+            .getAll()
+            .then((response) => {
+                //console.log('getProjectDetails', response[0].Schedule_x0020_List);
+
+                let ID = response[0].ID;
+                let Department = response[0].Department;
+                let Status0 = response[0].Status0;
+                let PercentComplete = response[0].PercentComplete;
+                let AssignedTo = response[0].AssignedTo;
+                let StartDate = response[0].StartDate;
+                let DueDate = response[0].DueDate;
+                let Body = response[0].Body;
+                let Priority = response[0].Priority;
+                let ProjectTag = response[0].Project_x0020_Tag;
+                let ProTypeDeptSpecific = response[0].ProTypeDeptSpecific;
+                let RecurringProject = response[0].Recurring_x0020_Project;
+                let Occurance = response[0].Occurance;
+                let Parent = response[0].Parent;
+                let IsActive = response[0].IsActive;
+                let OnHoldStatus = response[0].On_x0020_Hold_x0020_Status;
+                let OnHoldDate = response[0].On_x0020_Hold_x0020_Date;
+                let ScheduleList = response[0].Schedule_x0020_List;
+                let DocumentList = response[0].Project_x0020_Document;
+                let RequirementsList = response[0].Requirements;
+                let CalendarList = response[0].Project_x0020_Calender;
+
+                reactHandler.setState(prevState => ({
+                    CloneProjectData: [...prevState.CloneProjectData, {
+                        ID: ID, Department: Department, Status0: Status0, PercentComplete: PercentComplete,
+                        AssignedTo: AssignedTo, StartDate: StartDate, DueDate: DueDate, Body: Body, Priority: Priority,
+                        ProjectTag: ProjectTag, ProTypeDeptSpecific: ProTypeDeptSpecific, RecurringProject: RecurringProject,
+                        Occurance: Occurance, Parent: Parent, IsActive: IsActive, OnHoldStatus: OnHoldStatus, OnHoldDate: OnHoldDate,
+                        ScheduleList: ScheduleList, DocumentList: DocumentList, RequirementsList: RequirementsList, CalendarList: CalendarList
+                    }]
+                }));
+
+                // reactHandler.setState(prevState => ({
+                //     CloneProjectData: [...prevState.CloneProjectData, {
+                //         ScheduleList: ScheduleList, DocumentList: DocumentList, RequirementsList: RequirementsList, CalendarList: CalendarList
+                //     }]
+                // }));
+
+
+
+                reactHandler.CreateCloneProject(ProName);
+
+            }).catch(err => {
+                console.log("Error while fetching project list items", err);
+            });
+    }
+
+    private CreateCloneProject(ProName) {
+
+        console.log("CloneProjectData", this.state.CloneProjectData);
+        let obj: any = this.state.fields;
+        let TaskList = ProName + " Task List";
+        let ScheduleList = ProName + " Schedule List";
+        let ProjectDocument = ProName + " Project Document";
+        let Requirements = ProName + " Requirements";
+        //let ProjectTags = ProName + " Project Tags";
+        let ProjectTeamMembers = ProName + " Project Team Members";
+        let ProjectInfo = ProName + " Project Information";
+        let ProjectCal = ProName + " Project Calender";
+        let ProjectComments = ProName + " Project Comments";
+        let ProjectCommentsHistory = ProName + " Project Comments History";
+        let TaskComments = ProName + " Task Comments";
+        let TaskCommentsHistory = ProName + " Task Comments History";
+
+        // add an item to the list  
+        sp.web.lists.getByTitle("Project").items.add({
+            Title: "No Title",
+            Project: ProName,
+            StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
+            DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
+            AssignedToId: { results: obj.ownername },
+            Priority: obj.priority ? obj.priority : 'Low',
+            Body: obj.projectdescription ? obj.projectdescription : '',
+            ProTypeDeptSpecific: obj.departmentspecific ? obj.departmentspecific : false,
+            Recurring_x0020_Project: obj.requringproject ? obj.requringproject : false,
+            Occurance: obj.occurance ? obj.occurance : 'Daily',
+            Clone_x0020_Project: obj.cloneproject ? obj.cloneproject : false,
+            Clone_x0020_Documents: obj.clonedocuments ? obj.clonedocuments : false,
+            Clone_x0020_Requirements: obj.clonerequirements ? obj.clonerequirements : false,
+            Clone_x0020_Schedule: obj.cloneschedule ? obj.cloneschedule : false,
+            Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
+
+            Task_x0020_List: TaskList,
+            Schedule_x0020_List: ScheduleList,
+            Project_x0020_Document: ProjectDocument,
+            Requirements: Requirements,
+            //Project_x0020_Tags: ProjectTags,
+            Project_x0020_Team_x0020_Members: ProjectTeamMembers,
+            Project_x0020_Infromation: ProjectInfo,
+            Project_x0020_Calender: ProjectCal,
+            Project_x0020_Comments: ProjectComments,
+            Project_x0020_Comments_x0020_His: ProjectCommentsHistory,
+            Task_x0020_Comments: TaskComments,
+            Task_x0020_Comments_x0020_Histor: TaskCommentsHistory
+        }).then((iar: ItemAddResult) => {
+            this.CreateTaskList(ProName);
+        }).catch(err => {
+            console.log("Error while cloning project", ProName, " - ", err);
+        });
+    }
+
+    private CreateNewProject(ProName) {
+
+        let obj: any = this.state.fields;
+        let TaskList = ProName + " Task List";
+        let ScheduleList = ProName + " Schedule List";
+        let ProjectDocument = ProName + " Project Document";
+        let Requirements = ProName + " Requirements";
+        //let ProjectTags = ProName + " Project Tags";
+        let ProjectTeamMembers = ProName + " Project Team Members";
+        let ProjectInfo = ProName + " Project Information";
+        let ProjectCal = ProName + " Project Calender";
+        let ProjectComments = ProName + " Project Comments";
+        let ProjectCommentsHistory = ProName + " Project Comments History";
+        let TaskComments = ProName + " Task Comments";
+        let TaskCommentsHistory = ProName + " Task Comments History";
+
+        // add an item to the list  
+        sp.web.lists.getByTitle("Project").items.add({
+            Project: ProName,
+
+            StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
+            DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
+            AssignedToId: { results: obj.ownername },
+            Priority: obj.priority ? obj.priority : 'Low',
+            Body: obj.projectdescription ? obj.projectdescription : '',
+            ProTypeDeptSpecific: obj.departmentspecific ? obj.departmentspecific : false,
+            Recurring_x0020_Project: obj.requringproject ? obj.requringproject : false,
+            Occurance: obj.occurance ? obj.occurance : 'Daily',
+            Clone_x0020_Project: obj.cloneproject ? obj.cloneproject : false,
+            Clone_x0020_Documents: obj.clonedocuments ? obj.clonedocuments : false,
+            Clone_x0020_Requirements: obj.clonerequirements ? obj.clonerequirements : false,
+            Clone_x0020_Schedule: obj.cloneschedule ? obj.cloneschedule : false,
+            Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
+
+
+            Title: "No Title",
+
+            Task_x0020_List: TaskList,
+            Schedule_x0020_List: ScheduleList,
+            Project_x0020_Document: ProjectDocument,
+            Requirements: Requirements,
+            //Project_x0020_Tags: ProjectTags,
+            Project_x0020_Team_x0020_Members: ProjectTeamMembers,
+            Project_x0020_Infromation: ProjectInfo,
+            Project_x0020_Calender: ProjectCal,
+            Project_x0020_Comments: ProjectComments,
+            Project_x0020_Comments_x0020_His: ProjectCommentsHistory,
+            Task_x0020_Comments: TaskComments,
+            Task_x0020_Comments_x0020_Histor: TaskCommentsHistory
+        }).then((iar: ItemAddResult) => {
+            this.setState({ isDataSaved: true , savedProjectID:iar.data.Id});
+            this.state.fields['tags'].forEach(element => {
+                this.addProjectTagByTagName(element.value, iar.data.Id);
+            });
+            this.CreateTaskList(ProName);
+        }).catch(err => {
+            console.log("Error while adding items for ", ProName, " to Project List -", err);
+        });
+    }
+
+    private CreateTaskList(ProName) {
+        //let spWeb = new Web(this.context.pageContext.site.absoluteUrl);
+        let spEnableCT = false;
+        let reactHandler = this;
+        let TaskList = ProName + " Task List"
+        let TaskListDesc = TaskList + " Description";
+        let TaskTemplateId = 171;
+
+
+        sp.web.lists.add(TaskList, TaskListDesc, TaskTemplateId, spEnableCT).then(function (splist) {
+            console.log(TaskList, " created successfuly !");
+            reactHandler.AddTaskListColumns(TaskList, ProName, sp.web, spEnableCT);
+            reactHandler.TaskObj = splist.list;
+            reactHandler.AddPermissionsToTaskList(TaskList, ProName);
+        }).catch(err => {
+            console.log("Error while creating task List, Error -", err);
+        });
+    }
+
+
+    private AddTaskListColumns(ListName, ProName, spWeb, spEnableCT) {
+
+        let ScheduleList = ProName + " Schedule List";
+
+        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + `/>`;
+        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
+        //     console.log("Project created in list ", ListName);
+
+        let Status = `<Field Name="Status" DisplayName="Status" Type="Lookup" Required="FALSE" ShowField="Status" List=` + this.state.TaskStatusColor + ` />`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Status).then(res => {
+            console.log("Status created in list ", ListName);
+
+            let Duration = "<Field Name='Duration' StaticName='Duration' DisplayName='Duration' Type='Text'  />";
+            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Duration).then(res => {
+                console.log("Duration created in list ", ListName);
+
+                let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
+                sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
+                    console.log("Comment created in list ", ListName);
+
+                    this.CreateScheduleList(ScheduleList, ProName, spWeb, spEnableCT);
+
+                }).catch(err => {
+                    console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
+                }); //Comment
+
+            }).catch(err => {
+                console.log("Error while creating column Duration - ", " in list -", ListName, " Error -", err);
+            }); //Duration
+
+        }).catch(err => {
+            console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
+        }); //Status
+        // }).catch(err => {
+        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
+        // }); //Project
+    }
+
+
+    private CreateScheduleList(ScheduleList, ProName, spWeb, spEnableCT) {
+        let reactHandler = this;
+        let ScheduleListDesc = ScheduleList + " Description";
+        let TaskTemplateId = 171;
+
+
+        spWeb.lists.add(ScheduleList, ScheduleListDesc, TaskTemplateId, spEnableCT).then(function (splist) {
+            console.log(ScheduleList, " created successfuly !");
+            let ScheduleListID = "'{" + splist.data.Id + "}'";
+            reactHandler.AddScheduleListIDColumns(ScheduleList, ProName, spWeb, spEnableCT, ScheduleListID);
+            reactHandler.ScheduleObj = splist.list;
+            reactHandler.AddPermissionsToScheduleList(ScheduleList, ProName);
+        }).catch(err => {
+            console.log("Error while creating Schedule List, Error -", err);
+        });
+    }
+
+    private AddScheduleListIDColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID) {
+
+        let TaskComments = ProName + " Task Comments";
+
+        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + `/>`;
+        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
+        //     console.log("Project created in list ", ListName);
+
+        let Status = `<Field Name="Status" DisplayName="Status" Type="Lookup" Required="FALSE" ShowField="Status" List=` + this.state.TaskStatusColor + ` />`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Status).then(res => {
+            console.log("Status created in list ", ListName);
+
+            let Duration = "<Field Name='Duration' StaticName='Duration' DisplayName='Duration' Type='Text'  />";
+            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Duration).then(res => {
+                console.log("Duration created in list ", ListName);
+
+                let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
+                sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
+                    console.log("Comment created in list ", ListName);
+
+                    this.CreateTaskComments(TaskComments, ProName, spWeb, spEnableCT, ScheduleListID);
+
+                }).catch(err => {
+                    console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
+                }); //Comment
+
+            }).catch(err => {
+                console.log("Error while creating column Duration - ", " in list -", ListName, " Error -", err);
+            }); //Duration
+
+        }).catch(err => {
+            console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
+        }); //Status
+        // }).catch(err => {
+        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
+        // }); //Project
+    }
+
+    private CreateTaskComments(TaskComments, ProName, spWeb, spEnableCT, ScheduleListID) {
+        var reactHandler = this;
+        let TaskCommentsDesc = TaskComments + " Description";
+        let TaskCommentsTemplateId = 100;
+        // Create Project Calender List & Columns
+        spWeb.lists.add(TaskComments, TaskCommentsDesc, TaskCommentsTemplateId, spEnableCT).then(function (splist) {
+            console.log(TaskComments, " created successfuly !");
+            let TaskCommentsID = "'{" + splist.data.Id + "}'";
+            reactHandler.AddTaskCommentsColumns(TaskComments, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID);
+            reactHandler.TaskCommentObj = splist.list;
+            reactHandler.AddPermissionsToTaskCommentList(TaskComments, ProName);
+        }).catch(err => {
+            console.log("Error while creating Task Comments List, Error -", err);
+        });
+    }
+
+
+    private AddTaskCommentsColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID) {
+
+        let TaskCommentsHistory = ProName + " Task Comments History";
+
+        let TaskName = `<Field Name="Task Name" DisplayName="Task Name" Type="Lookup" Required="FALSE" ShowField="Title" List=` + ScheduleListID + ` />`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(TaskName).then(res => {
+            console.log("Task created in list ", ListName);
+
+            let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
+            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
+                console.log("Comment created in list ", ListName);
+                this.CreateTaskCommentHistory(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID);
+            }).catch(err => {
+                console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
+            }); //Comment
+
+        }).catch(err => {
+            console.log("Error while creating column task - ", " in list -", ListName, " Error -", err);
+        }); //Task Name
+    }
+
+    private CreateTaskCommentHistory(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID) {
+        var reactHandler = this;
+        let TaskCommentsHistoryDesc = TaskCommentsHistory + " Description";
+        let TaskCommentsHistoryTemplateId = 100;
+        // Create Project Calender List & Columns
+        spWeb.lists.add(TaskCommentsHistory, TaskCommentsHistoryDesc, TaskCommentsHistoryTemplateId, spEnableCT, ).then(function (splist) {
+            console.log(TaskCommentsHistory, " created successfuly !");
+            reactHandler.AddTaskCommentsHistoryColumns(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID);
+            reactHandler.TaskCommentHisObj = splist.list;
+            reactHandler.AddPermissionsToTaskCommentHisList(TaskCommentsHistory, ProName);
+        }).catch(err => {
+            console.log("Error while creating Task Comments History List, Error -", err);
+        });
+    }
+
+    private AddTaskCommentsHistoryColumns(ListName, ProName, spWeb, spEnableCT, TaskCommentsID) {
+
+        let ProjectDocument = ProName + " Project Document";
+
+        let TaskCommentID = `<Field Name="Task Comment ID" DisplayName="Task Comment ID" Type="Lookup" Required="FALSE" ShowField="ID" List=` + TaskCommentsID + `/>`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(TaskCommentID).then(res => {
+            console.log("Task Comment ID created in list ", ListName);
+
+            let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
+            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
+                console.log("Comment created in list ", ListName);
+
+                let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
+                sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
+                    console.log("IsDeleted created in list ", ListName);
+                    this.CreateProjectDocument(ProName, ProjectDocument, spWeb, spEnableCT);
+                }).catch(err => {
+                    console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
+                }); //IsDeleted 
+
+            }).catch(err => {
+                console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
+            }); //Comment
+
+        }).catch(err => {
+            console.log("Error while creating column Task Comment ID - ", " in list -", ListName, " Error -", err);
+        }); //Task Comment ID
+    }
+
+    private CreateProjectDocument(ProName, ProjectDocument, spWeb, spEnableCT) {
+        var reactHandler = this;
+        let ProjectDocumentDesc = ProjectDocument + " Description";
+        let DocTemplateId = 101;
+
+        spWeb.lists.add(ProjectDocument, ProjectDocumentDesc, DocTemplateId, spEnableCT).then(function (splist) {
+            console.log(ProjectDocument, " created successfuly !");
+            reactHandler.AddProjectDocColumns(ProjectDocument, ProName, spWeb, spEnableCT);
+            reactHandler.DocumentObj = splist.list;
+            reactHandler.AddPermissionsToDocumentList(ProjectDocument, ProName);
+        }).catch(err => {
+            console.log("Error while creating Project Doc List, Error -", err);
+        });
+    }
+
+    private AddProjectDocColumns(ListName, ProName, spWeb, spEnableCT) {
+        //let Risks = ProName + " Risks";
+        let Requirements = ProName + " Requirements";
+
+        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
+        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
+        //     console.log("Project created in list ", ListName);
+
+        let Owner = `<Field Name='Owner' StaticName='Owner' DisplayName='Owner' Type='User'/>`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Owner).then(res => {
+            console.log("Owner created in list ", ListName);
+
+            this.CreateRequirements(ProName, Requirements, spWeb, spEnableCT);
+
+        }).catch(err => {
+            console.log("Error while creating column Owner - ", " in list -", ListName, " Error -", err);
+        }); //Owner
+
+        // }).catch(err => {
+        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
+        // }); //Project
+    }
+
+    private CreateRequirements(ProName, Requirements, spWeb, spEnableCT) {
+        var reactHandler = this;
+        let RequirementsDesc = Requirements + " Description";
+        let RequirementsTemplateId = 100;
+
+        spWeb.lists.add(Requirements, RequirementsDesc, RequirementsTemplateId, spEnableCT).then(function (splist) {
+            console.log(Requirements, " created successfuly !");
+            // reactHandler.AddRequirementColumns(Requirements);
+            reactHandler.AddRequirementColumns(Requirements, ProName, spWeb, spEnableCT);
+            reactHandler.RequirementObj = splist.list;
+            reactHandler.AddPermissionsToRequirementList(Requirements, ProName);
+        }).catch(err => {
+            console.log("Error while creating Requirement List, Error -", err);
+        });
+    }
+
+    // private AddRequirementColumns(ListName){
+    private AddRequirementColumns(ListName, ProName, spWeb, spEnableCT) {
+
+        let ProjectTeamMembers = ProName + " Project Team Members";
+
+        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
+        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
+        //     console.log("Project created in list ", ListName);
+
+        let Requirement = `<Field Name='Requirement' StaticName='Requirement' DisplayName='Requirement' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Requirement).then(res => {
+            console.log("Requirement created in list ", ListName);
+
+            let Approver = `<Field Name='Approver' StaticName='Approver' DisplayName='Approver' Type='User'/>`;
+            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Approver).then(res => {
+                console.log("Approver created in list ", ListName);
+
+                let ApporvalStatus = `<Field DisplayName='Apporval Status' Name='ApporvalStatus' StaticName='Apporval Status' Type='Choice' Format='Dropdown'>
+                                                            <Default>Pending</Default>
+                                                            <CHOICES>
+                                                               <CHOICE>Pending</CHOICE>
+                                                               <CHOICE>Approved</CHOICE>
+                                                               <CHOICE>Rejected</CHOICE>
+                                                            </CHOICES>
+                                                        </Field>`;
+                sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(ApporvalStatus).then(res => {
+                    console.log("Apporval Status created in list ", ListName);
+
+                    let Efforts = `<Field Name='Efforts' StaticName='Efforts' DisplayName='Efforts' Type='Number'/>`;
+                    sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Efforts).then(res => {
+                        console.log("Efforts created in list ", ListName);
+
+                        let Resources = `<Field Name='Resources' StaticName='Resources' DisplayName='Resources' Type='Number'/>`;
+                        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Resources).then(res => {
+                            console.log("Resources created in list ", ListName);
+
+                            let ImpactOnTimelines = `<Field Name='ImpactOnTimelines' StaticName='ImpactOnTimelines' DisplayName='Impact On Timelines' Type='Boolean'><Default>0</Default></Field>`;
+                            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(ImpactOnTimelines).then(res => {
+                                console.log("ImpactOnTimelines created in list ", ListName);
+
+                                this.CreateProjectTeamMembers(ProName, ProjectTeamMembers, spWeb, spEnableCT);
+                            }).catch(err => {
+                                console.log("Error while creating column ImpactOnTimelines - ", " in list -", ListName, " Error -", err);
+                            }); //ImpactOnTimelines  
+
+                        }).catch(err => {
+                            console.log("Error while creating column Resources - ", " in list -", ListName, " Error -", err);
+                        }); //Resources     
+
+                    }).catch(err => {
+                        console.log("Error while creating column  Efforts - ", " in list -", ListName, " Error -", err);
+                    }); //Efforts
+
+                }).catch(err => {
+                    console.log("Error while creating column Apporval Status - ", " in list -", ListName, " Error -", err);
+                }); //Apporval Status
+
+            }).catch(err => {
+                console.log("Error while creating column Approver - ", " in list -", ListName, " Error -", err);
+            }); //Approver
+
+        }).catch(err => {
+            console.log("Error while creating column Requirement - ", " in list -", ListName, " Error -", err);
+        }); //Requirement
+        // }).catch(err => {
+        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
+        // }); //Project
+
+    }
+
+    private CreateProjectTeamMembers(ProName, ProjectTeamMembers, spWeb, spEnableCT) {
+        var reactHandler = this;
+        let TeamMembersDesc = ProjectTeamMembers + " Description";
+        let TeamMembersTemplateId = 100;
+
+        spWeb.lists.add(ProjectTeamMembers, TeamMembersDesc, TeamMembersTemplateId, spEnableCT).then(function (splist) {
+            console.log(ProjectTeamMembers, " created successfuly !");
+            reactHandler.AddTeamMemberColumns(ProjectTeamMembers, ProName, spWeb, spEnableCT);
+            reactHandler.TeamMemberObj = splist.list;
+            reactHandler.AddPermissionsToTeamMemberList(ProjectTeamMembers, ProName);
+        }).catch(err => {
+            console.log("Error while creating Team Members List, Error -", err);
+        });
+    }
+
+    // private AddTeamMemberColumns(ListName){
+    private AddTeamMemberColumns(ListName, ProName, spWeb, spEnableCT) {
+        let ProjectInfo = ProName + " Project Information";
+
+        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
+        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
+        //     console.log("Project created in list ", ListName);
+
+        let TeamMember = `<Field Name='TeamMember' StaticName='TeamMember' DisplayName='Team Member' Type='User'/>`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(TeamMember).then(res => {
+            console.log("TeamMember created in list ", ListName);
+
+            let StartDate = `<Field Name='StartDate' StaticName='StartDate' DisplayName='Start Date' Type='DateTime' Format='DateOnly' ><Default>[Now]</Default></Field>`;
+            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(StartDate).then(res => {
+                console.log("StartDate created in list ", ListName);
+
+                let EndDate = `<Field Name='EndDate' StaticName='EndDate' DisplayName='End Date' Type='DateTime' Format='DateOnly' ><Default>[Now]</Default></Field>`;
+                sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(EndDate).then(res => {
+                    console.log("EndDate created in list ", ListName);
+
+                    let Status = `<Field DisplayName='Status' Name='Status' StaticName='Status' Type='Choice' Format='Dropdown'>
+                                                            <Default>Active</Default>
+                                                            <CHOICES>
+                                                               <CHOICE>Active</CHOICE>
+                                                               <CHOICE>Inactive</CHOICE>
+                                                            </CHOICES>
+                                                        </Field>`;
+                    sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Status).then(res => {
+                        console.log("Status created in list ", ListName);
+
+                        this.CreateProjectInfo(ProName, ProjectInfo, spWeb, spEnableCT);
+
+                    }).catch(err => {
+                        console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
+                    }); //Status
+
+                }).catch(err => {
+                    console.log("Error while creating column EndDate - ", " in list -", ListName, " Error -", err);
+                }); //EndDate
+
+            }).catch(err => {
+                console.log("Error while creating column StartDate - ", " in list -", ListName, " Error -", err);
+            }); //StartDate
+
+        }).catch(err => {
+            console.log("Error while creating column TeamMember - ", " in list -", ListName, " Error -", err);
+        }); //TeamMember
+
+        // }).catch(err => {
+        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
+        // }); //Project
+
+    }
+
+    private CreateProjectInfo(ProName, ProjectInfo, spWeb, spEnableCT) {
+        var reactHandler = this;
+        let ProjectInfoDesc = ProjectInfo + " Description";
+        let ProjectInfoTemplateId = 100;
+
+        spWeb.lists.add(ProjectInfo, ProjectInfoDesc, ProjectInfoTemplateId, spEnableCT).then(function (splist) {
+            console.log(ProjectInfo, " created successfuly !");
+            reactHandler.AddProjectInfoColumns(ProjectInfo, ProName, spWeb, spEnableCT);
+            reactHandler.ProjectInfoObj = splist.list;
+            reactHandler.AddPermissionsToProjectInfoList(ProjectInfo, ProName);
+        }).catch(err => {
+            console.log("Error while creating Team Members List, Error -", err);
+        });
+    }
+
+    // private AddProjectInfoColumns(ListName){
+    private AddProjectInfoColumns(ListName, ProName, spWeb, spEnableCT) {
+        let ProjectCal = ProName + " Project Calender";
+
+        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
+        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
+        //     console.log("Project created in list ", ListName);
+
+        let Owner = `<Field Name='Owner' StaticName='Owner' DisplayName='Owner' Type='User'/>`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Owner).then(res => {
+            console.log("Owner created in list ", ListName);
+
+            let Roles_Responsibility = `<Field Name='Roles_Responsibility' StaticName='Roles_Responsibility' DisplayName='Roles_Responsibility' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
+            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Roles_Responsibility).then(res => {
+                console.log("Roles_Responsibility created in list ", ListName);
+
+                this.CreateProjectCalender(ProName, ProjectCal, spWeb, spEnableCT);
+
+            }).catch(err => {
+                console.log("Error while creating column Roles_Responsibility - ", " in list -", ListName, " Error -", err);
+            }); //Roles_Responsibility
+
+        }).catch(err => {
+            console.log("Error while creating column Owner - ", " in list -", ListName, " Error -", err);
+        }); //Owner
+
+        // }).catch(err => {
+        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
+        // }); //Project
+    }
+
+    private CreateProjectCalender(ProName, ProjectCalender, spWeb, spEnableCT) {
+        var reactHandler = this;
+        let ProjectCalenderDesc = ProjectCalender + " Description";
+        let ProjectCalenderTemplateId = 106;
+        let ProjectComments = ProName + " Project Comments";
+
+        spWeb.lists.add(ProjectCalender, ProjectCalenderDesc, ProjectCalenderTemplateId, spEnableCT).then(function (splist) {
+            console.log(ProjectCalender, " created successfuly !");
+            //reactHandler.AddProjectCalColumns(ProjectCalender, ProName, spWeb, spEnableCT);
+            reactHandler.ProjectCalendarObj = splist.list;
+            reactHandler.AddPermissionsToProjectCalendarList(ProjectCalender, ProName);
+            reactHandler.CreateProjectComments(ProjectComments, ProName, spWeb, spEnableCT);
+            //reactHandler.AddPermissionsToList(ProjectCalender, ProName, splist.list);
+        }).catch(err => {
+            console.log("Error while creating Project Calender List, Error -", err);
+        });
+    }
+
+    // // private AddProjectCalColumns(ListName){
+    // private AddProjectCalColumns(ListName, ProName, spWeb, spEnableCT) {
+    //     let ProjectComments = ProName + " Project Comments";
+
+    //     let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
+    //     sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
+    //         console.log("Project created in list ", ListName);
+    //         this.CreateProjectComments(ProjectComments, ProName, spWeb, spEnableCT);
+    //     }).catch(err => {
+    //         console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
+    //     }); //Project
+
+    //     console.log("Operation Done!!!!");
+    // }
+
+    //Methods Added by ankit starts
+
+    private CreateProjectComments(ProjectComments, ProName, spWeb, spEnableCT) {
+        var reactHandler = this;
+        let ProjectCommentDesc = ProjectComments + " Description";
+        let ProjectCommentTemplateId = 100;
+        // Create Project Comment List & Columns
+        spWeb.lists.add(ProjectComments, ProjectCommentDesc, ProjectCommentTemplateId, spEnableCT).then(function (splist) {
+            console.log(ProjectComments, " created successfuly !");
+            let ProjectListID = "{" + splist.data.Id + "}";
+            reactHandler.AddProjectCommentsColumns(ProjectComments, ProName, spWeb, spEnableCT, ProjectListID);
+            reactHandler.ProjectCommentObj = splist.list;
+            reactHandler.AddPermissionsToProjectCommentList(ProjectComments, ProName);
+        }).catch(err => {
+            console.log("Error while creating Project Comments List, Error -", err);
+        });
+    }
+
+    private AddProjectCommentsColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID) {
+        let ProjectCommentsHistory = ProName + " Project Comments History";
+
+        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
+        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
+        //     console.log("Project created in list ", ListName);
+
+        let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
+            console.log("Comment created in list ", ListName);
+
+            let CommentID = `<Field Name='CommentID' StaticName='CommentID' DisplayName='CommentID' Type='Text' Sortable='FALSE' />`;
+            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(CommentID).then(res => {
+                console.log("Comment ID created in list ", ListName);
+
+                let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
+                sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
+                    console.log("IsDeleted created in list ", ListName);
+                    this.CreateProjectCommentHistory(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID);
+                }).catch(err => {
+                    console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
+                }); //IsDeleted 
+            }).catch(err => {
+                console.log("Error while creating column Comment ID - ", " in list -", ListName, " Error -", err);
+            }); //CommentID
+        }).catch(err => {
+            console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
+        }); //Comment
+        // }).catch(err => {
+        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
+        // }); //Project
+    }
+
+    private CreateProjectCommentHistory(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID) {
+        var reactHandler = this;
+        let ProjectCommentsHistoryDesc = ProjectCommentsHistory + " Description";
+        let ProjectCommentsHistoryTemplateId = 100;
+        // Create Project Comment History List & Columns
+        spWeb.lists.add(ProjectCommentsHistory, ProjectCommentsHistoryDesc, ProjectCommentsHistoryTemplateId, spEnableCT).then(function (splist) {
+            console.log(ProjectCommentsHistory, " created successfuly !");
+            reactHandler.AddProjectCommentsHistoryColumns(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID);
+            reactHandler.ProjectCommentHisObj = splist.list;
+            reactHandler.AddPermissionsToProjectCommentHisList(ProjectCommentsHistory, ProName);
+            //reactHandler.cloneListItems(ProName);
+        }).catch(err => {
+            console.log("Error while creating Project Comments History List, Error -", err);
+        });
+    }
+    private cloneListItems(ProName) {
+
+        //if (this.state.isCalender === true) {
+        //    this.getCalenderItems(this.state.CloneProject + " Project Calender", ProName + " Project Calender");
+        //}
+        //if (this.state.isRequirement === true) {
+        //    this.getRequirementItems(this.state.CloneProject + " Requirements",ProName + " Requirements");
+        //}
+        //if (this.state.isSchedule === true) {
+        //    this.getScheduleItems(this.state.CloneProject + " Schedule List",ProName + " Schedule List");
+        //}
+        //if (this.state.isDocument === true) {
+        //    this.copyDocumentListItems(this.state.CloneProject + " Project Document",ProName + " Project Document");
+        //}
+        let flag = false;
+        if (this.state.fields['clonecalender'] === true) {
+            flag = true;
+            this.getCalenderItems(this.state.fields['project'] + " Project Calender", ProName + " Project Calender");
+        }
+        if (this.state.fields['clonerequirements'] === true) {
+            flag = true;
+            this.getRequirementItems(this.state.fields['project'] + " Requirements", ProName + " Requirements");
+        }
+        if (this.state.fields['cloneschedule'] === true) {
+            flag = true;
+            this.getScheduleItems(this.state.fields['project'] + " Schedule List", ProName + " Schedule List");
+        }
+        if (this.state.fields['clonedocuments'] === true) {
+            flag = true;
+            this.copyDocumentListItems(this.state.fields['project'] + " Project Document", ProName + " Project Document");
+        }
+        if (!flag) {
+            if (this.props.id) {
+                this._closePanel();
+                this.props.parentMethod();
+                //this.props.parentReopen();
+            } else {
+                this._closePanel();
+                this._showModal();
+            }
+        }
+    }
+    // get Calender list items
+    private getCalenderItems(oldCalendarList, newCalendarList) {
+        let reactHandler = this;
+        let Title;
+        let Description;
+        let EventDate;
+        let EndDate;
+        let Category;
+        let ParticipantsPickerId = new Array();
+        let ParticipantsPicker;
+        let Location;
+        sp.web.lists.getByTitle(oldCalendarList).items
+            .select("Title", "Description", "EventDate", "EndDate", "Category", "ParticipantsPicker/ID", "ParticipantsPicker/Title", "Location")
+            .expand("ParticipantsPicker")
+            .get()
+            .then(res => {
+                console.log("CalendarList -", res);
+                for (var i = 0; i < res.length; i++) {
+                    Title = res[i].Title;
+                    Description = res[i].Description;
+                    EventDate = res[i].EventDate;
+                    EndDate = res[i].EndDate;
+                    Category = res[i].Category;
+                    Location = res[i].Location;
+                    ParticipantsPicker = res[i].ParticipantsPicker;
+                    for (var i = 0; i < ParticipantsPicker.length; i++) {
+                        var ID = ParticipantsPicker[i].ID;
+                        ParticipantsPickerId.push(ID);
+                    }
+                }
+                reactHandler.addCalendarListItems(newCalendarList, Title, Description, EventDate, EndDate, Category, ParticipantsPickerId, Location);
+
+            }).catch(err => {
+                console.log("error while fetching items in ", oldCalendarList, " - ", err);
+            });
+    }
+
+    // Add Calender list items
+    private addCalendarListItems(newCalendarList, Title, Description, EventDate, EndDate, Category, ParticipantsPickerId, Location) {
+        sp.web.lists.getByTitle(newCalendarList).items.add({
+            Title: Title,
+            Description: Description,
+            EventDate: EventDate,
+            EndDate: EndDate,
+            Category: Category,
+            ParticipantsPickerId: {
+                results: ParticipantsPickerId  // allows multiple lookup value
+            },
+            Location: Location
+
+        }).then((iar: ItemAddResult) => {
+            console.log("Items added successfully in list ", newCalendarList);
+            if (this.props.id) {
+                this._closePanel();
+                this.props.parentMethod();
+                //this.props.parentReopen();
+            } else {
+                this._closePanel();
+                this._showModal();
+            }
+        }).catch(err => {
+            console.log("error while adding items in ", newCalendarList, " - ", err);
+        });
+    }
+
+    // get requirement list items
+    private getRequirementItems(oldRequirementsList, newRequirementsList) {
+        let reactHandler = this;
+        let Requirement;
+        let Efforts;
+        let ImpactOnTimelines;
+        let Resources;
+        let Attachments;
+        let ApproverId;
+        let ApporvalStatus;
+        sp.web.lists.getByTitle(oldRequirementsList).items
+            .select("Requirement", "Efforts", "Impact_x0020_On_x0020_Timelines", "Resources", "Attachments",
+            "Approver/ID", "Approver/Title", "Apporval_x0020_Status")
+            .expand("Approver")
+            .get()
+            .then(res => {
+                console.log("RequirementsList -", res);
+                for (var i = 0; i < res.length; i++) {
+                    Requirement = res[i].Requirement;
+                    Efforts = res[i].Efforts;
+                    ImpactOnTimelines = res[i].Impact_x0020_On_x0020_Timelines;
+                    Resources = res[i].Resources;
+                    Attachments = res[i].Attachments;
+                    ApproverId = res[i].Approver.ID;
+                    ApporvalStatus = res[i].ApporvalStatus;
+
+                }
+                this.addRequirementsListItems(newRequirementsList, Requirement, Efforts, ImpactOnTimelines, Resources, Attachments, ApproverId, ApporvalStatus);
+
+            }).catch((err) => {
+                console.log("error while fetching items in ", oldRequirementsList, " - ", err);
+            });
+    }
+
+    // Add requirement list items
+    private addRequirementsListItems(newRequirementsList, Requirement, Efforts, ImpactOnTimelines, Resources, Attachments, ApproverId, ApporvalStatus) {
+        sp.web.lists.getByTitle(newRequirementsList).items.add({
+            Title: 'No Title',
+            Requirement: Requirement,
+            Efforts: Efforts,
+            Impact_x0020_On_x0020_Timelines: ImpactOnTimelines,
+            Resources: Resources,
+            Attachments: Attachments,
+            ApproverId: ApproverId,
+            Apporval_x0020_Status: ApporvalStatus,
+        }).then((iar: ItemAddResult) => {
+            if (this.props.id) {
+                this._closePanel();
+                this.props.parentMethod();
+                //this.props.parentReopen();
+            } else {
+                this._closePanel();
+                this._showModal();
+            }
+            console.log("Items added successfully in list ", newRequirementsList);
+        }).catch(err => {
+            console.log("error while adding items in ", newRequirementsList, " - ", err);
+        });
+    }
+
+
+
+    // get schedule list items
+    private getScheduleItems(oldScheduleList, newScheduleList) {
+        let reactHandler = this;
+        let StartDate;
+        let DueDate;
+        let Duration;
+        let Status0Id;
+        let Priority;
+        let Body;
+        let Comment;
+        let TaskStatus;
+        let AssignedTo;
+        let AssignedToId = new Array();
+
+        sp.web.lists.getByTitle(oldScheduleList).items
+            .select("StartDate", "DueDate", "Duration", "AssignedTo/Title", "AssignedTo/ID", "Status0/ID", "Status0/Status",
+            "Status0/Status_x0020_Color", "Priority", "Body", "Predecessors/ID", "Predecessors/Title", "Comment", "Status")
+            .expand("AssignedTo", "Status0", "Predecessors")
+            .get()
+            .then(res => {
+                console.log("ScheduleList -", res);
+                for (var i = 0; i < res.length; i++) {
+                    StartDate = res[i].StartDate;
+                    DueDate = res[i].DueDate;
+                    Duration = res[i].Duration;
+                    Status0Id = res[i].Status0.ID;
+                    Priority = res[i].Priority;
+                    Body = res[i].Body;
+                    Comment = res[i].Comment;
+                    TaskStatus = res[i].Status;
+
+                    AssignedTo = res[i].AssignedTo;
+                    for (var i = 0; i < AssignedTo.length; i++) {
+                        var ID = AssignedTo[i].ID;
+                        AssignedToId.push(ID);
+                    }
+
+
+                }
+
+                reactHandler.addScheduleListItems(newScheduleList, StartDate, DueDate, Duration, AssignedToId, Status0Id, Priority, Body, Comment, TaskStatus);
+
+            }).catch((err) => {
+                console.log("error while fetching items in ", oldScheduleList, " - ", err);
+            });
+    }
+
+    // add schedule list items
+    private addScheduleListItems(newScheduleList, StartDate, DueDate, Duration, AssignedToId, Status0Id, Priority, Body, Comment, TaskStatus) {
+        sp.web.lists.getByTitle(newScheduleList).items.add({
+            Title: 'No Title',
+            StartDate: StartDate,
+            DueDate: DueDate,
+            Duration: Duration,
+            AssignedToId: { results: AssignedToId },
+            Status0Id: Status0Id,
+            Priority: Priority,
+            Body: Body,
+            Comment: Comment,
+            Status: TaskStatus
+
+        }).then((iar: ItemAddResult) => {
+            console.log("Items added successfully in list ", newScheduleList);
+            if (this.props.id) {
+                this._closePanel();
+                this.props.parentMethod();
+                //this.props.parentReopen();
+            } else {
+                this._closePanel();
+                this._showModal();
+            }
+        }).catch(err => {
+            console.log("error while adding items in ", newScheduleList, " - ", err);
+        });;
+    }
+
+    // Add Document list items
+    private copyDocumentListItems(oldDocumentList, newDocumentList) {
+
+        var siteurl = this.context.pageContext.web.absoluteUrl.split('.com')[1] + '/';
+        var sourceList = encodeURI(oldDocumentList) + '/';
+        var destinationList = encodeURI(newDocumentList) + '/';
+
+        sp.web.lists.getByTitle(oldDocumentList).items
+            .select('Title', 'LinkFilename', '*')
+            .getAll()
+            .then((response) => {
+                for (var i = 0; i < response.length; i++) {
+                    var item = response[i];
+                    sp.web.getFileByServerRelativeUrl(siteurl + sourceList + response[i].LinkFilename)
+                        .copyTo(siteurl + destinationList + response[i].LinkFilename, true)
+                }
+                console.log(response);
+                if (this.props.id) {
+                    this._closePanel();
+                    this.props.parentMethod();
+                    //this.props.parentReopen();
+                } else {
+                    this._closePanel();
+                    this._showModal();
+                }
+            }).catch(err => {
+                console.log("Error while copying document in list ", newDocumentList, " - ", err);
+            });
+    }
+    private AddProjectCommentsHistoryColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID) {
+        let CommentID = `<Field Name="CommentID" DisplayName="CommentID" Type="Lookup" Required="FALSE" ShowField="CommentID" List="` + ProjectListID + `" />`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(CommentID).then(res => {
+            console.log("CommentID created in list ", ListName);
+
+            let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
+            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
+                console.log("Comment created in list ", ListName);
+
+                let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
+                sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
+                    console.log("IsDeleted created in list ", ListName);
+                }).catch(err => {
+                    console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
+                }); //IsDeleted
+
+            }).catch(err => {
+                console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
+            }); //Comment
+
+        }).catch(err => {
+            console.log("Error while creating column CommentID - ", " in list -", ListName, " Error -", err);
+        }); //CommentID
+    }
+
+
+
+
+
+    // end
     addProjectTagByTagName(tagName, projectId) {
         var available = false;
         var project = [];
-        
+
         var filter = "Tag eq" + "'" + tagName + "'";
         sp.web.lists.getByTitle("Project Tags").items
             .select("Projects/ID", "Tag").expand("Projects")
@@ -455,14 +2058,14 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             ProjectsId: { results: [projectID] },
             Tag: tagName
         }).then((response) => {
-            if (this.props.id) {
-                this._closePanel();
-                this.props.parentMethod();
-                //this.props.parentReopen();
-            } else {
-                this._closePanel();
-                this._showModal();
-            }
+            // if (this.props.id) {
+            //     this._closePanel();
+            //     this.props.parentMethod();
+            //     //this.props.parentReopen();
+            // } else {
+            //     this._closePanel();
+            //     this._showModal();
+            // }
             console.log('Project team members added -', response);
         });
     }
@@ -476,14 +2079,14 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     ProjectsId: { results: project }
                 }).then(result => {
                     // here you will have updated the item
-                    if (this.props.id) {
-                        this._closePanel();
-                        this.props.parentMethod();
-                        //this.props.parentReopen();
-                    } else {
-                        this._closePanel();
-                        this._showModal();
-                    }
+                    // if (this.props.id) {
+                    //     this._closePanel();
+                    //     this.props.parentMethod();
+                    //     //this.props.parentReopen();
+                    // } else {
+                    //     this._closePanel();
+                    //     this._showModal();
+                    // }
                     console.log(JSON.stringify(result));
                 });
             }
@@ -798,7 +2401,10 @@ Schedule and Project Team now?
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={this._closeModal}>I'll Do it Later</Button>
-                        <Button onClick={this._closeModal}>Continue</Button>
+                        <Link to={`/viewProjectDetails/${this.state.savedProjectID}`}>
+                        <Button>Continue</Button>
+                        </Link>
+                        
                     </Modal.Footer>
                 </Modal>
             </div>

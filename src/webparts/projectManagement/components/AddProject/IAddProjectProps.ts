@@ -5,4 +5,6 @@ export interface IAddProjectProps {
   parentMethod: any,
   parentReopen: any,
   id?: number,
+  // context: any;
+  // siteurl : string
 }

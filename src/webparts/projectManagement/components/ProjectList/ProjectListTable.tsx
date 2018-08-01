@@ -126,7 +126,7 @@ export default class ProjectListTable extends React.Component<
                 <div className="PanelContainer">
                     <div className="content-section implementation">
                         <h5>Projects</h5>
-                        <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px",float:"right" }} onClick={this.onAddProject}>
+                        <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
                             Add Project
                         </button>
                         {this.state.showComponent ?

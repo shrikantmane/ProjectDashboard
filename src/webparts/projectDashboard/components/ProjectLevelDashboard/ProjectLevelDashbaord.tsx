@@ -43,7 +43,8 @@ export default class ProjectLevelDashboard extends React.Component<
         "Task_x0020_List",
         "Schedule_x0020_List",
         "Project_x0020_Document",
-        "Project_x0020_Team_x0020_Members"
+        "Project_x0020_Team_x0020_Members",
+        "Project_x0020_Infromation"
       )
       .filter(filter)
       .getAll()
@@ -56,8 +57,8 @@ export default class ProjectLevelDashboard extends React.Component<
           project.Task_x0020_List = response[0].Task_x0020_List;
           project.Schedule_x0020_List = response[0].Schedule_x0020_List;
           project.Project_x0020_Document = response[0].Project_x0020_Document;
-          project.Project_x0020_Team_x0020_Members =
-            response[0].Project_x0020_Team_x0020_Members;
+          project.Project_x0020_Team_x0020_Members = response[0].Project_x0020_Team_x0020_Members;
+          project.Project_x0020_Infromation = response[0].Project_x0020_Infromation;
           this.setState({ project: project });
         }
       })
@@ -109,23 +110,22 @@ export default class ProjectLevelDashboard extends React.Component<
                             </div>
                           </div>
                         </div>
-                        <ProjectMildstone scheduleList={this.state.project.Schedule_x0020_List}></ProjectMildstone>                      
+                        <ProjectMildstone scheduleList={this.state.project.Schedule_x0020_List}></ProjectMildstone> 
                       </div>
                     </div>
                   </div>
                 </div>
-
+                  <ProjectPlan scheduleList={this.state.project.Schedule_x0020_List}></ProjectPlan>
                   <ProjectTaskList scheduleList={this.state.project.Schedule_x0020_List}></ProjectTaskList>
                   <ProjectDocument projectDocument={this.state.project.Project_x0020_Document}></ProjectDocument>
                   <div className="clearfix"></div>
                   <ProjectTeamMembers projectTeamMembers={this.state.project.Project_x0020_Team_x0020_Members}></ProjectTeamMembers>
-                  <ProjectProjectRoleResponsibility projectRoleResponsibility ={"Project Information"} ></ProjectProjectRoleResponsibility>
-
-                {/* row conversationTasks */}
+                  <ProjectProjectRoleResponsibility projectRoleResponsibility ={this.state.project.Project_x0020_Infromation} ></ProjectProjectRoleResponsibility>
               </div>
             </div>
           </section>
         </div>
+         {/* <ProjectPlan scheduleList={this.state.project.Schedule_x0020_List}></ProjectPlan> */}
       </div>
     );
   }

@@ -6,9 +6,10 @@ export class Project {
     public Schedule_x0020_List: string;
     public Project_x0020_Document: string;
     public Project_x0020_Team_x0020_Members: string;
+    public Project_x0020_Infromation: string;
 }
 
-export class Mildstone {
+export class Milestone {
     public Title: string;   
     public DueDate: string;
     public Status0: Status;
@@ -46,6 +47,7 @@ export class Owner {
     public EMail: string;
     public PictureURL :string;
     public JobTitle :string;
+    public ImgURL : string;
 }
 
 export class Team_x0020_Member {
@@ -66,4 +68,53 @@ export class RoleResponsibility {
 
 export class Task {
     public ID: number;
+    public Week : Week;
+    public StartDate : string;
+    public EndDate : string;
+    public Title : string;
+    public OwnerName : string;
+    public Status : string;
+    public AssignedTo : Array<Owner>;
+    public Status0: Status;
+}
+
+
+export enum Week {
+    CurrentWeek = "Current Week",
+    NextWeek = "Next Week",
+    Future = "Future",
+    Past = "Past",
+}
+
+export class Plan {
+    public ID: number;
+    public StartDate : string;
+    public DueDate : string;
+    public Title : string;
+    public AssignedTo : Array<Owner>;
+    public Status0: Status;
+    public Project: Project;
+}
+
+export class ChartData {
+    public id: number;
+    public text : string;
+    public start_date : string;
+    public attachment : string;
+    public status : string;
+    public duration : number;
+    public color? : string;
+    public parent? :number;
+}
+
+export class ChartLink {
+    public id: number;
+    public source: number;
+    public target: number;
+    public type: number;
+}
+
+export class Chart {
+   public data : Array<ChartData>;
+   public link : Array<ChartLink>;
 }

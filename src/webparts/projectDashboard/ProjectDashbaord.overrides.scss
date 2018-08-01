@@ -502,6 +502,11 @@ img:not([alt]){
 border: 5px dashed #c00;
 }*/
 
+.gantt-container {
+    height: 500px;
+    width: 100%;
+  }
+ 
 body{
     background:#eff3f6;
     color: #454545;
@@ -1129,6 +1134,9 @@ input[type=radio]:checked ~ label, input[type=checkbox]:checked ~ label {
 .projectDetail .fa-caret-right{
     color: #c4c7ca;
     margin-right: 10px;
+}
+.profileDetails-container .ReactTable .pagination-bottom {
+    display: none;
 }
 .overlayTag{
     background-color: rgba(35,45,60,0.9);

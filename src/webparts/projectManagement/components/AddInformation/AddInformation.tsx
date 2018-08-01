@@ -158,15 +158,15 @@ export default class AddProject extends React.Component<IAddInformationProps, {
                 const selectedPeopleList: IPersonaWithMenu[] = [];
                 const selectedTarget: IPersonaWithMenu = {};
                 let tempSelectedPersona = {};
-                if (response[0].Owner.length > 0) {
-                    response[0].Owner.forEach(element => {
+                if (response[0].Owner) {
+                    // response[0].Owner.forEach(element => {
                         tempSelectedPersona = {
-                            key: element.ID,
-                            text: element.Title
+                            key: response[0].Owner.ID,
+                            text: response[0].Owner.Title
                         }
                         //assign(selectedTarget, tempSelectedPersona);
                         selectedPeopleList.push(tempSelectedPersona);
-                    });
+                    // });
                 }
                 
                 // this.setState({
@@ -277,7 +277,7 @@ if(tempState.length>0){
                 this.setState({ isDataSaved: true });
                 this._closePanel();
                 this._showModal();
-
+                this.props.parentMethod();
             });
         }
     }

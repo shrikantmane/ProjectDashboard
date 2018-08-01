@@ -54,6 +54,10 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             let fields = this.state.fields;
             fields[field] = e.target.value;
             this.setState({ fields, cloneProjectChecked: !this.state.cloneProjectChecked });
+        } else if(field === 'filedescription'){
+            let fields = this.state.fields;
+            fields[field] = e.target.files[0]
+            this.setState({ fields });
         } else {
             let fields = this.state.fields;
             fields[field] = e.target.value;
@@ -176,7 +180,8 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                 //DepartmentId: 2,
                 //Status0Id: 2
 
-            }).then(i => {
+            }).then((response) => {
+                //response.item.attachmentFiles.add(this.state.fields["filedescription"], this.state.selectedFile);
                 this._closePanel();
                 this.props.parentMethod();
                 this.props.parentReopen();
@@ -188,11 +193,13 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                 Resources: obj.projectdescription ? obj.projectdescription : '',
                 Efforts: obj.effortdescription ? obj.effortdescription : '',
             }).then((response) => {
+                //const formData = new FormData();
+                //formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
+                response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]);
                 console.log('Item adding-', response);
                 this.setState({ isDataSaved: true });
                 this._closePanel();
                 this._showModal();
-
             });
         }
     } else {
@@ -295,7 +302,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                           <label>Attachments</label>
                                                              <div className="form-control fileupload" data-provides="fileupload">
                                                              <input ref="filedescription" type="file" id="uploadFile" className={formControl + " " + (this.state.errorClass["filedescription"] ? this.state.errorClass["filedescription"] : '')} 
-                                                                            onChange={this.handleChange.bind(this, "filedescription")} value={this.state.fields["filedescription"]}>
+                                                                           onChange={this.handleChange.bind(this, "filedescription")} >
                                                                         </input>
                                                                         <span className="error">{this.state.errors["filedescription"]}</span>
                                                                  </div>

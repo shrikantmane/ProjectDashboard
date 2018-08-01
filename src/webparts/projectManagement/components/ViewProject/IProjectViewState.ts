@@ -1,5 +1,12 @@
 export interface IProjectViewState{
-    
+    project:string;
+    startdate:string;
+    enddate:string;
+    onhold:string;
+    owner:any;
+    priority:string;
+    complexity:string;
+    status:string;
     informationlist:any;
     documentlist:any;
     requirementlist:any;
@@ -13,4 +20,6 @@ export interface IProjectViewState{
     }]
     showComponent:boolean;
     calendarList:any;
+    imgURL:any;
+    statuscolor:any;
 }

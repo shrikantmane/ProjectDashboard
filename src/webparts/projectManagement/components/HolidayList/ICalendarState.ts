@@ -1,9 +1,10 @@
-import { TeamMembers, Information } from "./InformationList";
+import { CalendarList} from "./CalendarList";
+import { Calendar } from "office-ui-fabric-react/lib/Calendar";
 //import { TeamMembers } from "../../../../../lib/webparts/projectDashboard/components/CEOProjectsTable/CEOProject";
 // import ProjectTimeLine  from "../CEOProjectTimeLine/ProjectTimeLine";
 
-export interface IInformationState {
-    projectList: Array<Information>,
+export interface ICalendarState {
+    projectList: Array<CalendarList>,
     //   projectTimeLine: Array<ProjectTimeLine>,
     //   expandedRows? :any,
     //   globalFilter?: any,

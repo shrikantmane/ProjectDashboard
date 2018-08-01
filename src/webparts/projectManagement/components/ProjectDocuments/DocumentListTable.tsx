@@ -38,11 +38,10 @@ export default class ProjectListTable extends React.Component<
             selectedFile: "",
             documentID: ""
         };
-        this.onAddProject = this.onAddProject.bind(this);
+       
         this.refreshGrid = this.refreshGrid.bind(this);
-        this.UploadFiles = this.UploadFiles.bind(this);
-        this.deleteListItem = this.deleteListItem.bind(this);
-
+        this.UploadFiles=this.UploadFiles.bind(this);
+        this.actionTemplate=this.actionTemplate.bind(this);
     }
     dt: any;
     componentDidMount() {
@@ -59,12 +58,16 @@ export default class ProjectListTable extends React.Component<
         this.getProjectDocuments(this.props.list);
     }
 
-    deleteListItem(listName, itemID): any {
-        sp.web.lists.getByTitle(listName).
-            items.getById(itemID).delete().then(i => {
-                console.log(listName + ` item deleted`);
-            });
-    }
+   
+    private deleteListItem(rowData,e):any {
+        e.preventDefault();
+           console.log('Edit :' + rowData);
+           sp.web.lists.getByTitle(this.props.list).
+           items.getById(rowData.ID).delete().then((response) => {
+             console.log(this.props.list + ` item deleted`);
+             this.getProjectDocuments(this.props.list);
+           });
+       }
     componentWillReceiveProps(nextProps) {
         if (nextProps.list != "" || nextProps.list != null) {
             this.getProjectDocuments(nextProps.list);
@@ -129,10 +132,10 @@ export default class ProjectListTable extends React.Component<
             return (
                 <div>
 
-                    <a href={rowData.File.ServerRelativeUrl} >{rowData.File.Name} </a>
-                    <i
+                    <a href={rowData.File.ServerRelativeUrl} ><i
                         style={{ marginRight: "5px" }}
-                        className={iconClass} />
+                        className={iconClass} ></i> {rowData.File.Name} </a>
+                    
                 </div>
             );
 
@@ -142,17 +145,12 @@ export default class ProjectListTable extends React.Component<
 
 
     actionTemplate(rowData, column) {
-        return <a href="#"   > Remove</a>;
+        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}> Remove</a>;
     }
     editTemplate(rowData, column) {
         return <a href="#"> Edit </a>;
     }
-    onAddProject() {
-        console.log('button clicked');
-        this.setState({
-            showComponent: true,
-        });
-    }
+   
 
     UploadFiles() {
 
@@ -163,11 +161,13 @@ export default class ProjectListTable extends React.Component<
 
             //assuming that the name of document library is Documents, change as per your requirement, 
             //this will add the file in root folder of the document library, if you have a folder named test, replace it as "/Documents/test"
-            sp.web.getFolderByServerRelativeUrl("/projects/Project Documents").files.add(file.name, file, true).then((result) => {
+            sp.web.getFolderByServerRelativeUrl("Project Documents").files.add(file.name, file, true).then((result) => {
                 console.log(file.name + " upload successfully!");
-            })
-        }
+             
+                this.getProjectDocuments(this.props.list);
+            });
 
+        }
     }
     fileChangedHandler = (event) => {
         const file = event.target.files[0]
@@ -185,7 +185,7 @@ export default class ProjectListTable extends React.Component<
                     </button> */}
                     <input type="file" onChange={this.fileChangedHandler} />
                     <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.UploadFiles}>
-                        Upload 
+                        Upload
                     </button>
                     {/* <input type="button" value="Upload" className="btn btn-outline btn-sm" onClick={this.UploadFiles} /> */}
                     <div className="project-list">

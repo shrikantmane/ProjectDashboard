@@ -3,7 +3,7 @@ import { sp, ItemAddResult } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
 import styles from "../ProjectManagement.module.scss";
-import  {ITeamMembersProps } from "./ITeamMembersProps";
+import { ITeamMembersProps } from "./ITeamMembersProps";
 import { ITeamState } from "./ITeamState";
 import {
     TeamMembers
@@ -20,20 +20,20 @@ import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
 import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
 import { IPersonaProps, Persona } from 'office-ui-fabric-react/lib/Persona';
 import {
-  CompactPeoplePicker,
-  IBasePickerSuggestionsProps,
-  IBasePicker,
-  ListPeoplePicker,
-  NormalPeoplePicker,
-  ValidationState
+    CompactPeoplePicker,
+    IBasePickerSuggestionsProps,
+    IBasePicker,
+    ListPeoplePicker,
+    NormalPeoplePicker,
+    ValidationState
 } from 'office-ui-fabric-react/lib/Pickers';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { IPersonaWithMenu } from 'office-ui-fabric-react/lib/components/pickers/PeoplePicker/PeoplePickerItems/PeoplePickerItem.types';
 //import { people, mru } from './PeoplePickerExampleData';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Promise } from 'es6-promise';
-  
-  const suggestionProps: IBasePickerSuggestionsProps = {
+
+const suggestionProps: IBasePickerSuggestionsProps = {
     //suggestionsHeaderText: 'Suggested People',
     // mostRecentlyUsedHeaderText: 'Suggested Contacts',
     // noResultsFoundText: 'No results found',
@@ -42,23 +42,23 @@ import { Promise } from 'es6-promise';
     suggestionsAvailableAlertText: 'People Picker Suggestions available',
     //suggestionsContainerAriaLabel: 'Suggested contacts',
 
-  };
-  
-  const limitedSearchAdditionalProps: IBasePickerSuggestionsProps = {
+};
+
+const limitedSearchAdditionalProps: IBasePickerSuggestionsProps = {
     searchForMoreText: 'Load all Results',
     resultsMaximumNumber: 10,
     searchingText: 'Searching...',
-  };
-  
-  const limitedSearchSuggestionProps: IBasePickerSuggestionsProps = assign(limitedSearchAdditionalProps, suggestionProps);
+};
+
+const limitedSearchSuggestionProps: IBasePickerSuggestionsProps = assign(limitedSearchAdditionalProps, suggestionProps);
 
 //End: People Picker
 
 
 
 export default class ProjectListTable extends React.Component<
-ITeamMembersProps,
-ITeamState
+    ITeamMembersProps,
+    ITeamState
     > {
     private _picker: IBasePicker<IPersonaProps>;
     constructor(props) {
@@ -93,26 +93,26 @@ ITeamState
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
     }
-    refreshGrid (){
+    refreshGrid() {
         this.getAllProjectMemeber(this.props.list);
     }
     componentWillReceiveProps(nextProps) {
-      if(nextProps.list!="" || nextProps.list!=null){
-          this.getAllProjectMemeber(nextProps.list);
-      }
-   }
+        if (nextProps.list != "" || nextProps.list != null) {
+            this.getAllProjectMemeber(nextProps.list);
+        }
+    }
 
     dt: any;
     componentDidMount() {
         SPComponentLoader.loadCss(
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
-        if((this.props.list)!="" || (this.props.list)!=null){
-          this.getAllProjectMemeber(this.props.list);
-      }
+        if ((this.props.list) != "" || (this.props.list) != null) {
+            this.getAllProjectMemeber(this.props.list);
+        }
         this._getAllSiteUsers();
     }
-    
+
 
 
     /* Html UI */
@@ -133,7 +133,7 @@ ITeamState
             );
     }
 
-    
+
 
     ownerTemplate(rowData: TeamMembers, column) {
         if (rowData.Team_x0020_Member)
@@ -151,43 +151,47 @@ ITeamState
     }
     onAddProject() {
         console.log('button clicked');
-        
+
         let obj: any = this.state.fields;
-            let fields = this.state.fields;
-            let tempState: any = this.state.currentSelectedItems;
+        let fields = this.state.fields;
+        let tempState: any = this.state.currentSelectedItems;
         sp.web.lists.getByTitle(this.props.list).items.add({
-          
-          Team_x0020_MemberId: tempState[0].key
-      }).then((response) => {
-          console.log('Item adding-', response);
-          this.setState( fields);
-          
-          
-      });
+
+            Team_x0020_MemberId: tempState[0].key
+        }).then((response) => {
+            console.log('Item adding-', response);
+            this.setState(fields);
+
+
+        });
     }
     public render(): React.ReactElement<ITeamState> {
         return (
-            <div>
+            <div className="PanelContainer">
                 {/* <DataTableSubmenu /> */}
-                {this._renderControlledPicker()}
                 <div className="content-section implementation">
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
-                        Add Team Members 
-                    </button>
+                    <h5>Team Members</h5>
+                    <div className="display-line">
+                        {this._renderControlledPicker()}
+                        <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                            Add
+                        </button>
+                    </div>
                     {/* {this.state.showComponent ?
                             <AddProject parentMethod={this.refreshGrid}/>  :
                         null
                     } */}
+                    <div className="project-list">
+                        <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
+                            <Column field="AssignedTo" header="Owner" sortable={true} body={this.ownerTemplate} />
 
-                    <DataTable value={this.state.projectList} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
-                        <Column field="AssignedTo" header="Owner" body={this.ownerTemplate} />
-                       
-                        <Column field="Start_x0020_Date" header="Start Date" body={this.duedateTemplate}  />
-                        <Column field="End_x0020_Date" header="End Date" body={this.enddateTemplate} />
-                        <Column field="Status" header="Status" />
-                       
-                        <Column header="Remove" body={this.actionTemplate} />
-                    </DataTable>
+                            <Column field="Start_x0020_Date" sortable={true} header="Start Date" body={this.duedateTemplate} />
+                            <Column field="End_x0020_Date" sortable={true} header="End Date" body={this.enddateTemplate} />
+                            <Column field="Status" sortable={true} header="Status" />
+
+                            <Column header="Remove" body={this.actionTemplate} />
+                        </DataTable>
+                    </div>
                 </div>
 
                 {/* <DataTableDoc></DataTableDoc> */}
@@ -197,43 +201,43 @@ ITeamState
 
     /* Api Call*/
 
-    
 
-    getAllProjectMemeber(list){
-      if((list)!=""){
-        sp.web.lists.getByTitle(list).items.select("ID","Team_x0020_Member/ID", "Team_x0020_Member/Title","Start_x0020_Date", "End_x0020_Date","Status")
-  .expand("Team_x0020_Member").get().then((response) => {
-            console.log('members by name', response);
-            this.setState({ projectList: response });
-          
-        });
-      }
-      }
 
-          /* Private Methods */
+    getAllProjectMemeber(list) {
+        if ((list) != "") {
+            sp.web.lists.getByTitle(list).items.select("ID", "Team_x0020_Member/ID", "Team_x0020_Member/Title", "Start_x0020_Date", "End_x0020_Date", "Status")
+                .expand("Team_x0020_Member").get().then((response) => {
+                    console.log('members by name', response);
+                    this.setState({ projectList: response });
+
+                });
+        }
+    }
+
+    /* Private Methods */
 
     /*Start: People Picker Methods */
-      /*Start: People Picker Methods */
-      private _getAllSiteUsers = (): void => {
+    /*Start: People Picker Methods */
+    private _getAllSiteUsers = (): void => {
         var reactHandler = this;
         sp.web.siteUsers.get().then(function (data) {
-          const peopleList: IPersonaWithMenu[] = [];
-          data.forEach((persona) => {
-              let profileUrl = "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-              persona.Email +
-          "&UA=0&size=HR64x64&sc=1531997060853";
-            const target: IPersonaWithMenu = {};
-            let tempPersona = {
-              key: persona.Id,
-              text: persona.Title,
+            const peopleList: IPersonaWithMenu[] = [];
+            data.forEach((persona) => {
+                let profileUrl = "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                    persona.Email +
+                    "&UA=0&size=HR64x64&sc=1531997060853";
+                const target: IPersonaWithMenu = {};
+                let tempPersona = {
+                    key: persona.Id,
+                    text: persona.Title,
 
-              imageUrl: persona.Email === undefined || persona.Email === '' ?  null : profileUrl
-            }
-            assign(target, tempPersona);
-            peopleList.push(target);
-    
-          });
-    
+                    imageUrl: persona.Email === undefined || persona.Email === '' ? null : profileUrl
+                }
+                assign(target, tempPersona);
+                peopleList.push(target);
+
+            });
+
             const mru: IPersonaProps[] = peopleList.slice(0, 5);
             reactHandler.setState({
                 peopleList: peopleList,
@@ -242,12 +246,12 @@ ITeamState
             //console.log('People : ' + peopleList);
         });
     };
-    
+
     private _getTextFromItem(persona: IPersonaProps): string {
         return persona.text as string;
-      }
-      
-      private _renderControlledPicker() {
+    }
+
+    private _renderControlledPicker() {
         const controlledItems = [];
         for (let i = 0; i < 5; i++) {
             const item = this.state.peopleList[i];
@@ -265,7 +269,7 @@ ITeamState
                     key={'controlled'}
                     selectedItems={this.state.currentSelectedItems}
                     onChange={this._onItemsChange}
-                    
+
                     inputProps={{
                         onBlur: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onBlur called'),
                         onFocus: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onFocus called')
@@ -442,5 +446,5 @@ ITeamState
         return input;
     }
     /*End: People Picker Methods */
-     
-    }
+
+}

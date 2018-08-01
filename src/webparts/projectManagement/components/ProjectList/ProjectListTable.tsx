@@ -70,17 +70,7 @@ export default class ProjectListTable extends React.Component<
 
     statusTemplate(rowData: Project, column) {
         if (rowData.Status0)
-            // return (
-            //     <div className={styles.statusDetail}>
-            //         <div
-            //             className={styles.completeStatus + " " + styles.statusPill}
-            //             style={{ backgroundColor: rowData.Status0.Status_x0020_Color }}
-            //         >
-            //             {rowData.Status0.Status}
-            //         </div>
-            //     </div>   
-            // )
-        return (<div style={{ backgroundColor: rowData.Status0['Status_x0020_Color'],borderRadius: '3rem',textAlign: 'center',padding: '2px',color: 'white' }}>{rowData.Status0['Status']}</div>);
+            return (<div style={{ backgroundColor: rowData.Status0['Status_x0020_Color'], borderRadius: '3rem', textAlign: 'center', padding: '2px', color: 'white' }}>{rowData.Status0['Status']}</div>);
     }
 
     ownerTemplate(rowData: Project, column) {
@@ -135,7 +125,8 @@ export default class ProjectListTable extends React.Component<
                 {/* <DataTableSubmenu /> */}
                 <div className="PanelContainer">
                     <div className="content-section implementation">
-                        <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                        <h5>Projects</h5>
+                        <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px",float:"right" }} onClick={this.onAddProject}>
                             Add Project
                         </button>
                         {this.state.showComponent ?
@@ -144,7 +135,7 @@ export default class ProjectListTable extends React.Component<
                         }
                         <div className="project-list">
                             <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
-                                <Column header="Action" body={this.editTemplate} style={{ width:"8%" }} />
+                                <Column header="Action" body={this.editTemplate} style={{ width: "8%" }} />
                                 <Column field="Project" sortable={true} header="Project" />
                                 <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} />
                                 <Column field="Status0" sortable={true} header="Status" body={this.statusTemplate} />
@@ -157,7 +148,7 @@ export default class ProjectListTable extends React.Component<
                     </div>
                 </div>
                 {/* <DataTableDoc></DataTableDoc> */}
-            </div>
+            </div >
         );
     }
 

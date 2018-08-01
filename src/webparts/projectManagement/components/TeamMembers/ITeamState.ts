@@ -23,5 +23,5 @@ export interface ITeamState {
     peopleList: IPersonaProps[];
     mostRecentlyUsed: IPersonaProps[];
     currentSelectedItems?: IPersonaProps[];
-
+    fields: {},
 }

@@ -117,6 +117,15 @@ export default class ProjectTaskList extends React.Component<
                       accessor: "Week",
                     },
                     {
+                      Header: "Title",
+                      accessor: "Title",
+                      Aggregated: row => {
+                        return (
+                          <span></span>
+                        );
+                      }
+                    },
+                    {
                       Header: "Owner",
                       accessor: "OwnerName",
                       Cell: ({ row, original }) => {

@@ -38,20 +38,41 @@ IRequirementState
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
+        
+        this.reopenPanel = this.reopenPanel.bind(this);
+        this.editTemplate = this.editTemplate.bind(this);
     }
     dt: any;
     componentDidMount() {
         SPComponentLoader.loadCss(
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
-        this.GetRequirements();
+        if(this.props.list!="" || this.props.list!=null){
+            this.getScheduleList(this.props.list);
+        }
      
         
     }
-    refreshGrid (){
-        this.GetRequirements();
+    reopenPanel() {
+        this.setState({
+            showComponent: false,
+            projectID: null
+        })
     }
-    componentWillReceiveProps(nextProps) { }
+    
+    refreshGrid (){
+        this.setState({
+            showComponent: false,
+            projectID: null
+        })
+        this.getScheduleList(this.props.list);
+        
+    }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.list!="" || nextProps.list!=null){
+            this.getScheduleList(nextProps.list);
+        }
+     }
 
     /* Private Methods */
 
@@ -104,12 +125,20 @@ IRequirementState
         return <a href="#"> Remove</a>;
     }
     editTemplate(rowData, column) {
-        return <a href="#"> Edit </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}> Edit </a>;
     }
     onAddProject() {
         console.log('button clicked');
         this.setState({
             showComponent: true,
+        });
+    }
+    private onEditProject(rowData, e): any {
+        e.preventDefault();
+        console.log('Edit :' + rowData);
+        this.setState({
+            showComponent: true,
+            projectID: rowData.ID
         });
     }
     public render(): React.ReactElement<IRequirementState> {
@@ -122,11 +151,11 @@ IRequirementState
                         Add Requirement
                     </button>
                     {this.state.showComponent ?
-                         <AddRequirement parentMethod={this.refreshGrid}/> :
+                         <AddRequirement id={this.state.projectID} parentReopen={this.reopenPanel}parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId}/> :
                         null
                     }
                     <DataTable value={this.state.projectList} paginator={true} rows={10} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
-                   
+                    <Column header="Action" body={this.editTemplate} />
                         <Column field="Requirement" header="Requirement"  />
                         <Column field="Resources" header="Resources" />
                         <Column field="Impact_x0020_on_x0020_Timelines" header="Impact on Timeline?"   body={this.impactTemplate}  />
@@ -149,15 +178,49 @@ IRequirementState
 
     
    
-    GetRequirements() {
-        sp.web.lists.getByTitle("Requirements").items
-          .select("Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created").expand("Approver", "Author")
-          .getAll().then((response) => {
-            console.log('member by name', response);
-            this.setState({ projectList: response });
-          });
-     
-      }
+    
+////////////
+    //   getproject() {
+    //     var teamList:string;
+        
+    //     var last_part:string;
+    //      var url =window.location.href ;
+    //       var parts = url.split("/");
+    //      last_part = parts[parts.length-1];
+         
+    //         var projectid=Number(last_part);
+    //   // get Project Documents list items for all projects
+    //   sp.web.lists.getByTitle("Project").items
+    //     .select("Project", "DueDate", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "Priority","Task_x0020_List","Project_x0020_Team_x0020_Members","Project_x0020_Document","Requirements","ID").expand("Status0", "AssignedTo")
+    //     .filter('ID eq \'' + projectid + '\'')
+    //     .getAll()
+    //     .then((response) => {
+    //       console.log('Project by names', response);
+    //       teamList=response[0].Requirements;
+
+    //       this.getScheduleList(teamList,projectid);
+    //   }).catch((e: Error) => {
+    //       alert(`There was an error : ${e.message}`);
+    //     });
+
+
+
+    // }
+   getScheduleList(list){
+    if((list)!=""){
+   
+   
+      sp.web.lists.getByTitle(list).items.select("ID","Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created")
+      .expand("Approver", "Author")
+      .get().
+      then((response) => {
+          console.log('member by list', response);
+          this.setState({ projectList: response });
+      
+      });
+    //}
+   }
+}
      
      
      

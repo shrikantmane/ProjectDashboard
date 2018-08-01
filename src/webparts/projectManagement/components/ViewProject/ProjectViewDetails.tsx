@@ -80,9 +80,9 @@ export default class ProjectViewDetails extends React.Component<
                                                         <div className="col-sm-12 col-md-12 col-lg-12 cardHeading">
                                                             <div> 
                                                                 <h5 className="pull-left heading-style">Team Members</h5>
-                                                                <div><TeamListTable></TeamListTable></div>
                                                             </div>
                                                         </div>
+                                                        <div><TeamListTable></TeamListTable></div>
                                                     </div>
                                                 </div>
                                             </div>

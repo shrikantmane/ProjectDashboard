@@ -38,7 +38,7 @@ export default class ProjectListTable extends React.Component<
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
-
+        this.actionTemplate=this.actionTemplate.bind(this);
         this.reopenPanel = this.reopenPanel.bind(this);
         this.editTemplate = this.editTemplate.bind(this);
     }
@@ -121,9 +121,8 @@ export default class ProjectListTable extends React.Component<
             );
     }
 
-    actionTemplate(rowData, column) {
-        return <a href="#"> Remove</a>;
-    }
+
+
     editTemplate(rowData, column) {
         return <a href="#" onClick={this.onEditProject.bind(this, rowData)}> Edit </a>;
     }
@@ -133,6 +132,9 @@ export default class ProjectListTable extends React.Component<
             showComponent: true,
         });
     }
+    actionTemplate(rowData, column) {
+        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}> Remove</a>;
+    }
     private onEditProject(rowData, e): any {
         e.preventDefault();
         console.log('Edit :' + rowData);
@@ -141,6 +143,20 @@ export default class ProjectListTable extends React.Component<
             projectID: rowData.ID
         });
     }
+    private deleteListItem(rowData,e):any {
+        e.preventDefault();
+           console.log('Edit :' + rowData);
+           
+           
+        
+           sp.web.lists.getByTitle(this.props.list).
+           items.getById(rowData.ID).delete().then((response) => {
+             console.log(this.props.list + ` item deleted`);
+           });
+       this.getScheduleList(this.props.list);
+         
+       }
+    
     public render(): React.ReactElement<IRequirementState> {
         return (
             <div className="PanelContainer">
@@ -157,7 +173,7 @@ export default class ProjectListTable extends React.Component<
                     }
                     <div className="project-list">
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
-                            <Column header="Action" body={this.editTemplate} />
+                            <Column header="Edit" body={this.editTemplate} />
                             <Column field="Requirement" sortable={true} header="Requirement" />
                             <Column field="Resources" sortable={true} header="Resources" />
                             <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timeline?" body={this.impactTemplate} />
@@ -167,6 +183,7 @@ export default class ProjectListTable extends React.Component<
                             <Column field="Approver" header="Approver" sortable={true} body={this.approverTemplate} />
                             <Column field="Author" header="Created By" sortable={true} body={this.ownerTemplate} />
                             <Column field="Created" header="Created On" sortable={true} body={this.duedateTemplate} />
+                            <Column header="Remove" body={this.actionTemplate} />
                         </DataTable>
                     </div>
                 </div>

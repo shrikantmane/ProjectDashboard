@@ -3,19 +3,19 @@ import { sp, ItemAddResult } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
 import styles from "../ProjectManagement.module.scss";
-import { IInformationProps } from "./IInformationProps";
+import { ICalendarProps } from "./ICalendarProps";
 
-import { IInformationState } from "./IInformationState";
+import { ICalendarState } from "./ICalendarState";
 import {
-    Information
-} from "./InformationList";
+    CalendarList
+} from "./CalendarList";
 import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 //import AddProject from '../AddProject/AddProject';
-import AddInformation from '../AddInformation/AddInformation';
+import AddEvent from '../AddEvent/AddEvent';
 export default class ProjectListTable extends React.Component<
-    IInformationProps,
-    IInformationState
+ICalendarProps,
+    ICalendarState
     > {
     constructor(props) {
         super(props);
@@ -34,7 +34,7 @@ export default class ProjectListTable extends React.Component<
         //     expandedRows: []
         // };
         this.state = {
-            projectList: new Array<Information>(),
+            projectList: new Array<CalendarList>(),
             showComponent: false,
         };
         this.onAddProject = this.onAddProject.bind(this);
@@ -49,7 +49,7 @@ export default class ProjectListTable extends React.Component<
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
         if (this.props.list != "" || this.props.list != null) {
-            this.getProjectInformation(this.props.list);
+            this.getProjectCalendar(this.props.list);
         }
 
 
@@ -62,7 +62,7 @@ export default class ProjectListTable extends React.Component<
             showComponent: false,
             informationID: null
         })
-        this.getProjectInformation(this.props.list);
+        this.getProjectCalendar(this.props.list);
     }
     reopenPanel() {
         this.setState({
@@ -72,7 +72,7 @@ export default class ProjectListTable extends React.Component<
     }
     componentWillReceiveProps(nextProps) {
         if (nextProps.list != "" || nextProps.list != null) {
-            this.getProjectInformation(nextProps.list);
+            this.getProjectCalendar(nextProps.list);
         }
     }
 
@@ -91,14 +91,14 @@ export default class ProjectListTable extends React.Component<
     //         );
     // }
 
-    ownerTemplate(rowData: Information, column) {
-        if (rowData.Owner)
-            return (
-                <div>
-                    {rowData.Owner.Title}
-                </div>
-            );
-    }
+    // ownerTemplate(rowData: Information, column) {
+    //     if (rowData.Owner)
+    //         return (
+    //             <div>
+    //                 {rowData.Owner.Title}
+    //             </div>
+    //         );
+    // }
     actionTemplate(rowData, column) {
         return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}> Remove</a>;
     }
@@ -110,6 +110,22 @@ export default class ProjectListTable extends React.Component<
         this.setState({
             showComponent: true,
         });
+    }
+    duedateTemplate(rowData:CalendarList , column) {
+        if (rowData.EndDate)
+            return (
+                <div>
+                    {(new Date(rowData.EndDate)).toLocaleDateString()}
+                </div>
+            );
+    }
+    startdateTemplate(rowData:CalendarList , column) {
+        if (rowData.EventDate)
+            return (
+                <div>
+                    {(new Date(rowData.EventDate)).toLocaleDateString()}
+                </div>
+            );
     }
     private onEditProject(rowData, e): any {
         e.preventDefault();
@@ -126,30 +142,31 @@ export default class ProjectListTable extends React.Component<
         sp.web.lists.getByTitle(this.props.list).
         items.getById(rowData.ID).delete().then((response) => {
           console.log(this.props.list + ` item deleted`);
-          this.getProjectInformation(this.props.list);
+          this.getProjectCalendar(this.props.list);
         });
  
     }
-    public render(): React.ReactElement<IInformationState> {
+    public render(): React.ReactElement<ICalendarState> {
         return (
             <div className="PanelContainer">
                 {/* <DataTableSubmenu /> */}
 
                 <div className="content-section implementation">
-                    <h5>Responsibilities</h5>
+                    <h5>Holidays</h5>
                     <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
-                        Add Role/Responsibility
+                        Add Event
                     </button>
                     {this.state.showComponent ?
-                        <AddInformation id={this.state.informationID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
+                        <AddEvent id={this.state.informationID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
                         null
                     }
                     <div className="project-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
                             <Column header="Edit" body={this.editTemplate} />
-                            <Column field="Roles_Responsibility" sortable={true} header="Role/ Responsibility" />
-                            <Column field="Owner" sortable={true} header="Owner" body={this.ownerTemplate} />
-                            <Column field="Department" sortable={true} header="Departments" />
+                            <Column header="Title" field="Title" />
+                            <Column field="EventDate" sortable={true} header="Start Date"   body={this.startdateTemplate}/>
+                            {/* <Column field="Owner" sortable={true} header="Owner" body={this.ownerTemplate} /> */}
+                            <Column field="EndDate" sortable={true} header="End Date" body={this.duedateTemplate}/>
                             <Column header="Remove" body={this.actionTemplate} />
                         </DataTable>
                     </div>
@@ -162,10 +179,10 @@ export default class ProjectListTable extends React.Component<
 
     /* Api Call*/
 
-    getProjectInformation(list) {
+    getProjectCalendar(list) {
         if ((list) != "") {
             sp.web.lists.getByTitle(list).items
-                .select("ID", "Roles_Responsibility", "Owner/ID", "Owner/Title").expand("Owner")
+                .select("ID", "Title","EventDate","EndDate")
                 .get()
                 .then((response) => {
                     console.log('infor by name', response);

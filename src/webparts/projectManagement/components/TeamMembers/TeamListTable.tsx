@@ -92,6 +92,7 @@ export default class ProjectListTable extends React.Component<
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
+        this.actionTemplate=this.actionTemplate.bind(this);
     }
     refreshGrid() {
         this.getAllProjectMemeber(this.props.list);
@@ -144,7 +145,7 @@ export default class ProjectListTable extends React.Component<
             );
     }
     actionTemplate(rowData, column) {
-        return <a href="#"> Remove</a>;
+        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}> Remove</a>;
     }
     editTemplate(rowData, column) {
         return <a href="#"> Edit </a>;
@@ -161,10 +162,26 @@ export default class ProjectListTable extends React.Component<
         }).then((response) => {
             console.log('Item adding-', response);
             this.setState(fields);
-
+this.refreshGrid();
 
         });
     }
+    private deleteListItem(rowData,e):any {
+        e.preventDefault();
+           console.log('Edit :' + rowData);
+           
+           
+        
+           sp.web.lists.getByTitle(this.props.list).
+           items.getById(rowData.ID).update({
+            Status: "Inactive"
+          }).then((response) => {
+            console.log("Project Team Member item updated");
+            this.getAllProjectMemeber(this.props.list);
+          });
+       
+      
+       }
     public render(): React.ReactElement<ITeamState> {
         return (
             <div className="PanelContainer">

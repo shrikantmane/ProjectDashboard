@@ -1,9 +1,9 @@
-import { TeamMembers, Information } from "./InformationList";
+import { CalendarListView } from "./CalendarViewList";
 //import { TeamMembers } from "../../../../../lib/webparts/projectDashboard/components/CEOProjectsTable/CEOProject";
 // import ProjectTimeLine  from "../CEOProjectTimeLine/ProjectTimeLine";
 
-export interface IInformationState {
-    projectList: Array<Information>,
+export interface ICalendarViewState {
+    projectList: Array<CalendarListView>,
     //   projectTimeLine: Array<ProjectTimeLine>,
     //   expandedRows? :any,
     //   globalFilter?: any,
@@ -16,6 +16,17 @@ export interface IInformationState {
     //   isKeyDocumentLoaded :boolean,
     //   isTagLoaded :boolean,
     //   expandedRowID : number,
-    showComponent: boolean,
-    informationID ?: number
+    showComponent: boolean
+    selectedFile:any
+    documentID:any,
+//     events:[
+//         // {
+//         // id?:number,
+//         // title?:string,
+//         // start?:string,
+//         // end?:string,
+//         // }
+// ]
+events:any;
+    
 }

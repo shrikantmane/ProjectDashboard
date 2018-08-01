@@ -23,6 +23,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
     errorClass:{},
     cloneProjectChecked: boolean,
     showModal: boolean;
+    isDataSaved: boolean;
 }> {
 
     constructor(props) {
@@ -33,7 +34,8 @@ export default class AddProject extends React.Component<IAddEventProps, {
             errors: {},
             errorClass:{},
             cloneProjectChecked: false,
-            showModal: false
+            showModal: false,
+            isDataSaved: false
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -44,18 +46,27 @@ export default class AddProject extends React.Component<IAddEventProps, {
             let fields = this.state.fields;
             fields[field] = e;
         }
-        else if (field === 'duedate') {
+        else if (field === 'enddate') {
             let fields = this.state.fields;
             fields[field] = e;
         }
-        else if (field === 'cloneproject') {
-            let fields = this.state.fields;
-            fields[field] = e.target.value;
-            this.setState({ fields, cloneProjectChecked: !this.state.cloneProjectChecked });
-        } else {
+        else {
             let fields = this.state.fields;
             fields[field] = e.target.value;
             this.setState({ fields });
+        }
+    }
+    componentDidMount() { 
+        if (this.props.id) {
+            this.getProjectByID(this.props.id);
+            this.setState({
+                fields: {}
+            })
+            
+        } else {
+            this.setState({
+                fields: {}
+            })
         }
     }
 
@@ -71,11 +82,28 @@ export default class AddProject extends React.Component<IAddEventProps, {
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
         }
-        if (!fields["description"]) {
+        if (!fields["startdate"]) {
             formIsValid = false;
-            errors["description"] = "Cannot be empty";
-            errorClass["description"] = "classError";
+            errors["startdate"] = "Cannot be empty";
+            errorClass["startdate"] = "classError";
         }
+        if (!fields["enddate"]) {
+            formIsValid = false;
+            errors["enddate"] = "Cannot be empty";
+            errorClass["enddate"] = "classError";
+        }
+        if (fields["startdate"] && fields["enddate"]) {
+            if (fields["enddate"] < fields["startdate"]) {
+                formIsValid = false;
+                errors["enddate"] = "End Date should always be greater than Start Date";
+                errorClass["enddate"] = "classError";
+            }
+        }
+        // if (!fields["description"]) {
+        //     formIsValid = false;
+        //     errors["description"] = "Cannot be empty";
+        //     errorClass["description"] = "classError";
+        // }
        
         
 
@@ -104,15 +132,44 @@ export default class AddProject extends React.Component<IAddEventProps, {
         this.setState({ errors: errors, errorClass: errorClass });
         return formIsValid;
     }
-
+    private getProjectByID(id): void {
+        // get Project Documents list items for all projects
+        let filterString = "ID eq " + id;
+        sp.web.lists.getByTitle(this.props.list).items
+            .select("ID","Title", "EndDate", "EventDate","Description" )
+           
+            .filter(filterString)
+            .get()
+            .then((response) => {
+                let fields = this.state.fields;
+                console.log('Project1 by name', response);
+                console.log('Project112 by name',  response[0].Requirement );
+                fields["projectname"] = response ? response[0].Title : '';
+                fields["startdate"] =  response ? new Date(response[0].EventDate) : '';
+                //fields["description"] = response ? response[0].Description : '';
+                fields["enddate"] = response ? new Date(response[0].EndDate) : '';
+               console.log("hieee",this.state.fields["projectname"]);
+               this.setState(fields);
+            //    this.setState({
+            //     fields: response[0].Roles_Responsibility
+            //    })
+            }).catch((e: Error) => {
+                alert(`There was an error : ${e.message}`);
+            });
+            
+    }
     projectSubmit(e) {
         e.preventDefault();
         if (this.handleValidation()) {
             let obj: any = this.state.fields;
-            sp.web.lists.getByTitle(this.props.list).items.add({
+            if (this.props.id) {
+            sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
                 Title: obj.projectname ? obj.projectname : '',
-                //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
-                Description: obj.description ? obj.description : '',
+               // Description: obj.description ? obj.description : '',
+                EventDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
+                //EventDate: obj.projectdescription ? obj.projectdescription : '',
+                EndDate: obj.enddate ? new Date(obj.enddate).toDateString() : '',
+               // Attachments: obj.filedescription ? obj.effortdescription : '',
                 //Owner: obj.ownername?obj.ownername:'',
                // Impact: obj.priority ? obj.priority : '',
                // Mitigation: obj.projectdescription ? obj.projectdescription : '',
@@ -122,15 +179,28 @@ export default class AddProject extends React.Component<IAddEventProps, {
                 //DepartmentId: 2,
                 //Status0Id: 2
 
-            }).then((response) => {
-                console.log('Item adding-', response);
+            }).then(i => {
                 this._closePanel();
-                this._showModal();
-                //this.props.parentMethod();
+                this.props.parentMethod();
+                this.props.parentReopen();
             });
         } else {
-            console.log("Form has errors.")
+            sp.web.lists.getByTitle(this.props.list).items.add({
+                Title: obj.projectname ? obj.projectname : '',
+                EventDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
+               // Description: obj.description ? obj.description : '',
+                EndDate: obj.enddate ? new Date(obj.enddate).toDateString(): '',
+            }).then((response) => {
+                console.log('Item adding-', response);
+                this.setState({ isDataSaved: true });
+                this._closePanel();
+                this._showModal();
+                this.props.parentMethod();
+            });
         }
+    } else {
+        console.log("Form has errors.")
+    }
     }
     _showModal() {
         this.setState({ showModal: true });
@@ -140,6 +210,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
     };
 
     public render(): React.ReactElement<IAddEventProps> {
+        const html = '<div>Example HTML string</div>';
         let formControl = 'form-control';
         let paddingInputStyle = 'padding-input-style';
         // const selectProjectContent = this.state.cloneProjectChecked ?
@@ -223,17 +294,17 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-lg-6">
+                                                                {/* <div className="col-lg-6">
                                                                     <div className="form-group">
                                                                         <label>Description</label>
                                                                         <span className="calendar-style"><i className="fas fa-user icon-style"></i>
                                                                             <input ref="description" type="text" className={paddingInputStyle + " " + formControl + " " + (this.state.errorClass["description"] ? this.state.errorClass["description"] : '')}  placeholder="Brief the owner about the project"
-                                                                                onChange={this.handleChange.bind(this, "description")} value={this.state.fields["description"]}>
+                                                                                onChange={this.handleChange.bind(this, "description")} value={this.state.fields["description"]} dangerouslySetInnerHTML={{__html: html}}>
                                                                             </input>
                                                                         </span>
                                                                         <span className="error">{this.state.errors["ownername"]}</span>
                                                                     </div>
-                                                                </div>
+                                                                </div> */}
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
                                                                         <label>Start Time</label>
@@ -250,10 +321,10 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                         <label>End Time</label>
                                                                         <DatePicker
                                                                             placeholder="Select end date"
-                                                                            onSelectDate={this.handleChange.bind(this, "startdate")}
-                                                                            value={this.state.fields["startdate"]}
+                                                                            onSelectDate={this.handleChange.bind(this, "enddate")}
+                                                                            value={this.state.fields["enddate"]}
                                                                         />
-                                                                        <span className="error">{this.state.errors["startdate"]}</span>
+                                                                        <span className="error">{this.state.errors["enddate"]}</span>
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-lg-6">
@@ -282,7 +353,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                 
                                                                 <div className="col-lg-12">
                                                                     <div className="btn-sec">
-                                                                        <button id="submit" value="Submit" className="btn-style btn btn-success">Save</button>
+                                                                        <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
                                                                         <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
                                                                     </div>
                                                                 </div>
@@ -328,6 +399,9 @@ Schedule and Project Team now?
     }
     private _closePanel = (): void => {
         this.setState({ showPanel: false });
+        if (!this.state.isDataSaved) {
+             this.props.parentReopen();
+        }
     };
     /* Api Call*/
 

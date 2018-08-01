@@ -109,28 +109,38 @@ export default class Gantt extends React.Component<any, any>{
 
   initGanttChart() {
     gantt.config.columns = [
-      { name: "text", label: "Task name", tree: true, width: 80 },
-      { name: "start_date", label: "Start time", align: "center", width: 80 },
       {
-        name: "attachment1", label: "Attachment", width: 80,
+        name: "attachment", label: "", width: 30,
         template: function (obj) {
-          return "<a href='https://www.w3schools.com'>" + obj.attachment + "</a>";
+          return "<a href=''><i class='fas fa-paperclip'></i></a>";
         }
       },
+      {
+        name: "comments", label: "", width: 30,
+        template: function (obj) {
+          return "<a href=''><i class='far fa-comments'></i></a>";
+        }
+      },
+      { name: "text", label: "Task name", tree: true, width: 100 },
+      { name: "start_date", label: "Start time", align: "center", width: 80 },
       {
         name: "status", label: "Status", width: 80,
         template: function (obj) {
-          return ("<span style='background:#ccc;'>" + obj.status + "</span>")
+          console.log('obj', obj);
+          return ("<div style='background-color:" + obj.statusBackgroudColor +"'>" + obj.status + "</div>")
         }
-      },
+      },  
       {
-        name: "duration", label: "Duration", align: "center", width: 80,
+        name: "actualDuration", label: "Duration", align: "center", width: 80,
         template: function (obj) {
-          console.log('duration', obj.duration);
-          return ("<span style='background:#ccc;'>" + obj.duration + "</span>")
+          return ("<span style='background:#ccc;'>" + obj.actualDuration + "</span>")
         }
       },
     ];
+    gantt.templates.grid_file = function(item) {
+      return "";
+  };
+    gantt.config.readonly = true;
     gantt.config.layout = {
       css: "gantt_container",
       cols: [
@@ -154,15 +164,11 @@ export default class Gantt extends React.Component<any, any>{
         { view: "scrollbar", id: "scrollVer" }
       ]
     };
-    //   gantt.templates.task_class  = function(start, end, task){
-    //     switch (task.duration){
-    //         case 1:
-    //             return "test";
-    //         case 2:
-    //             return "test1";
-
-    //     }
-    // };
+      gantt.templates.task_class  = function(start, end, task){       
+        if(task.actualDuration == 0){
+          return "milestone";
+        }
+    };
   }
 
   render() {

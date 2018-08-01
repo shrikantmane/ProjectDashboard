@@ -43,7 +43,7 @@ export class MileStones {
     public StartDate :string;
     public DueDate: string;
     public Status0: Status;
-    public Project: Project;
+    public ProjectID: number;
     public AssignedTo: Array<AssignedTo>;
     public Priority: string;
     public Body: string;

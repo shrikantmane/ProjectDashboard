@@ -658,10 +658,11 @@ export default class CEOProjectInformation extends React.Component<
           "AssignedTo/EMail"
         )
         .expand("Project", "Status0", "AssignedTo")
-        .filter("Duration eq 0")
+        .filter("Duration eq '0 days'")
         .get()
         .then((milestones: Array<MileStones>) => {
           milestones.forEach(mileStone => {
+            mileStone.ProjectID = item.ID;
             allMildStones.push(mileStone);
           });         
           if(count == projectList.length){
@@ -675,49 +676,14 @@ export default class CEOProjectInformation extends React.Component<
           this.getMildStones(projectList, allMildStones);
         }
       }
-    });
-
-    // for (var count = 0;count < projectList.length; count++) {
-    //   var ScheduleList = projectList[count].Schedule_x0020_List;
-    //   sp.web.lists
-    //     .getByTitle(ScheduleList)
-    //     .items.select(
-    //     "ID",
-    //     "Title",
-    //     "StartDate",
-    //     "DueDate",
-    //     "Status0/ID",
-    //     "Body",
-    //     "Status0/Status",
-    //     "Status0/Status_x0020_Color",
-    //     "Project/ID",
-    //     "Project/Title",
-    //     "AssignedTo/Title",
-    //     "AssignedTo/ID",
-    //     "AssignedTo/EMail"
-    //     )
-    //     .expand("Project", "Status0", "AssignedTo")
-    //     .filter("Duration eq 0")
-    //     .get()
-    //     .then((
-    //       // mileStone for single project - similar to API getMildStonesByProject
-    //       milestones: Array<MildStones>
-    //       ) => { 
-    //       // All mileStone
-    //      // allMildStones.push(milestones);
-    //           let     filteredMilestones = sortBy(milestones, function(dateObj) {
-    //         return new Date(dateObj.StartDate);
-    //       });
-    //       projectList[count].MildStoneList = filteredMilestones;
-    //     });
-    // }
-  //  console.log("allMildStones -", allMildStones);
+    });  
   }
 
   private getMildStones(projectList: Array<CEOProjects>, allMildStones : Array<MileStones>): void {
         let timeline = new ProjectTimeLine();
         let groups = Array<Groups>();
         let timeLineItems = Array<TimeLineItems>();
+        let milstoneCounter = 1;
         projectList.forEach(item => {
 
           groups.push({
@@ -726,7 +692,7 @@ export default class CEOProjectInformation extends React.Component<
           });
 
           let filteredMilestones = filter(allMildStones, function (milstoneItem) {
-            return milstoneItem.Project && milstoneItem.Project.ID == item.ID;
+            return milstoneItem.ProjectID == item.ID;
           });
           let mileStone = null;
           let mildstones = [];
@@ -737,14 +703,16 @@ export default class CEOProjectInformation extends React.Component<
             return new Date(dateObj.StartDate);
           });
           for (let count = 0; count < filteredMilestones.length; count++) {
-
+           
             timeLineItems.push({
-              id: filteredMilestones[count].ID,
+              id: milstoneCounter,
               group: item.ID,
               title: filteredMilestones[count].Title,
               start_time: moment(new Date(filteredMilestones[count].StartDate).setHours(0, 0, 0, 0)),
               end_time: moment(new Date(filteredMilestones[count].DueDate).setHours(23, 59, 59, 59))
-            })
+            });
+
+            milstoneCounter ++ ;
 
             let mStartDate = new Date(new Date(filteredMilestones[count].StartDate).setHours(0, 0, 0, 0));
             let mDueDate = new Date(new Date(filteredMilestones[count].DueDate).setHours(0, 0, 0, 0));
@@ -798,125 +766,9 @@ export default class CEOProjectInformation extends React.Component<
         timeline.groups = groups;
         timeline.items = timeLineItems;
         this.setState({ projectList: projectList, projectTimeLine: timeline, isLoading: false });
-  }
-
-  // private getMildStones(projectList: Array<CEOProjects>): void {
-  //   sp.web.lists
-  //     .getByTitle("Tasks List")
-  //     .items.select(
-  //       "ID",
-  //       "Title",
-  //       "StartDate",
-  //       "DueDate",
-  //       "Status0/ID",
-  //       "Body",
-  //       "Status0/Status",
-  //       "Status0/Status_x0020_Color",
-  //       "Project/ID",
-  //       "Project/Title",
-  //       "AssignedTo/Title",
-  //       "AssignedTo/ID",
-  //       "AssignedTo/EMail"
-  //     )
-  //     .expand("Project", "Status0", "AssignedTo")
-  //     .filter("Duration eq 0")
-  //     .get()
-  //     .then((milestones: Array<MildStones>) => {
-  //       let timeline = new ProjectTimeLine();
-  //       let groups = Array<Groups>();
-  //       let timeLineItems = Array<TimeLineItems>();
-  //       projectList.forEach(item => {
-
-  //         groups.push({
-  //           id: item.ID,
-  //           title: item.Project
-  //         });
-
-  //         let filteredMilestones = filter(milestones, function (milstoneItem) {
-  //           return milstoneItem.Project && milstoneItem.Project.ID == item.ID;
-  //         });
-  //         let mileStone = null;
-  //         let mildstones = [];
-  //         let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
-  //         let lastDueDate = new Date(new Date().setHours(0, 0, 0, 0));
-
-  //         filteredMilestones = sortBy(filteredMilestones, function (dateObj) {
-  //           return new Date(dateObj.StartDate);
-  //         });
-  //         for (let count = 0; count < filteredMilestones.length; count++) {
-
-  //           timeLineItems.push({
-  //             id: filteredMilestones[count].ID,
-  //             group: item.ID,
-  //             title: filteredMilestones[count].Title,
-  //             start_time: moment(new Date(filteredMilestones[count].StartDate).setHours(0, 0, 0, 0)),
-  //             end_time: moment(new Date(filteredMilestones[count].DueDate).setHours(23, 59, 59, 59))
-  //           })
-
-  //           let mStartDate = new Date(new Date(filteredMilestones[count].StartDate).setHours(0, 0, 0, 0));
-  //           let mDueDate = new Date(new Date(filteredMilestones[count].DueDate).setHours(0, 0, 0, 0));
-
-  //           if (currentDate >= mStartDate && currentDate <= mDueDate) {
-  //             mileStone = filteredMilestones[count];
-  //           } else {
-  //             if (currentDate < mStartDate) {
-  //               mildstones.push(filteredMilestones[count]);
-  //             }
-  //           }
-
-  //           if (filteredMilestones[count].AssignedTo && filteredMilestones[count].AssignedTo.length > 0) {
-  //             filteredMilestones[count].AssignedTo.forEach(element => {
-  //               if (element.EMail != null) {
-  //                 element.imgURL =
-  //                   "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-  //                   element.EMail +
-  //                   "&UA=0&size=HR64x64&sc=1531997060853";
-  //                 // element.imgURL = "/_layouts/15/userphoto.aspx?size=S&username=" + element.EMail;       
-  //               } else {
-  //                 element.imgURL = "";
-  //               }
-  //             });
-  //           }
-  //         }
-  //         item.MildStoneList = filteredMilestones;
-  //         item.MileStone =
-  //           mileStone == null ? mildstones.length > 0 ?
-  //             mildstones[0] : filteredMilestones.length > 0 ? filteredMilestones[filteredMilestones.length - 1] : null :
-  //             mileStone;
-  //         if (item.AssignedTo && item.AssignedTo.length > 0) {
-  //           item.AssignedTo.forEach(element => {
-  //             if (element.EMail != null) {
-  //               element.imgURL =
-  //                 "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-  //                 element.EMail +
-  //                 "&UA=0&size=HR64x64&sc=1531997060853";
-  //             } else {
-  //               element.imgURL = "";
-  //             }
-
-  //             // if (element.EMail != null) {
-  //             //   element.imgURL = "/_layouts/15/userphoto.aspx?size=S&username=" + element.EMail                     
-  //             // } else {
-  //             //   element.imgURL = "";
-  //             // }
-  //           });
-  //         }
-
-  //         item.StatusText = item.Status0 ? item.Status0.Status : "";
-  //         item.OwnerTitle =
-  //           item.AssignedTo && item.AssignedTo.length > 0
-  //             ? item.AssignedTo[0].Title
-  //             : "";
-
-  //       });
-  //       timeline.groups = groups;
-  //       timeline.items = timeLineItems;
-  //       this.setState({ projectList: projectList, projectTimeLine: timeline, isLoading: false });
-  //     });
-  // }
+  }  
 
   private getTeamMembersByProject(currentProject: CEOProjects): void {
-    // let filter = "Project/ID eq " + currentProject.ID + " and  Status eq 'Active'";
     sp.web.lists
       .getByTitle(currentProject.Project_x0020_Team_x0020_Members)
       .items.select(
@@ -925,12 +777,9 @@ export default class CEOProjectInformation extends React.Component<
         "Team_x0020_Member/EMail",
         "Start_x0020_Date",
         "End_x0020_Date",
-        "Status",
-        "Project/ID",
-        "Project/Title"
+        "Status",       
       )
-      .expand("Team_x0020_Member", "Project")
-      //  .filter(filter)
+      .expand("Team_x0020_Member")
       .get()
       .then((response: Array<TeamMembers>) => {
         response.forEach(item => {
@@ -946,7 +795,7 @@ export default class CEOProjectInformation extends React.Component<
               item.Team_x0020_Member.ImgUrl = "";
 
             }
-            item.Team_x0020_Member.TaskCount = currentProject.MildStoneList.filter(a => a.AssignedTo[0] && a.AssignedTo[0].ID == item.Team_x0020_Member.ID).length;
+            item.Team_x0020_Member.TaskCount = currentProject.MildStoneList.filter(a => a.AssignedTo && a.AssignedTo[0] && a.AssignedTo[0].ID == item.Team_x0020_Member.ID).length;
           }
         });
         let projects = this.state.projectList;

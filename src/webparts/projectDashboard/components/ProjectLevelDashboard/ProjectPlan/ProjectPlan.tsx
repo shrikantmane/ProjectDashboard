@@ -89,22 +89,33 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
 
   public render(): React.ReactElement<IProjectPlanProps> {
     return (
-      <div>
-        {this.state.chart && this.state.chart.data && this.state.chart.data.length > 0 ?
-          <div>
-            <Toolbar
-              zoom={this.state.currentZoom}
-              onZoomChange={this.handleZoomChange.bind(this)}
-            />
-            <div className="gantt-container">
-              <Gantt
-                tasks={this.state.chart}
-                zoom={this.state.currentZoom}
-              />
+      <div className="col-lg-12 col-md-12 col-sm-12">
+        <div className="well recommendedProjects  ">
+          <div className="row">
+            <div className="col-sm-12 col-12 cardHeading">
+              <div className="tasklist-div">
+                <h5>Task List</h5>
+              </div>
+            </div>
+            <div className="col-sm-12 col-12">
+              {this.state.chart && this.state.chart.data && this.state.chart.data.length > 0 ?
+                <div className="taskGanttContainer">
+                  <Toolbar
+                    zoom={this.state.currentZoom}
+                    onZoomChange={this.handleZoomChange.bind(this)}
+                  />
+                  <div className="gantt-container">
+                    <Gantt
+                      tasks={this.state.chart}
+                      zoom={this.state.currentZoom}
+                    />
+                  </div>
+                </div>
+                : null
+              }
             </div>
           </div>
-          : null
-        }
+        </div>
       </div>
     );
   }

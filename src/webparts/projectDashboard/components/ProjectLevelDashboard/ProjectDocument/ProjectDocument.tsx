@@ -92,11 +92,10 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
       <div className="col-xs-12 col-md-5">
         <div className="well recommendedProjects">
           <div className="row">
-            <div className="col-sm-12 cardHeading">
+            <div className="col-sm-12 col-12 cardHeading">
               <h5>Project Documents</h5>
             </div>
-            <div className="clearfix"></div>
-            <div className="profileDetails-container">
+            <div className="col-sm-12 col-12 profileDetails-container">
               <DataTable
                 value={this.state.documentList}
                 responsive={true}

@@ -38,6 +38,9 @@ export class Document {
     public File : File;
     public Owner : Owner;
     public Created : string;
+    public FileName : string;
+    public OwnerTitle : string;
+    public Date : Date;
 }
 
 export class Owner {
@@ -120,6 +123,8 @@ export class ChartData {
     public color? : string;
     public parent? :number;
     public progress :number;
+    public comments :string;
+    public statusBackgroudColor : string;
 }
 
 export class ChartLink {

@@ -26,6 +26,11 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
       .get()
       .then((response: Array<Document>) => {
         console.log('Project Documents -', response);
+        response.forEach(item => {
+          item.FileName = item.File ? item.File.Name :"";
+          item.OwnerTitle = item.Owner ? item.Owner.Title :""; 
+          item.Date = new Date(item.Created);         
+        });
         this.setState({ documentList: response })
       });
 
@@ -101,7 +106,7 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
                 responsive={true}
               >
                 <Column
-                  field="Document"
+                  field="FileName"
                   header="Documents Type"
                   body={this.documentTypeTemplate}
                   sortable={true}
@@ -113,8 +118,9 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
                   sortable={true}
                 />
                 <Column
-                  field="Time"
-                  header="Time/Date"
+                  field="Date"
+                  header="Date"
+                  sortable={true}
                   body={this.timeDateTemplate}
                 />
               </DataTable>

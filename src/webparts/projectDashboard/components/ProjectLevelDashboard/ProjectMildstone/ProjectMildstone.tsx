@@ -27,7 +27,7 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
   private getAllMilestones(scheduleList: string) {
     sp.web.lists.getByTitle(scheduleList).items
       .select('Title', 'DueDate', 'Status0/ID', 'Status0/Status', 'Status0/Status_x0020_Color', 'Priority').expand('Status0')
-      .filter("Duration eq 0")
+      .filter("Duration eq '0 days'")
       .get()
       .then((mildstones: Array<Milestone>) => {
         console.log("mildstones -", mildstones);

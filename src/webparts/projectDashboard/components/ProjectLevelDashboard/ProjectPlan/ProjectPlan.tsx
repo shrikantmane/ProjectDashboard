@@ -84,7 +84,9 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
             duration: item.Duration && item.Duration != "" ? parseFloat(item.Duration.split(" ")[0]) : -1,
             actualDuration :item.Duration && item.Duration != "" ? parseFloat(item.Duration.split(" ")[0]) : -1,
             progress: item.PercentComplete / 100,            
-            parent:item.ParentID ? item.ParentID.Id :null
+            parent:item.ParentID ? item.ParentID.Id :null,
+            comments: "",
+            statusBackgroudColor : item.Status0 ? item.Status0.Status_x0020_Color : "", 
           });
            item.Predecessors.forEach(predecessor => {
             chartData.links.push({

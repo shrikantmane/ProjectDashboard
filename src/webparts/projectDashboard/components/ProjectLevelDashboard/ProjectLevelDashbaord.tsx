@@ -117,7 +117,7 @@ export default class ProjectLevelDashboard extends React.Component<
                   </div>
                 </div>
                   <ProjectPlan scheduleList={this.state.project.Schedule_x0020_List}></ProjectPlan>
-                  <ProjectTaskList scheduleList={this.state.project.Schedule_x0020_List}></ProjectTaskList>
+                  <ProjectTaskList taskList={this.state.project.Task_x0020_List}></ProjectTaskList>
                   <ProjectDocument projectDocument={this.state.project.Project_x0020_Document}></ProjectDocument>
                   <div className="clearfix"></div>
                   <ProjectTeamMembers projectTeamMembers={this.state.project.Project_x0020_Team_x0020_Members}></ProjectTeamMembers>

@@ -19,13 +19,13 @@ export default class ProjectTaskList extends React.Component<
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.scheduleList != nextProps.scheduleList)
-      this.getAllTask(nextProps.scheduleList);
+    if (this.props.taskList != nextProps.taskList)
+      this.getAllTask(nextProps.taskList);
   }
 
-  private getAllTask(scheduleList: string) {
+  private getAllTask(taskList: string) {
     sp.web.lists
-      .getByTitle(scheduleList)
+      .getByTitle(taskList)
       .items.select(
         "Title",
         "StartDate",
@@ -70,7 +70,7 @@ export default class ProjectTaskList extends React.Component<
             });
             item.OwnerName = item.AssignedTo[0].Title
           }
-          item.Status = item.Status0 != null ? item.Status0.Status : "";
+          item.Status = item.Status0 != null ? item.Status0.Status : "";        
         });
 
         this.setState({ taskList: response });
@@ -113,8 +113,10 @@ export default class ProjectTaskList extends React.Component<
                   onExpandedChange={(newExpanded, index, event) => this.handleRowExpanded(newExpanded, index)}                 
                   columns={[
                     {
-                      Header: "Duration",
+                      Header: "",
                       accessor: "Week",
+                      sortable: false,
+                      filterable: false,
                     },
                     {
                       Header: "Title",

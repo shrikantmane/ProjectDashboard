@@ -109,28 +109,37 @@ export default class Gantt extends React.Component<any, any>{
 
   initGanttChart() {
     gantt.config.columns = [
+      {
+        name: "attachment", label: "", width: 30,
+        template: function (obj) {
+          return "<a href=''><i class='fas fa-paperclip'></i></a>";
+        }
+      },
+      {
+        name: "comments", label: "", width: 30,
+        template: function (obj) {
+          return "<a href=''><i class='far fa-comments'></i></a>";
+        }
+      },
       { name: "text", label: "Task name", tree: true, width: 100 },
       { name: "start_date", label: "Start time", align: "center", width: 80 },
       {
-        name: "attachment1", label: "Attachment", width: 80,
+        name: "status", label: "Status", width: 80,
         template: function (obj) {
-          return "<a href='https://www.w3schools.com'>" + obj.attachment + "</a>";
+          console.log('obj', obj);
+          return ("<div style='background-color:" + obj.statusBackgroudColor +"'>" + obj.status + "</div>")
         }
-      },
+      },  
       {
         name: "actualDuration", label: "Duration", align: "center", width: 80,
         template: function (obj) {
           return ("<span style='background:#ccc;'>" + obj.actualDuration + "</span>")
         }
       },
-      {
-        name: "status", label: "Status", width: 80,
-        template: function (obj) {
-          return ("<span style='background:#ccc;'>" + obj.status + "</span>")
-        }
-      }
-
     ];
+    gantt.templates.grid_file = function(item) {
+      return "";
+  };
     gantt.config.readonly = true;
     gantt.config.layout = {
       css: "gantt_container",

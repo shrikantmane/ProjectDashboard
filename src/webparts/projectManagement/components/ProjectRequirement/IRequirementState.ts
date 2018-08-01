@@ -4,6 +4,7 @@ import { Requirement } from "./RequirementList";
 
 export interface IRequirementState {
     projectList: Array<Requirement>,
+    
     //   projectTimeLine: Array<ProjectTimeLine>,
     //   expandedRows? :any,
     //   globalFilter?: any,
@@ -16,5 +17,6 @@ export interface IRequirementState {
     //   isKeyDocumentLoaded :boolean,
     //   isTagLoaded :boolean,
     //   expandedRowID : number,
-    showComponent: boolean
+    showComponent: boolean,
+    projectID ?: number
 }

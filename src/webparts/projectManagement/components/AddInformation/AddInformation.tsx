@@ -5,7 +5,7 @@ import { Column } from "primereact/components/column/Column";
 import styles from "../ProjectManagement.module.scss";
 import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
-import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
+
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { IAddInformationProps } from './IAddInformationProps';
 import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
@@ -14,31 +14,89 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Modal } from 'react-bootstrap';
 import ProjectListTable from '../ProjectList/ProjectListTable';
 
+//Start: People Picker
+
+import { BaseComponent, assign } from 'office-ui-fabric-react/lib/Utilities';
+import { Dropdown, IDropdownOption } from 'office-ui-fabric-react/lib/Dropdown';
+import { Toggle } from 'office-ui-fabric-react/lib/Toggle';
+import { IPersonaProps, Persona } from 'office-ui-fabric-react/lib/Persona';
+import {
+  CompactPeoplePicker,
+  IBasePickerSuggestionsProps,
+  IBasePicker,
+  ListPeoplePicker,
+  NormalPeoplePicker,
+  ValidationState
+} from 'office-ui-fabric-react/lib/Pickers';
+import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
+import { IPersonaWithMenu } from 'office-ui-fabric-react/lib/components/pickers/PeoplePicker/PeoplePickerItems/PeoplePickerItem.types';
+//import { people, mru } from './PeoplePickerExampleData';
+import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
+import { Promise } from 'es6-promise';
+  
+  const suggestionProps: IBasePickerSuggestionsProps = {
+    //suggestionsHeaderText: 'Suggested People',
+    // mostRecentlyUsedHeaderText: 'Suggested Contacts',
+    // noResultsFoundText: 'No results found',
+    loadingText: 'Loading',
+    showRemoveButtons: true,
+    suggestionsAvailableAlertText: 'People Picker Suggestions available',
+    //suggestionsContainerAriaLabel: 'Suggested contacts',
+
+  };
+  
+  const limitedSearchAdditionalProps: IBasePickerSuggestionsProps = {
+    searchForMoreText: 'Load all Results',
+    resultsMaximumNumber: 10,
+    searchingText: 'Searching...',
+  };
+  
+  const limitedSearchSuggestionProps: IBasePickerSuggestionsProps = assign(limitedSearchAdditionalProps, suggestionProps);
+
+//End: People Picker
 
 
 export default class AddProject extends React.Component<IAddInformationProps, {
+    
     showPanel: boolean;
     fields: {},
     errors: {},
     errorClass:{},
     cloneProjectChecked: boolean,
     showModal: boolean;
+    isDataSaved: boolean;
+    currentPicker?: number | string;
+    delayResults?: boolean;
+    peopleList: IPersonaProps[];
+    mostRecentlyUsed: IPersonaProps[];
+    currentSelectedItems?: IPersonaProps[];
 }> {
-
+    private _picker: IBasePicker<IPersonaProps>;
     constructor(props) {
         super(props);
+        const peopleList: IPersonaWithMenu[] = [];
         this.state = {
             showPanel: true,
             fields: {},
             errors: {},
             errorClass:{},
             cloneProjectChecked: false,
-            showModal: false
+            showModal: false,
+            isDataSaved: false,
+            currentPicker: 1,
+            delayResults: false,
+            peopleList: peopleList,
+            mostRecentlyUsed: [],
+            currentSelectedItems: []
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
     }
-
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.list!="" || nextProps.list!=null){
+            this.getProjectByID(nextProps.id);
+        }
+     }
     handleChange(field, e) {
         if (field === 'startdate') {
             let fields = this.state.fields;
@@ -52,13 +110,77 @@ export default class AddProject extends React.Component<IAddInformationProps, {
             let fields = this.state.fields;
             fields[field] = e.target.value;
             this.setState({ fields, cloneProjectChecked: !this.state.cloneProjectChecked });
-        } else {
+        }
+        else if (field === 'ownername') {
+            let fields = this.state.fields;
+            let tempstate:any=this.state.currentSelectedItems;
+            let ownerArray = [];
+            e.forEach(element => {
+                ownerArray.push(element.key);
+            });
+            tempstate[field] = ownerArray;
+            this.setState({ fields });
+
+        } 
+         else {
             let fields = this.state.fields;
             fields[field] = e.target.value;
             this.setState({ fields });
         }
     }
-
+    componentDidMount() { 
+        if (this.props.id) {
+            this.getProjectByID(this.props.id);
+            this.setState({
+                fields: {}
+            })
+            
+        } else {
+            this.setState({
+                fields: {}
+            })
+        }
+        this._getAllSiteUsers();
+    }
+    private getProjectByID(id): void {
+        // get Project Documents list items for all projects
+        let filterString = "ID eq " + id;
+        sp.web.lists.getByTitle(this.props.list).items
+            .select("ID","Roles_Responsibility","Owner/Title","Owner/ID").expand("Owner")
+            .filter(filterString)
+            .get()
+            .then((response) => {
+                let fields = this.state.fields;
+                console.log('Project1 by name', response);
+                console.log('Project11 by name',  response[0].Roles_Responsibility );
+                fields["projectname"] = response ? response[0].Roles_Responsibility : '';
+               // fields["ownername"]=response?response[0].Owner.Title : '';
+                const selectedPeopleList: IPersonaWithMenu[] = [];
+                const selectedTarget: IPersonaWithMenu = {};
+                let tempSelectedPersona = {};
+                if (response[0].Owner.length > 0) {
+                    response[0].Owner.forEach(element => {
+                        tempSelectedPersona = {
+                            key: element.ID,
+                            text: element.Title
+                        }
+                        //assign(selectedTarget, tempSelectedPersona);
+                        selectedPeopleList.push(tempSelectedPersona);
+                    });
+                }
+                
+                // this.setState({
+                //     assignedTo: response[0].AssignedTo
+                // });
+                this.setState({ currentSelectedItems: selectedPeopleList })
+               fields["ownername"] = selectedPeopleList;
+               console.log("hieee",this.state.fields["projectname"]);
+               this.setState(fields);
+            }).catch((e: Error) => {
+                alert(`There was an error : ${e.message}`);
+            });
+            
+    }
     handleValidation() {
         let fields = this.state.fields;
         let errors = {};
@@ -71,7 +193,7 @@ export default class AddProject extends React.Component<IAddInformationProps, {
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
         }
-        if (!fields["ownername"]) {
+        if (!this.state.currentSelectedItems || this.state.currentSelectedItems.length===0) {
             formIsValid = false;
             errors["ownername"] = "Cannot be empty";
             errorClass["ownername"] = "classError";
@@ -109,11 +231,29 @@ export default class AddProject extends React.Component<IAddInformationProps, {
         e.preventDefault();
         if (this.handleValidation()) {
             let obj: any = this.state.fields;
-            sp.web.lists.getByTitle("Project Information").items.add({
+            let fields = this.state.fields;
+            let tempState: any = this.state.currentSelectedItems;
+            // let ownerArray = [];
+            // tempState.forEach(element => {
+            //     ownerArray.push(element.key);
+            // });
+            // fields['ownername'] = ownerArray;
+            // this.setState({ fields });
+
+if(tempState.length>0){
+    
+    fields['ownername'] = tempState[0].key;
+        this.setState({ fields });
+
+
+            if (this.props.id) {
+            sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
                 Roles_Responsibility: obj.projectname ? obj.projectname : '',
+
+                OwnerId: tempState[0].key//{ results: obj.ownername },
                 //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
                
-                //Owner: obj.ownername?obj.ownername:'',
+                //OwnerId: obj.ownername?obj.ownername:'',
                // Impact: obj.priority ? obj.priority : '',
                // Mitigation: obj.projectdescription ? obj.projectdescription : '',
                 //Department_x0020_Specific: obj.departmentspecific ? (obj.departmentspecific === 'on' ? true : false) : null,
@@ -122,15 +262,28 @@ export default class AddProject extends React.Component<IAddInformationProps, {
                 //DepartmentId: 2,
                 //Status0Id: 2
 
-            }).then((response) => {
-                console.log('Item adding-', response);
+          
+            }).then(i => {
                 this._closePanel();
-                this._showModal();
                 this.props.parentMethod();
+                this.props.parentReopen();
             });
         } else {
-            console.log("Form has errors.")
+            sp.web.lists.getByTitle(this.props.list).items.add({
+                Roles_Responsibility: obj.projectname ? obj.projectname : '',
+                OwnerId: tempState[0].key
+            }).then((response) => {
+                console.log('Item adding-', response);
+                this.setState({ isDataSaved: true });
+                this._closePanel();
+                this._showModal();
+
+            });
         }
+    }
+    } else {
+        console.log("Form has errors.")
+    }
     }
     _showModal() {
         this.setState({ showModal: true });
@@ -226,11 +379,13 @@ export default class AddProject extends React.Component<IAddInformationProps, {
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
                                                                         <label>Assigned To</label>
-                                                                        <span className="calendar-style"><i className="fas fa-user icon-style"></i>
-                                                                            <input ref="ownername" type="text" className={paddingInputStyle + " " + formControl + " " + (this.state.errorClass["ownername"] ? this.state.errorClass["ownername"] : '')} placeholder="Enter owners name"
+                                                                        {this._renderControlledPicker()}
+                                                                         {/* <span className="calendar-style"><i className="fas fa-user icon-style"></i>
+                                                                            {/* <input ref="ownername"  className={paddingInputStyle + " " + formControl + " " + (this.state.errorClass["ownername"] ? this.state.errorClass["ownername"] : '')}
                                                                                 onChange={this.handleChange.bind(this, "ownername")} value={this.state.fields["ownername"]}>
-                                                                            </input>
-                                                                        </span>
+                                                                            </input> */}
+                                                                              {/* {this._renderNormalPicker()}
+                                                                        </span>  */} 
                                                                         <span className="error">{this.state.errors["ownername"]}</span>
                                                                     </div>
                                                                 </div>
@@ -249,7 +404,7 @@ export default class AddProject extends React.Component<IAddInformationProps, {
                                                                 
                                                                 <div className="col-lg-12">
                                                                     <div className="btn-sec">
-                                                                        <button id="submit" value="Submit" className="btn-style btn btn-success">Save</button>
+                                                                        <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
                                                                         <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
                                                                     </div>
                                                                 </div>
@@ -295,7 +450,243 @@ Schedule and Project Team now?
     }
     private _closePanel = (): void => {
         this.setState({ showPanel: false });
+        if (!this.state.isDataSaved) {
+             this.props.parentReopen();
+        }
     };
+    
+          /* Private Methods */
+
+    /*Start: People Picker Methods */
+    private _getAllSiteUsers = (): void => {
+        var reactHandler = this;
+        sp.web.siteUsers.get().then(function (data) {
+          const peopleList: IPersonaWithMenu[] = [];
+          data.forEach((persona) => {
+              let profileUrl = "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+              persona.Email +
+          "&UA=0&size=HR64x64&sc=1531997060853";
+            const target: IPersonaWithMenu = {};
+            let tempPersona = {
+              key: persona.Id,
+              text: persona.Title,
+
+              imageUrl: persona.Email === undefined || persona.Email === '' ?  null : profileUrl
+            }
+            assign(target, tempPersona);
+            peopleList.push(target);
+    
+          });
+    
+            const mru: IPersonaProps[] = peopleList.slice(0, 5);
+            reactHandler.setState({
+                peopleList: peopleList,
+                //mostRecentlyUsed: mru
+            });
+            //console.log('People : ' + peopleList);
+        });
+    };
+    
+    private _getTextFromItem(persona: IPersonaProps): string {
+        return persona.text as string;
+      }
+      
+      private _renderControlledPicker() {
+        const controlledItems = [];
+        for (let i = 0; i < 5; i++) {
+            const item = this.state.peopleList[i];
+            if (this.state.currentSelectedItems!.indexOf(item) === -1) {
+                controlledItems.push(this.state.peopleList[i]);
+            }
+        }
+        return (
+            <div>
+                <NormalPeoplePicker
+                    onResolveSuggestions={this._onFilterChanged}
+                    getTextFromItem={this._getTextFromItem}
+                    pickerSuggestionsProps={suggestionProps}
+                    className={'ms-PeoplePicker'}
+                    key={'controlled'}
+                    selectedItems={this.state.currentSelectedItems}
+                    onChange={this._onItemsChange}
+                    
+                    inputProps={{
+                        onBlur: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onBlur called'),
+                        onFocus: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onFocus called')
+                    }}
+                    itemLimit={1}
+                    //componentRef={this._resolveRef('_picker')}
+                    resolveDelay={300}
+                />
+                {/* <label> Click to Add a person </label>
+                {controlledItems.map((item, index) => (
+                    <div key={index}>
+                        <DefaultButton
+                            className="controlledPickerButton"
+                            // tslint:disable-next-line:jsx-no-lambda
+                            onClick={() => {
+                                this.setState({
+                                    currentSelectedItems: this.state.currentSelectedItems!.concat([item])
+                                });
+                            }}
+                        >
+                            <Persona {...item} />
+                        </DefaultButton>
+                    </div>
+                ))} */}
+            </div>
+        );
+    }
+
+
+    private _onItemsChange = (items: any[]): void => {
+        this.setState({
+            currentSelectedItems: items
+        });
+    };
+
+    private _onSetFocusButtonClicked = (): void => {
+        if (this._picker) {
+            this._picker.focusInput();
+        }
+    };
+
+    private _renderFooterText = (): JSX.Element => {
+        return <div>No additional results</div>;
+    };
+
+    private _onRemoveSuggestion = (item: IPersonaProps): void => {
+        const { peopleList, mostRecentlyUsed: mruState } = this.state;
+        const indexPeopleList: number = peopleList.indexOf(item);
+        const indexMostRecentlyUsed: number = mruState.indexOf(item);
+
+        if (indexPeopleList >= 0) {
+            const newPeople: IPersonaProps[] = peopleList
+                .slice(0, indexPeopleList)
+                .concat(peopleList.slice(indexPeopleList + 1));
+            this.setState({ peopleList: newPeople });
+        }
+
+        if (indexMostRecentlyUsed >= 0) {
+            const newSuggestedPeople: IPersonaProps[] = mruState
+                .slice(0, indexMostRecentlyUsed)
+                .concat(mruState.slice(indexMostRecentlyUsed + 1));
+            this.setState({ mostRecentlyUsed: newSuggestedPeople });
+        }
+    };
+
+    private _onItemSelected = (item: IPersonaProps): Promise<IPersonaProps> => {
+        const processedItem = item;//Object.assign({}, item);
+        processedItem.text = `${item.text} (selected)`;
+        return new Promise<IPersonaProps>((resolve, reject) => setTimeout(() => resolve(processedItem), 250));
+    };
+
+    private _onFilterChanged = (
+        filterText: string,
+        currentPersonas: IPersonaProps[],
+        limitResults?: number
+    ): IPersonaProps[] | Promise<IPersonaProps[]> => {
+        if (filterText) {
+            let filteredPersonas: IPersonaProps[] = this._filterPersonasByText(filterText);
+
+            filteredPersonas = this._removeDuplicates(filteredPersonas, currentPersonas);
+            filteredPersonas = limitResults ? filteredPersonas.splice(0, limitResults) : filteredPersonas;
+            return this._filterPromise(filteredPersonas);
+        } else {
+            return [];
+        }
+    };
+
+    private _returnMostRecentlyUsed = (currentPersonas: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> => {
+        let { mostRecentlyUsed } = this.state;
+        mostRecentlyUsed = this._removeDuplicates(mostRecentlyUsed, currentPersonas);
+        return this._filterPromise(mostRecentlyUsed);
+    };
+
+    private _returnMostRecentlyUsedWithLimit = (
+        currentPersonas: IPersonaProps[]
+    ): IPersonaProps[] | Promise<IPersonaProps[]> => {
+        let { mostRecentlyUsed } = this.state;
+        mostRecentlyUsed = this._removeDuplicates(mostRecentlyUsed, currentPersonas);
+        mostRecentlyUsed = mostRecentlyUsed.splice(0, 3);
+        return this._filterPromise(mostRecentlyUsed);
+    };
+
+    private _onFilterChangedWithLimit = (
+        filterText: string,
+        currentPersonas: IPersonaProps[]
+    ): IPersonaProps[] | Promise<IPersonaProps[]> => {
+        return this._onFilterChanged(filterText, currentPersonas, 3);
+    };
+
+    private _filterPromise(personasToReturn: IPersonaProps[]): IPersonaProps[] | Promise<IPersonaProps[]> {
+        if (this.state.delayResults) {
+            return this._convertResultsToPromise(personasToReturn);
+        } else {
+            return personasToReturn;
+        }
+    }
+
+    private _listContainsPersona(persona: IPersonaProps, personas: IPersonaProps[]) {
+        if (!personas || !personas.length || personas.length === 0) {
+            return false;
+        }
+        return personas.filter(item => item.text === persona.text).length > 0;
+    }
+
+    private _filterPersonasByText(filterText: string): IPersonaProps[] {
+        return this.state.peopleList.filter(item => this._doesTextStartWith(item.text as string, filterText));
+    }
+
+    private _doesTextStartWith(text: string, filterText: string): boolean {
+        return text.toLowerCase().indexOf(filterText.toLowerCase()) === 0;
+    }
+
+    private _convertResultsToPromise(results: IPersonaProps[]): Promise<IPersonaProps[]> {
+        return new Promise<IPersonaProps[]>((resolve, reject) => setTimeout(() => resolve(results), 2000));
+    }
+
+    private _removeDuplicates(personas: IPersonaProps[], possibleDupes: IPersonaProps[]) {
+        return personas.filter(persona => !this._listContainsPersona(persona, possibleDupes));
+    }
+
+    private _toggleDelayResultsChange = (toggleState: boolean): void => {
+        this.setState({ delayResults: toggleState });
+    };
+
+    private _dropDownSelected = (option: IDropdownOption): void => {
+        this.setState({ currentPicker: option.key });
+    };
+
+    private _validateInput = (input: string): ValidationState => {
+        if (input.indexOf('@') !== -1) {
+            return ValidationState.valid;
+        } else if (input.length > 1) {
+            return ValidationState.warning;
+        } else {
+            return ValidationState.invalid;
+        }
+    };
+
+    /**
+     * Takes in the picker input and modifies it in whichever way
+     * the caller wants, i.e. parsing entries copied from Outlook (sample
+     * input: "Aaron Reid <aaron>").
+     *
+     * @param input The text entered into the picker.
+     */
+    private _onInputChange(input: string): string {
+        const outlookRegEx = /<.*>/g;
+        const emailAddress = outlookRegEx.exec(input);
+
+        if (emailAddress && emailAddress[0]) {
+            return emailAddress[0].substring(1, emailAddress[0].length - 1);
+        }
+
+        return input;
+    }
+    /*End: People Picker Methods */
+     
     /* Api Call*/
 
 }

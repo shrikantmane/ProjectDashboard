@@ -2,5 +2,8 @@
 
 export interface IProjectRequirementProps {
     // projectList: Array<CEOProjects>,
+    list:any;
+    projectId:any;
+
   }
   

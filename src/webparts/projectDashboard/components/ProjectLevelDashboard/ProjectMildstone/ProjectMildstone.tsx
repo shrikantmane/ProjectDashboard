@@ -68,7 +68,7 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
                           <tbody>
                             <tr>
                               <td><i className="far fa-calendar-check"></i></td>
-                              <td>{item.DueDate}</td>
+                              <td>{new Date(item.DueDate).toDateString()}</td>
                             </tr>
                             <tr>
                               <td>Status</td>

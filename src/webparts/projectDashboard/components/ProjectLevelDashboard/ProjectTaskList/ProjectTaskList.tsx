@@ -133,7 +133,7 @@ export default class ProjectTaskList extends React.Component<
                         if (original && original.AssignedTo && original.AssignedTo.length > 0) {
                           return (
                             <div>
-                              <img src={original.AssignedTo[0].ImgURL} className="img-responsive"></img>
+                              {/* <img src={original.AssignedTo[0].ImgURL} className="img-responsive"></img> */}
                               <span> {original.AssignedTo[0].Title}</span>
                             </div>
                           )

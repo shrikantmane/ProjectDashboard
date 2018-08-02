@@ -126,13 +126,13 @@ export default class Gantt extends React.Component<any, any>{
       {
         name: "status", label: "Status", width: 80,
         template: function (obj) {
-          return ("<div style='background-color:" + obj.statusBackgroudColor +"'>" + obj.status + "</div>")
+          return ("<div class='ganttStatus' style='background-color:" + obj.statusBackgroudColor +"'>" + obj.status + "</div>")
         }
       },  
       {
         name: "actualDuration", label: "Duration", align: "center", width: 80,
         template: function (obj) {
-          return ("<span style='background:#ccc;'>" + obj.actualDuration + "</span>")
+          return ("<span>" + obj.actualDuration + "</span>")
         }
       },
     ];

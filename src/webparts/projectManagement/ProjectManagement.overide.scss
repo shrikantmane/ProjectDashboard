@@ -710,7 +710,7 @@ table.table-striped h4{
         border: 1px solid #363636;
         border-radius: 3px;
         padding: 1px 5px;
-        margin-right: 10px
+        width: 25px;
     }
     abbr.tooltip-style {
         cursor: pointer;
@@ -723,20 +723,23 @@ table.table-striped h4{
         border-radius: 3px;
         padding: 1px 5px;
         margin-right: 10px;
+        width: 25px;
     }
     button.btn.btn-primary.action-btn-style.blue-light-color.btn-xs {
         background-color: #31b0d5;
         border-color: #31b0d5;
         border-radius: 3px;
-        padding: 1px 5px;
-        margin-right: 10px
+        padding: 1px 1px;
+        margin-right: 10px;
+        width: 25px;
     }
     button.btn.btn-primary.action-btn-style.blue-color.btn-xs {
-        background-color: #31b0d5;
-        border-color: #31b0d5;
+        background-color: #337ab7;
+        border-color: #2e6da4;
         border-radius: 3px;
         padding: 1px 5px;
-        margin-right: 10px
+        margin-right: 10px;
+        width: 25px;
     }
 }
 /*------------------------ END: Project List View -----------------------------*/
@@ -750,6 +753,7 @@ table.table-striped h4{
         padding-bottom: 0px;
         padding-right: 0px;
         height: 100vh;
+        font-size: 0.7rem;
     }
     .infoBoxes{
         height: 75px;

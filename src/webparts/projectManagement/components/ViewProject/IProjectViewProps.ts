@@ -4,6 +4,6 @@ export interface IProjectViewProps {
   requirementList:any;
   documentList:any;
   informationList:any;
-  
+  Violet: any;
 
 }

@@ -925,7 +925,7 @@ div[class^="footerBar_"] {
     padding: 3px 12px;
   }
   .form-group .chosen-container-multi .chosen-choices:after {
-    content: ''; // background: url(chosen-sprite.png) no-repeat 0 7px;
+    content: '';
     background-position: 0px 7px;
     height: 21px;
     width: 14px;
@@ -1607,70 +1607,6 @@ div[class^="footerBar_"] {
   .rt-resizable-header {
     background-color: #002641;
     color: #fff;
-  }
-  @-moz-keyframes graphic-design {
-    0% {
-      width: 0px;
-    }
-    100% {
-      width: 100%;
-    }
-  }
-  @-moz-keyframes html-css {
-    0% {
-      width: 0px;
-    }
-    100% {
-      width: 90%;
-    }
-  }
-  @-moz-keyframes jquery {
-    0% {
-      width: 0px;
-    }
-    100% {
-      width: 65%;
-    }
-  }
-  @-moz-keyframes wordpress {
-    0% {
-      width: 0px;
-    }
-    100% {
-      width: 80%;
-    }
-  }
-  @-webkit-keyframes graphic-design {
-    0% {
-      width: 0px;
-    }
-    100% {
-      width: 100%;
-    }
-  }
-  @-webkit-keyframes html-css {
-    0% {
-      width: 0px;
-    }
-    100% {
-      width: 90%;
-    }
-  }
-  @-webkit-keyframes jquery {
-    0% {
-      width: 0px;
-    }
-    100% {
-      width: 65%;
-    }
-  }
-  @-webkit-keyframes wordpress {
-    0% {
-      width: 0px;
-    }
-    100% {
-      width: 80%;
-    }
   }
   /*------------------------ Mobile View -----------------------------*/
   @media only screen and (min-width: 1400px) {

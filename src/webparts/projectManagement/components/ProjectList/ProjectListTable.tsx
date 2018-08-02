@@ -117,26 +117,28 @@ export default class ProjectListTable extends React.Component<
             <div>
                 {/* <DataTableSubmenu /> */}
                 <div className="PanelContainer">
-                    <div className="content-section implementation">
-                        <h5>Projects</h5>
-                        <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
-                            Add Project
+                    <div className="well">
+                        <div className="content-section implementation">
+                            <h5>Projects</h5>
+                            <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                                Add Project
                         </button>
-                        {this.state.showComponent ?
-                            <AddProject id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} /> :
-                            null
-                        }
-                        <div className="project-list">
-                            <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
-                                <Column header="Action" body={this.editTemplate} style={{ width: "8%" }} />
-                                <Column field="Project" sortable={true} header="Project" />
-                                <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} />
-                                <Column field="Status0" sortable={true} header="Status" body={this.statusTemplate} />
-                                <Column field="AssignedTo" sortable={true} header="Owner" body={this.ownerTemplate} />
-                                <Column field="Priority" sortable={true} header="Priority" />
-                                <Column field="Risks" sortable={true} header="Risk" />
-                                <Column header="Project Details" body={this.actionTemplate} />
-                            </DataTable>
+                            {this.state.showComponent ?
+                                <AddProject id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} /> :
+                                null
+                            }
+                            <div className="project-list">
+                                <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
+                                    <Column header="Action" body={this.editTemplate} style={{ width: "8%" }} />
+                                    <Column field="Project" sortable={true} header="Project" />
+                                    <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} />
+                                    <Column field="Status0" sortable={true} header="Status" body={this.statusTemplate} />
+                                    <Column field="AssignedTo" sortable={true} header="Owner" body={this.ownerTemplate} />
+                                    <Column field="Priority" sortable={true} header="Priority" />
+                                    <Column field="Risks" sortable={true} header="Risk" />
+                                    <Column header="Project Details" body={this.actionTemplate} />
+                                </DataTable>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -151,16 +153,16 @@ export default class ProjectListTable extends React.Component<
         // get Project Documents list items for all projects
         sp.web.lists.getByTitle("Project").items
             .select(
-            "Project",
-            "DueDate",
-            "Status0/ID",
-            "Status0/Status",
-            "Status0/Status_x0020_Color",
-            "AssignedTo/Title",
-            "AssignedTo/ID",
-            "Priority",
-            "Risks",
-            "ID")
+                "Project",
+                "DueDate",
+                "Status0/ID",
+                "Status0/Status",
+                "Status0/Status_x0020_Color",
+                "AssignedTo/Title",
+                "AssignedTo/ID",
+                "Priority",
+                "Risks",
+                "ID")
             .expand("Status0", "AssignedTo")
             .getAll()
             .then((response) => {

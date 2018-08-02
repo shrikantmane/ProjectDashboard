@@ -578,7 +578,7 @@ div[class^="footerBar_"] {
   body {
     background: #eff3f6;
     color: #454545;
-    font-family: AvenirLTStd-Book_3;
+    font-family: 'Conv_AVENIRLTSTD-BOOK';
     overflow-x: auto;
   }
   .ReactTable.-striped .rt-tr.-odd, .ReactTable.-highlight .rt-tbody .rt-tr:not(.-padRow):hover {
@@ -777,7 +777,7 @@ div[class^="footerBar_"] {
   }
   .well .StepProgress-item {
     position: relative;
-    font-family: 'Montserrat', sans-serif;
+    font-family: 'Conv_AVENIRLTSTD-BOOK';
     font-size: 13px;
     color: #848C98;
     font-weight: 600;
@@ -1110,7 +1110,7 @@ div[class^="footerBar_"] {
     font-size: 16px !important;
   }
   .recommendedProjects {
-    max-height: 615px;
+    // max-height: 615px;
     margin-bottom: 20px;
     border: none;
   }

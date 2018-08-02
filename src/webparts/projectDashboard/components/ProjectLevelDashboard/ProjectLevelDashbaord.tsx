@@ -50,7 +50,6 @@ export default class ProjectLevelDashboard extends React.Component<
       .filter(filter)
       .getAll()
       .then((response: Array<Project>) => {
-        console.log("Project items", response);
         if (response && response.length > 0) {
           project.Project = response[0].Project;
           project.DueDate = response[0].DueDate;
@@ -68,17 +67,24 @@ export default class ProjectLevelDashboard extends React.Component<
       });
   }
 
-  private getProjectTagsByProjectID(id: number) {
-    let filter = "Project/ID eq " + id;
+  private getProjectTagsByProjectID(id: number): void {
+    let filterString = "Projects/ID eq " + id;
     sp.web.lists.getByTitle("Project Tags").items
-      .select("Tag","Color")
-      .filter(filter)
+      .select("Projects/ID", "Tag", "Color").expand("Projects")
+      .filter(filterString)
       .get()
-      .then((response : Array<Tag>) => {
-        console.log("tagList", response);
-       this.setState({tagList : response})
+      .then((response) => {      
+        if (response.length > 0) {
+          let tags = new Array<Tag>();
+          response.forEach(element => {
+            tags.push({
+              Tag: element.Tag,
+              Color: element.Color
+            });
+          });
+          this.setState({tagList : response});
+        }
       });
-
   }
   public render(): React.ReactElement<IProjectLevelDashboardProps> {
     return (

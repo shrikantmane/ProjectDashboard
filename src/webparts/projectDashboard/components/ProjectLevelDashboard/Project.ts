@@ -23,9 +23,9 @@ export class Status {
 }
 
 export class Tag {
-    public ID: number;
+    public ID?: number;
     public Tag: string;
-    public Title:string;
+    public Title?:string;
     public Color:string;
 }
 
@@ -97,7 +97,7 @@ export class Plan {
     public Duration : string;
     public AssignedTo : Array<Owner>;
     public Status0: Status;
-    public Project: Project;
+   // public Project: Project;
     public ParentID: Parent;
     public PercentComplete : number;
     public Predecessors :Array<Predecessor>;

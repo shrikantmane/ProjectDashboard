@@ -23,7 +23,6 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
       .select("Team_x0020_Member/ID", "Team_x0020_Member/Title", "Team_x0020_Member/EMail").expand("Team_x0020_Member")
       .get()
       .then((response: Array<TeamMember>) => {
-        console.log('Team Member -', response);
         let currentScope = this;
         let count = 1;
         response.forEach(item => {

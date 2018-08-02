@@ -639,134 +639,134 @@ export default class CEOProjectInformation extends React.Component<
     // console.log("projectList -", projectList);
     let count = 1;
     projectList.forEach(item => {
-      if(item.Schedule_x0020_List){
-      sp.web.lists
-        .getByTitle(item.Schedule_x0020_List)
-        .items.select(
-          "ID",
-          "Title",
-          "StartDate",
-          "DueDate",
-          "Status0/ID",
-          "Body",
-          "Status0/Status",
-          "Status0/Status_x0020_Color",
-          "Project/ID",
-          "Project/Title",
-          "AssignedTo/Title",
-          "AssignedTo/ID",
-          "AssignedTo/EMail"
-        )
-        .expand("Project", "Status0", "AssignedTo")
-        .filter("Duration eq '0 days'")
-        .get()
-        .then((milestones: Array<MileStones>) => {
-          milestones.forEach(mileStone => {
-            mileStone.ProjectID = item.ID;
-            allMildStones.push(mileStone);
-          });         
-          if(count == projectList.length){
-            this.getMildStones(projectList, allMildStones);
-          }
-          count ++;
-        });
-      }else {
-        count ++;
-        if(count == projectList.length){
+      if (item.Schedule_x0020_List) {
+        sp.web.lists
+          .getByTitle(item.Schedule_x0020_List)
+          .items.select(
+            "ID",
+            "Title",
+            "StartDate",
+            "DueDate",
+            "Status0/ID",
+            "Body",
+            "Status0/Status",
+            "Status0/Status_x0020_Color",
+            // "Project/ID",
+            // "Project/Title",
+            "AssignedTo/Title",
+            "AssignedTo/ID",
+            "AssignedTo/EMail"
+          )
+          .expand("Status0", "AssignedTo")
+          .filter("Duration eq '0 days'")
+          .get()
+          .then((milestones: Array<MileStones>) => {
+            milestones.forEach(mileStone => {
+              mileStone.ProjectID = item.ID;
+              allMildStones.push(mileStone);
+            });
+            if (count == projectList.length) {
+              this.getMildStones(projectList, allMildStones);
+            }
+            count++;
+          });
+      } else {
+        count++;
+        if (count == projectList.length) {
           this.getMildStones(projectList, allMildStones);
         }
       }
-    });  
+    });
   }
 
-  private getMildStones(projectList: Array<CEOProjects>, allMildStones : Array<MileStones>): void {
-        let timeline = new ProjectTimeLine();
-        let groups = Array<Groups>();
-        let timeLineItems = Array<TimeLineItems>();
-        let milstoneCounter = 1;
-        projectList.forEach(item => {
+  private getMildStones(projectList: Array<CEOProjects>, allMildStones: Array<MileStones>): void {
+    let timeline = new ProjectTimeLine();
+    let groups = Array<Groups>();
+    let timeLineItems = Array<TimeLineItems>();
+    let milstoneCounter = 1;
+    projectList.forEach(item => {
 
-          groups.push({
-            id: item.ID,
-            title: item.Project
-          });
+      groups.push({
+        id: item.ID,
+        title: item.Project
+      });
 
-          let filteredMilestones = filter(allMildStones, function (milstoneItem) {
-            return milstoneItem.ProjectID == item.ID;
-          });
-          let mileStone = null;
-          let mildstones = [];
-          let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
-          let lastDueDate = new Date(new Date().setHours(0, 0, 0, 0));
+      let filteredMilestones = filter(allMildStones, function (milstoneItem) {
+        return milstoneItem.ProjectID == item.ID;
+      });
+      let mileStone = null;
+      let mildstones = [];
+      let currentDate = new Date(new Date().setHours(0, 0, 0, 0));
+      let lastDueDate = new Date(new Date().setHours(0, 0, 0, 0));
 
-          filteredMilestones = sortBy(filteredMilestones, function (dateObj) {
-            return new Date(dateObj.StartDate);
-          });
-          for (let count = 0; count < filteredMilestones.length; count++) {
-           
-            timeLineItems.push({
-              id: milstoneCounter,
-              group: item.ID,
-              title: filteredMilestones[count].Title,
-              start_time: moment(new Date(filteredMilestones[count].StartDate).setHours(0, 0, 0, 0)),
-              end_time: moment(new Date(filteredMilestones[count].DueDate).setHours(23, 59, 59, 59))
-            });
+      filteredMilestones = sortBy(filteredMilestones, function (dateObj) {
+        return new Date(dateObj.StartDate);
+      });
+      for (let count = 0; count < filteredMilestones.length; count++) {
 
-            milstoneCounter ++ ;
-
-            let mStartDate = new Date(new Date(filteredMilestones[count].StartDate).setHours(0, 0, 0, 0));
-            let mDueDate = new Date(new Date(filteredMilestones[count].DueDate).setHours(0, 0, 0, 0));
-
-            if (currentDate >= mStartDate && currentDate <= mDueDate) {
-              mileStone = filteredMilestones[count];
-            } else {
-              if (currentDate < mStartDate) {
-                mildstones.push(filteredMilestones[count]);
-              }
-            }
-
-            if (filteredMilestones[count].AssignedTo && filteredMilestones[count].AssignedTo.length > 0) {
-              filteredMilestones[count].AssignedTo.forEach(element => {
-                if (element.EMail != null) {
-                  element.imgURL =
-                    "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-                    element.EMail +
-                    "&UA=0&size=HR64x64&sc=1531997060853";
-                } else {
-                  element.imgURL = "";
-                }
-              });
-            }
-          }
-          item.MildStoneList = filteredMilestones;
-          item.MileStone =
-            mileStone == null ? mildstones.length > 0 ?
-              mildstones[0] : filteredMilestones.length > 0 ? filteredMilestones[filteredMilestones.length - 1] : null :
-              mileStone;
-          if (item.AssignedTo && item.AssignedTo.length > 0) {
-            item.AssignedTo.forEach(element => {
-              if (element.EMail != null) {
-                element.imgURL =
-                  "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-                  element.EMail +
-                  "&UA=0&size=HR64x64&sc=1531997060853";
-              } else {
-                element.imgURL = "";
-              }
-            });
-          }
-
-          item.StatusText = item.Status0 ? item.Status0.Status : "";
-          item.OwnerTitle =
-            item.AssignedTo && item.AssignedTo.length > 0
-              ? item.AssignedTo[0].Title
-              : "";
-
+        timeLineItems.push({
+          id: milstoneCounter,
+          group: item.ID,
+          title: filteredMilestones[count].Title,
+          start_time: moment(new Date(filteredMilestones[count].StartDate).setHours(0, 0, 0, 0)),
+          end_time: moment(new Date(filteredMilestones[count].DueDate).setHours(23, 59, 59, 59))
         });
-        timeline.groups = groups;
-        timeline.items = timeLineItems;
-        this.setState({ projectList: projectList, projectTimeLine: timeline, isLoading: false });
-  }  
+
+        milstoneCounter++;
+
+        let mStartDate = new Date(new Date(filteredMilestones[count].StartDate).setHours(0, 0, 0, 0));
+        let mDueDate = new Date(new Date(filteredMilestones[count].DueDate).setHours(0, 0, 0, 0));
+
+        if (currentDate >= mStartDate && currentDate <= mDueDate) {
+          mileStone = filteredMilestones[count];
+        } else {
+          if (currentDate < mStartDate) {
+            mildstones.push(filteredMilestones[count]);
+          }
+        }
+
+        if (filteredMilestones[count].AssignedTo && filteredMilestones[count].AssignedTo.length > 0) {
+          filteredMilestones[count].AssignedTo.forEach(element => {
+            if (element.EMail != null) {
+              element.imgURL =
+                "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                element.EMail +
+                "&UA=0&size=HR64x64&sc=1531997060853";
+            } else {
+              element.imgURL = "";
+            }
+          });
+        }
+      }
+      item.MildStoneList = filteredMilestones;
+      item.MileStone =
+        mileStone == null ? mildstones.length > 0 ?
+          mildstones[0] : filteredMilestones.length > 0 ? filteredMilestones[filteredMilestones.length - 1] : null :
+          mileStone;
+      if (item.AssignedTo && item.AssignedTo.length > 0) {
+        item.AssignedTo.forEach(element => {
+          if (element.EMail != null) {
+            element.imgURL =
+              "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+              element.EMail +
+              "&UA=0&size=HR64x64&sc=1531997060853";
+          } else {
+            element.imgURL = "";
+          }
+        });
+      }
+
+      item.StatusText = item.Status0 ? item.Status0.Status : "";
+      item.OwnerTitle =
+        item.AssignedTo && item.AssignedTo.length > 0
+          ? item.AssignedTo[0].Title
+          : "";
+
+    });
+    timeline.groups = groups;
+    timeline.items = timeLineItems;
+    this.setState({ projectList: projectList, projectTimeLine: timeline, isLoading: false });
+  }
 
   private getTeamMembersByProject(currentProject: CEOProjects): void {
     sp.web.lists
@@ -777,8 +777,8 @@ export default class CEOProjectInformation extends React.Component<
         "Team_x0020_Member/EMail",
         "Start_x0020_Date",
         "End_x0020_Date",
-        "Status",       
-      )
+        "Status",
+    )
       .expand("Team_x0020_Member")
       .get()
       .then((response: Array<TeamMembers>) => {
@@ -804,59 +804,57 @@ export default class CEOProjectInformation extends React.Component<
         this.setState({ projectList: projects, isTeamMemberLoaded: true });
       });
   }
-  private getMildStonesByProject(currentProject: CEOProjects): void {
-    let filter = "Project/ID eq '" + currentProject.ID + "' and Duration eq 0";
-    sp.web.lists
-      .getByTitle(currentProject.Schedule_x0020_List)
-      .items.select(
-        "Title",
-        "StartDate",
-        "DueDate",
-        "Body",
-        "Status0/ID",
-        "Status0/Status",
-        "Status0/Status_x0020_Color",
-        "Project/ID",
-        "Project/Title",
-        "AssignedTo/Title",
-        "AssignedTo/ID",
-        "AssignedTo/EMail",
-        "Priority"
-      )
-      .expand("Project", "Status0", "AssignedTo")
-      //.filter(filter)
-      .filter("Duration eq 0")
-      .get()
-      .then((response: Array<MileStones>) => {
-        response.forEach(item => {
-          if (item.AssignedTo && item.AssignedTo.length > 0) {
-            item.AssignedTo.forEach(element => {
-              if (element.EMail != null) {
-                element.imgURL =
-                  "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-                  element.EMail +
-                  "&UA=0&size=HR64x64&sc=1531997060853";
-                // element.imgURL ="/_layouts/15/userphoto.aspx?size=S&username=" + element.EMail  
-              } else {
-                element.imgURL = "";
-              }
-            });
-          }
-        });
-        let projects = this.state.projectList;
-        let project = find(projects, { ID: currentProject.ID });
-        project.MildStoneList = response;
-        this.setState({ projectList: projects });
-      });
-  }
+  // private getMildStonesByProject(currentProject: CEOProjects): void {
+  //   let filter = "Project/ID eq '" + currentProject.ID + "' and Duration eq 0";
+  //   sp.web.lists
+  //     .getByTitle(currentProject.Schedule_x0020_List)
+  //     .items.select(
+  //       "Title",
+  //       "StartDate",
+  //       "DueDate",
+  //       "Body",
+  //       "Status0/ID",
+  //       "Status0/Status",
+  //       "Status0/Status_x0020_Color",
+  //       "Project/ID",
+  //       "Project/Title",
+  //       "AssignedTo/Title",
+  //       "AssignedTo/ID",
+  //       "AssignedTo/EMail",
+  //       "Priority"
+  //     )
+  //     .expand("Project", "Status0", "AssignedTo")
+  //     //.filter(filter)
+  //     .filter("Duration eq 0")
+  //     .get()
+  //     .then((response: Array<MileStones>) => {
+  //       response.forEach(item => {
+  //         if (item.AssignedTo && item.AssignedTo.length > 0) {
+  //           item.AssignedTo.forEach(element => {
+  //             if (element.EMail != null) {
+  //               element.imgURL =
+  //                 "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+  //                 element.EMail +
+  //                 "&UA=0&size=HR64x64&sc=1531997060853";
+  //               // element.imgURL ="/_layouts/15/userphoto.aspx?size=S&username=" + element.EMail  
+  //             } else {
+  //               element.imgURL = "";
+  //             }
+  //           });
+  //         }
+  //       });
+  //       let projects = this.state.projectList;
+  //       let project = find(projects, { ID: currentProject.ID });
+  //       project.MildStoneList = response;
+  //       this.setState({ projectList: projects });
+  //     });
+  // }
 
   private getKeyDocumentsByProject(currentProject: CEOProjects): void {
-    // let filter = "Project/ID eq '" + currentProject.ID + "'";
     sp.web.lists
       .getByTitle(currentProject.Project_x0020_Document)
-      .items.select("File", "Project/ID", "Project/Title")
-      .expand("File", "Project")
-      // .filter(filter)
+      .items.select("File")
+      .expand("File")
       .get()
       .then((response: Array<Documents>) => {
         let projects = this.state.projectList;
@@ -867,17 +865,23 @@ export default class CEOProjectInformation extends React.Component<
   }
 
   private getTaggingByProject(currentProject: CEOProjects): void {
-    let filter = "Project/ID eq '" + currentProject.ID + "'";
-    sp.web.lists
-      .getByTitle("Project Tags")
-      .items.select("ID", "Tags", "Color")
-      .filter(filter)
+    let filterString = "Projects/ID eq " + currentProject.ID;
+    sp.web.lists.getByTitle("Project Tags").items
+      .select("Projects/ID", "Tag", "Color").expand("Projects")
+      .filter(filterString)
       .get()
-      .then((response: Array<Tags>) => {
-        if (response != null && response.length > 0) {
+      .then((response) => {      
+        if (response.length > 0) {
+          let tags = new Array<Tags>();
+          response.forEach(element => {
+            tags.push({
+              Tags: element.Tag,
+              Color: element.Color
+            });
+          });
           let projects = this.state.projectList;
           let project = find(projects, { ID: currentProject.ID });
-          project.TagList = response;
+          project.TagList = tags;
           this.setState({ projectList: projects, isTagLoaded: true });
         }
       });

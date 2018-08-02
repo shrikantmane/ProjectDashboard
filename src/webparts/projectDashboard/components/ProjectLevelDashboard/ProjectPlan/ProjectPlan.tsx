@@ -55,9 +55,7 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
         "Body",
         "Status0/ID",
         "Status0/Status",
-        "Status0/Status_x0020_Color",
-        "Project/ID",
-        "Project/Title",
+        "Status0/Status_x0020_Color",       
         "AssignedTo/Title",
         "AssignedTo/ID",
         "AssignedTo/EMail",
@@ -66,10 +64,9 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
         "Predecessors/Id",
         "Predecessors/Title"
       )
-      .expand("Project", "Status0", "AssignedTo", "ParentID", "Predecessors")
+      .expand("Status0", "AssignedTo", "ParentID", "Predecessors")
       .get()
       .then((response: Array<Plan>) => {
-        console.log("Plan", response);
         let chartData = new Chart();
         chartData.data = Array<ChartData>();
         chartData.links = Array<ChartLink>(); 

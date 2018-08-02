@@ -705,6 +705,39 @@ table.table-striped h4{
         border-style: none !important;
         border-width: 0px;
     }
+    button.btn.btn-primary.action-btn-style.black-color.btn-xs {
+        background-color: #363636;
+        border: 1px solid #363636;
+        border-radius: 3px;
+        padding: 1px 5px;
+        margin-right: 10px
+    }
+    abbr.tooltip-style {
+        cursor: pointer;
+        border-bottom: none;
+    }
+    button.btn.btn-primary.action-btn-style.blue-dark-color.btn-xs {
+        color: #fff;
+        background-color: #204d74;
+        border-color: #122b40;
+        border-radius: 3px;
+        padding: 1px 5px;
+        margin-right: 10px;
+    }
+    button.btn.btn-primary.action-btn-style.blue-light-color.btn-xs {
+        background-color: #31b0d5;
+        border-color: #31b0d5;
+        border-radius: 3px;
+        padding: 1px 5px;
+        margin-right: 10px
+    }
+    button.btn.btn-primary.action-btn-style.blue-color.btn-xs {
+        background-color: #31b0d5;
+        border-color: #31b0d5;
+        border-radius: 3px;
+        padding: 1px 5px;
+        margin-right: 10px
+    }
 }
 /*------------------------ END: Project List View -----------------------------*/
 

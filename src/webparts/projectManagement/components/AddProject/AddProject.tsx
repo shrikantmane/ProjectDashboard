@@ -156,6 +156,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     savedProjectID: any;
 }> {
     private _picker: IBasePicker<IPersonaProps>;
+    // Added by Ashwini
     public ViewersGroupId: string | number;
     public ContributersGroupId: string | number;
     public OwnersGroupId: string | number;
@@ -171,7 +172,17 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     public RequirementObj: any;
     public ProjectInfoObj: any;
     public ProjectCalendarObj: any;
-
+    public TaskList = "_Task_List";
+    public ScheduleList = "_Schedule_List";
+    public ProjectDocument = "_Project_Document";
+    public Requirements = "_Requirements";
+    public ProjectTeamMembers = "_Project_Team_Members";
+    public ProjectInfo = "_Project_Information";
+    public ProjectCal = "_Project_Calender";
+    public ProjectComments = "_Project_Comments";
+    public ProjectCommentsHistory = "_Project_Comments_History";
+    public TaskComments = "_Task_Comments";
+    public TaskCommentsHistory = "_Task_Comments_History";
 
 
     constructor(props) {
@@ -206,7 +217,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             ProjectList: '',
             TaskStatusColor: '',
             roleAssignments: [],
-            savedProjectID:0
+            savedProjectID: 0
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -614,13 +625,13 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     //Add User to group
                     reactHandler.AddHBCUsersToGroup(OwnersGroup, ProName);
                     // Add Item to project list & other list creation
-                    //if (reactHandler.state.isClone != true) {
-                    if (reactHandler.state.fields['cloneproject'] !== true) {
-                        reactHandler.CreateNewProject(ProName);
-                    }
-                    else {
-                        reactHandler.getProjectDetails(ProName);
-                    }
+                    let projectName = ProName.split(' ').join('_');
+                    //if (reactHandler.state.fields['cloneproject'] !== true) {
+                        reactHandler.CreateNewProject(projectName);
+                    // }
+                    // else {
+                    //     reactHandler.getProjectDetails(projectName);
+                    // }
                 }).catch(e => {
                     console.log("Error while creating " + OwnersGroup + " group: " + e);
                 });
@@ -1072,23 +1083,22 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         console.log("CloneProjectData", this.state.CloneProjectData);
         let obj: any = this.state.fields;
-        let TaskList = ProName + " Task List";
-        let ScheduleList = ProName + " Schedule List";
-        let ProjectDocument = ProName + " Project Document";
-        let Requirements = ProName + " Requirements";
-        //let ProjectTags = ProName + " Project Tags";
-        let ProjectTeamMembers = ProName + " Project Team Members";
-        let ProjectInfo = ProName + " Project Information";
-        let ProjectCal = ProName + " Project Calender";
-        let ProjectComments = ProName + " Project Comments";
-        let ProjectCommentsHistory = ProName + " Project Comments History";
-        let TaskComments = ProName + " Task Comments";
-        let TaskCommentsHistory = ProName + " Task Comments History";
+        	  let TaskListClmn = ProName + this.TaskList;
+        let ScheduleListClmn = ProName + this.ScheduleList;
+        let ProjectDocumentClmn = ProName + this.ProjectDocument;
+        let RequirementsClmn = ProName + this.Requirements;
+        let ProjectTeamMembersClmn = ProName + this.ProjectTeamMembers;
+        let ProjectInfoClmn = ProName + this.ProjectInfo;
+        let ProjectCalClmn = ProName + this.ProjectCal;
+        let ProjectCommentsClmn = ProName + this.ProjectComments;
+        let ProjectCommentsHistoryClmn = ProName + this.ProjectCommentsHistory;
+        let TaskCommentsClmn = ProName + this.TaskComments;
+        let TaskCommentsHistoryClmn = ProName + this.TaskCommentsHistory;
 
         // add an item to the list  
         sp.web.lists.getByTitle("Project").items.add({
             Title: "No Title",
-            Project: ProName,
+            Project: ProName.split('_').join(' '),
             StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
             DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
             AssignedToId: { results: obj.ownername },
@@ -1103,18 +1113,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Clone_x0020_Schedule: obj.cloneschedule ? obj.cloneschedule : false,
             Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
 
-            Task_x0020_List: TaskList,
-            Schedule_x0020_List: ScheduleList,
-            Project_x0020_Document: ProjectDocument,
-            Requirements: Requirements,
+            Task_x0020_List: TaskListClmn,
+            Schedule_x0020_List: ScheduleListClmn,
+            Project_x0020_Document: ProjectDocumentClmn,
+            Requirements: RequirementsClmn,
             //Project_x0020_Tags: ProjectTags,
-            Project_x0020_Team_x0020_Members: ProjectTeamMembers,
-            Project_x0020_Infromation: ProjectInfo,
-            Project_x0020_Calender: ProjectCal,
-            Project_x0020_Comments: ProjectComments,
-            Project_x0020_Comments_x0020_His: ProjectCommentsHistory,
-            Task_x0020_Comments: TaskComments,
-            Task_x0020_Comments_x0020_Histor: TaskCommentsHistory
+            Project_x0020_Team_x0020_Members: ProjectTeamMembersClmn,
+            Project_x0020_Infromation: ProjectInfoClmn,
+            Project_x0020_Calender: ProjectCalClmn,
+            Project_x0020_Comments: ProjectCommentsClmn,
+            Project_x0020_Comments_x0020_His: ProjectCommentsHistoryClmn,
+            Task_x0020_Comments: TaskCommentsClmn,
+            Task_x0020_Comments_x0020_Histor: TaskCommentsHistoryClmn
         }).then((iar: ItemAddResult) => {
             this.CreateTaskList(ProName);
         }).catch(err => {
@@ -1125,23 +1135,21 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     private CreateNewProject(ProName) {
 
         let obj: any = this.state.fields;
-        let TaskList = ProName + " Task List";
-        let ScheduleList = ProName + " Schedule List";
-        let ProjectDocument = ProName + " Project Document";
-        let Requirements = ProName + " Requirements";
-        //let ProjectTags = ProName + " Project Tags";
-        let ProjectTeamMembers = ProName + " Project Team Members";
-        let ProjectInfo = ProName + " Project Information";
-        let ProjectCal = ProName + " Project Calender";
-        let ProjectComments = ProName + " Project Comments";
-        let ProjectCommentsHistory = ProName + " Project Comments History";
-        let TaskComments = ProName + " Task Comments";
-        let TaskCommentsHistory = ProName + " Task Comments History";
+      	  let TaskListClmn = ProName + this.TaskList;
+        let ScheduleListClmn = ProName + this.ScheduleList;
+        let ProjectDocumentClmn = ProName + this.ProjectDocument;
+        let RequirementsClmn = ProName + this.Requirements;
+        let ProjectTeamMembersClmn = ProName + this.ProjectTeamMembers;
+        let ProjectInfoClmn = ProName + this.ProjectInfo;
+        let ProjectCalClmn = ProName + this.ProjectCal;
+        let ProjectCommentsClmn = ProName + this.ProjectComments;
+        let ProjectCommentsHistoryClmn = ProName + this.ProjectCommentsHistory;
+        let TaskCommentsClmn = ProName + this.TaskComments;
+        let TaskCommentsHistoryClmn = ProName + this.TaskCommentsHistory;
 
         // add an item to the list  
         sp.web.lists.getByTitle("Project").items.add({
-            Project: ProName,
-
+            Project: ProName.split('_').join(' '),
             StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
             DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
             AssignedToId: { results: obj.ownername },
@@ -1159,24 +1167,25 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
             Title: "No Title",
 
-            Task_x0020_List: TaskList,
-            Schedule_x0020_List: ScheduleList,
-            Project_x0020_Document: ProjectDocument,
-            Requirements: Requirements,
+            Task_x0020_List: TaskListClmn,
+            Schedule_x0020_List: ScheduleListClmn,
+            Project_x0020_Document: ProjectDocumentClmn,
+            Requirements: RequirementsClmn,
             //Project_x0020_Tags: ProjectTags,
-            Project_x0020_Team_x0020_Members: ProjectTeamMembers,
-            Project_x0020_Infromation: ProjectInfo,
-            Project_x0020_Calender: ProjectCal,
-            Project_x0020_Comments: ProjectComments,
-            Project_x0020_Comments_x0020_His: ProjectCommentsHistory,
-            Task_x0020_Comments: TaskComments,
-            Task_x0020_Comments_x0020_Histor: TaskCommentsHistory
+            Project_x0020_Team_x0020_Members: ProjectTeamMembersClmn,
+            Project_x0020_Infromation: ProjectInfoClmn,
+            Project_x0020_Calender: ProjectCalClmn,
+            Project_x0020_Comments: ProjectCommentsClmn,
+            Project_x0020_Comments_x0020_His: ProjectCommentsHistoryClmn,
+            Task_x0020_Comments: TaskCommentsClmn,
+            Task_x0020_Comments_x0020_Histor: TaskCommentsHistoryClmn
         }).then((iar: ItemAddResult) => {
-            this.setState({ isDataSaved: true , savedProjectID:iar.data.Id});
+            
+            this.CreateTaskList(ProName);
+            this.setState({ isDataSaved: true, savedProjectID: iar.data.Id });
             this.state.fields['tags'].forEach(element => {
                 this.addProjectTagByTagName(element.value, iar.data.Id);
             });
-            this.CreateTaskList(ProName);
         }).catch(err => {
             console.log("Error while adding items for ", ProName, " to Project List -", err);
         });
@@ -1186,25 +1195,28 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         //let spWeb = new Web(this.context.pageContext.site.absoluteUrl);
         let spEnableCT = false;
         let reactHandler = this;
-        let TaskList = ProName + " Task List"
+        	  let TaskList = ProName + this.TaskList;
         let TaskListDesc = TaskList + " Description";
         let TaskTemplateId = 171;
 
 
         sp.web.lists.add(TaskList, TaskListDesc, TaskTemplateId, spEnableCT).then(function (splist) {
             console.log(TaskList, " created successfuly !");
-            reactHandler.AddTaskListColumns(TaskList, ProName, sp.web, spEnableCT);
-            reactHandler.TaskObj = splist.list;
-            reactHandler.AddPermissionsToTaskList(TaskList, ProName);
+            
+            reactHandler.AddTaskListColumns(TaskList, ProName, sp.web, spEnableCT,splist.list);
+            
+           
         }).catch(err => {
             console.log("Error while creating task List, Error -", err);
         });
     }
 
 
-    private AddTaskListColumns(ListName, ProName, spWeb, spEnableCT) {
+    private AddTaskListColumns(ListName, ProName, spWeb, spEnableCT,list) {
 
-        let ScheduleList = ProName + " Schedule List";
+        
+        let ScheduleList = ProName + this.ScheduleList;
+        this.TaskObj = list;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + `/>`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1221,7 +1233,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
                     console.log("Comment created in list ", ListName);
-
+                    this.AddPermissionsToTaskList(ListName, ProName);
                     this.CreateScheduleList(ScheduleList, ProName, spWeb, spEnableCT);
 
                 }).catch(err => {
@@ -1250,17 +1262,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         spWeb.lists.add(ScheduleList, ScheduleListDesc, TaskTemplateId, spEnableCT).then(function (splist) {
             console.log(ScheduleList, " created successfuly !");
             let ScheduleListID = "'{" + splist.data.Id + "}'";
-            reactHandler.AddScheduleListIDColumns(ScheduleList, ProName, spWeb, spEnableCT, ScheduleListID);
-            reactHandler.ScheduleObj = splist.list;
-            reactHandler.AddPermissionsToScheduleList(ScheduleList, ProName);
+            reactHandler.AddScheduleListIDColumns(ScheduleList, ProName, spWeb, spEnableCT, ScheduleListID,splist.list);
+           
         }).catch(err => {
             console.log("Error while creating Schedule List, Error -", err);
         });
     }
 
-    private AddScheduleListIDColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID) {
+    private AddScheduleListIDColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID,list) {
 
-        let TaskComments = ProName + " Task Comments";
+        
+        let TaskComments = ProName + this.TaskComments;
+         this.ScheduleObj = list;
+            
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + `/>`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1277,7 +1291,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
                     console.log("Comment created in list ", ListName);
-
+                    this.AddPermissionsToScheduleList(ListName, ProName);
                     this.CreateTaskComments(TaskComments, ProName, spWeb, spEnableCT, ScheduleListID);
 
                 }).catch(err => {
@@ -1304,18 +1318,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         spWeb.lists.add(TaskComments, TaskCommentsDesc, TaskCommentsTemplateId, spEnableCT).then(function (splist) {
             console.log(TaskComments, " created successfuly !");
             let TaskCommentsID = "'{" + splist.data.Id + "}'";
-            reactHandler.AddTaskCommentsColumns(TaskComments, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID);
-            reactHandler.TaskCommentObj = splist.list;
-            reactHandler.AddPermissionsToTaskCommentList(TaskComments, ProName);
+            reactHandler.AddTaskCommentsColumns(TaskComments, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID, splist.list);
+            
         }).catch(err => {
             console.log("Error while creating Task Comments List, Error -", err);
         });
     }
 
 
-    private AddTaskCommentsColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID) {
+    private AddTaskCommentsColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID,list) {
 
-        let TaskCommentsHistory = ProName + " Task Comments History";
+        
+        let TaskCommentsHistory = ProName + this.TaskCommentsHistory;
+        this.TaskCommentObj = list;
 
         let TaskName = `<Field Name="Task Name" DisplayName="Task Name" Type="Lookup" Required="FALSE" ShowField="Title" List=` + ScheduleListID + ` />`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(TaskName).then(res => {
@@ -1324,6 +1339,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
                 console.log("Comment created in list ", ListName);
+                
+            this.AddPermissionsToTaskCommentList(ListName, ProName);
                 this.CreateTaskCommentHistory(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID);
             }).catch(err => {
                 console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
@@ -1341,17 +1358,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         // Create Project Calender List & Columns
         spWeb.lists.add(TaskCommentsHistory, TaskCommentsHistoryDesc, TaskCommentsHistoryTemplateId, spEnableCT, ).then(function (splist) {
             console.log(TaskCommentsHistory, " created successfuly !");
-            reactHandler.AddTaskCommentsHistoryColumns(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID);
-            reactHandler.TaskCommentHisObj = splist.list;
-            reactHandler.AddPermissionsToTaskCommentHisList(TaskCommentsHistory, ProName);
+            reactHandler.AddTaskCommentsHistoryColumns(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID,splist.list);
+           
         }).catch(err => {
             console.log("Error while creating Task Comments History List, Error -", err);
         });
     }
 
-    private AddTaskCommentsHistoryColumns(ListName, ProName, spWeb, spEnableCT, TaskCommentsID) {
+    private AddTaskCommentsHistoryColumns(ListName, ProName, spWeb, spEnableCT, TaskCommentsID,list) {
 
-        let ProjectDocument = ProName + " Project Document";
+        
+        let ProjectDocument = ProName + this.ProjectDocument;
+         this.TaskCommentHisObj = list;
 
         let TaskCommentID = `<Field Name="Task Comment ID" DisplayName="Task Comment ID" Type="Lookup" Required="FALSE" ShowField="ID" List=` + TaskCommentsID + `/>`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(TaskCommentID).then(res => {
@@ -1364,6 +1382,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
                     console.log("IsDeleted created in list ", ListName);
+                    
+            this.AddPermissionsToTaskCommentHisList(ListName, ProName);
                     this.CreateProjectDocument(ProName, ProjectDocument, spWeb, spEnableCT);
                 }).catch(err => {
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
@@ -1385,17 +1405,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         spWeb.lists.add(ProjectDocument, ProjectDocumentDesc, DocTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectDocument, " created successfuly !");
-            reactHandler.AddProjectDocColumns(ProjectDocument, ProName, spWeb, spEnableCT);
-            reactHandler.DocumentObj = splist.list;
-            reactHandler.AddPermissionsToDocumentList(ProjectDocument, ProName);
+            reactHandler.AddProjectDocColumns(ProjectDocument, ProName, spWeb, spEnableCT,splist.list);
         }).catch(err => {
             console.log("Error while creating Project Doc List, Error -", err);
         });
     }
 
-    private AddProjectDocColumns(ListName, ProName, spWeb, spEnableCT) {
+    private AddProjectDocColumns(ListName, ProName, spWeb, spEnableCT,list) {
         //let Risks = ProName + " Risks";
-        let Requirements = ProName + " Requirements";
+        
+        let Requirements = ProName + this.Requirements;
+        
+            this.DocumentObj = list;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1404,7 +1425,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         let Owner = `<Field Name='Owner' StaticName='Owner' DisplayName='Owner' Type='User'/>`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Owner).then(res => {
             console.log("Owner created in list ", ListName);
-
+             
+            this.AddPermissionsToDocumentList(ListName, ProName);
             this.CreateRequirements(ProName, Requirements, spWeb, spEnableCT);
 
         }).catch(err => {
@@ -1424,18 +1446,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         spWeb.lists.add(Requirements, RequirementsDesc, RequirementsTemplateId, spEnableCT).then(function (splist) {
             console.log(Requirements, " created successfuly !");
             // reactHandler.AddRequirementColumns(Requirements);
-            reactHandler.AddRequirementColumns(Requirements, ProName, spWeb, spEnableCT);
-            reactHandler.RequirementObj = splist.list;
-            reactHandler.AddPermissionsToRequirementList(Requirements, ProName);
+            reactHandler.AddRequirementColumns(Requirements, ProName, spWeb, spEnableCT,splist.list);
         }).catch(err => {
             console.log("Error while creating Requirement List, Error -", err);
         });
     }
 
     // private AddRequirementColumns(ListName){
-    private AddRequirementColumns(ListName, ProName, spWeb, spEnableCT) {
+    private AddRequirementColumns(ListName, ProName, spWeb, spEnableCT,list) {
 
-        let ProjectTeamMembers = ProName + " Project Team Members";
+        
+        let ProjectTeamMembers = ProName + this.ProjectTeamMembers;
+        
+            this.RequirementObj = list;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1472,6 +1495,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(ImpactOnTimelines).then(res => {
                                 console.log("ImpactOnTimelines created in list ", ListName);
 
+                                
+            this.AddPermissionsToRequirementList(ListName, ProName);
                                 this.CreateProjectTeamMembers(ProName, ProjectTeamMembers, spWeb, spEnableCT);
                             }).catch(err => {
                                 console.log("Error while creating column ImpactOnTimelines - ", " in list -", ListName, " Error -", err);
@@ -1509,17 +1534,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         spWeb.lists.add(ProjectTeamMembers, TeamMembersDesc, TeamMembersTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectTeamMembers, " created successfuly !");
-            reactHandler.AddTeamMemberColumns(ProjectTeamMembers, ProName, spWeb, spEnableCT);
-            reactHandler.TeamMemberObj = splist.list;
-            reactHandler.AddPermissionsToTeamMemberList(ProjectTeamMembers, ProName);
+            reactHandler.AddTeamMemberColumns(ProjectTeamMembers, ProName, spWeb, spEnableCT,splist.list);
         }).catch(err => {
             console.log("Error while creating Team Members List, Error -", err);
         });
     }
 
     // private AddTeamMemberColumns(ListName){
-    private AddTeamMemberColumns(ListName, ProName, spWeb, spEnableCT) {
-        let ProjectInfo = ProName + " Project Information";
+    private AddTeamMemberColumns(ListName, ProName, spWeb, spEnableCT,list) {
+        
+        let ProjectInfo = ProName + this.ProjectInfo;
+        
+            this.TeamMemberObj = list;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1546,7 +1572,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                         </Field>`;
                     sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Status).then(res => {
                         console.log("Status created in list ", ListName);
-
+                        
+            this.AddPermissionsToTeamMemberList(ListName, ProName);
                         this.CreateProjectInfo(ProName, ProjectInfo, spWeb, spEnableCT);
 
                     }).catch(err => {
@@ -1578,17 +1605,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         spWeb.lists.add(ProjectInfo, ProjectInfoDesc, ProjectInfoTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectInfo, " created successfuly !");
-            reactHandler.AddProjectInfoColumns(ProjectInfo, ProName, spWeb, spEnableCT);
-            reactHandler.ProjectInfoObj = splist.list;
-            reactHandler.AddPermissionsToProjectInfoList(ProjectInfo, ProName);
+            reactHandler.AddProjectInfoColumns(ProjectInfo, ProName, spWeb, spEnableCT,splist.list);
         }).catch(err => {
             console.log("Error while creating Team Members List, Error -", err);
         });
     }
 
     // private AddProjectInfoColumns(ListName){
-    private AddProjectInfoColumns(ListName, ProName, spWeb, spEnableCT) {
-        let ProjectCal = ProName + " Project Calender";
+    private AddProjectInfoColumns(ListName, ProName, spWeb, spEnableCT,list) {
+        
+        let ProjectCal = ProName + this.ProjectCal;
+        
+            this.ProjectInfoObj =list ;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1601,7 +1629,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             let Roles_Responsibility = `<Field Name='Roles_Responsibility' StaticName='Roles_Responsibility' DisplayName='Roles_Responsibility' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Roles_Responsibility).then(res => {
                 console.log("Roles_Responsibility created in list ", ListName);
-
+                
+            this.AddPermissionsToProjectInfoList(ListName, ProName);
                 this.CreateProjectCalender(ProName, ProjectCal, spWeb, spEnableCT);
 
             }).catch(err => {
@@ -1621,7 +1650,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         var reactHandler = this;
         let ProjectCalenderDesc = ProjectCalender + " Description";
         let ProjectCalenderTemplateId = 106;
-        let ProjectComments = ProName + " Project Comments";
+        
+        let ProjectComments = ProName + this.ProjectComments;
 
         spWeb.lists.add(ProjectCalender, ProjectCalenderDesc, ProjectCalenderTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectCalender, " created successfuly !");
@@ -1660,16 +1690,17 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         spWeb.lists.add(ProjectComments, ProjectCommentDesc, ProjectCommentTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectComments, " created successfuly !");
             let ProjectListID = "{" + splist.data.Id + "}";
-            reactHandler.AddProjectCommentsColumns(ProjectComments, ProName, spWeb, spEnableCT, ProjectListID);
-            reactHandler.ProjectCommentObj = splist.list;
-            reactHandler.AddPermissionsToProjectCommentList(ProjectComments, ProName);
+            reactHandler.AddProjectCommentsColumns(ProjectComments, ProName, spWeb, spEnableCT, ProjectListID, splist.list);
         }).catch(err => {
             console.log("Error while creating Project Comments List, Error -", err);
         });
     }
 
-    private AddProjectCommentsColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID) {
-        let ProjectCommentsHistory = ProName + " Project Comments History";
+    private AddProjectCommentsColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID,list) {
+        
+        let ProjectCommentsHistory = ProName + this.ProjectCommentsHistory;
+        
+            this.ProjectCommentObj =list;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1686,6 +1717,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
                     console.log("IsDeleted created in list ", ListName);
+                    
+            this.AddPermissionsToProjectCommentList(ListName, ProName);
                     this.CreateProjectCommentHistory(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID);
                 }).catch(err => {
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
@@ -1708,14 +1741,46 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         // Create Project Comment History List & Columns
         spWeb.lists.add(ProjectCommentsHistory, ProjectCommentsHistoryDesc, ProjectCommentsHistoryTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectCommentsHistory, " created successfuly !");
-            reactHandler.AddProjectCommentsHistoryColumns(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID);
-            reactHandler.ProjectCommentHisObj = splist.list;
-            reactHandler.AddPermissionsToProjectCommentHisList(ProjectCommentsHistory, ProName);
+            reactHandler.AddProjectCommentsHistoryColumns(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID,splist.list);
+           
             //reactHandler.cloneListItems(ProName);
         }).catch(err => {
             console.log("Error while creating Project Comments History List, Error -", err);
         });
     }
+
+     private AddProjectCommentsHistoryColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID,list) {
+
+         
+         this.ProjectCommentHisObj = list;
+
+        let CommentID = `<Field Name="CommentID" DisplayName="CommentID" Type="Lookup" Required="FALSE" ShowField="CommentID" List="` + ProjectListID + `" />`;
+        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(CommentID).then(res => {
+            console.log("CommentID created in list ", ListName);
+
+            let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
+            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
+                console.log("Comment created in list ", ListName);
+
+                let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
+                sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
+                    console.log("IsDeleted created in list ", ListName);
+                        
+            this.AddPermissionsToProjectCommentHisList(ListName, ProName);
+                     
+                }).catch(err => {
+                    console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
+                }); //IsDeleted
+
+            }).catch(err => {
+                console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
+            }); //Comment
+
+        }).catch(err => {
+            console.log("Error while creating column CommentID - ", " in list -", ListName, " Error -", err);
+        }); //CommentID
+    }
+
     private cloneListItems(ProName) {
 
         //if (this.state.isCalender === true) {
@@ -1990,30 +2055,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 console.log("Error while copying document in list ", newDocumentList, " - ", err);
             });
     }
-    private AddProjectCommentsHistoryColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID) {
-        let CommentID = `<Field Name="CommentID" DisplayName="CommentID" Type="Lookup" Required="FALSE" ShowField="CommentID" List="` + ProjectListID + `" />`;
-        sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(CommentID).then(res => {
-            console.log("CommentID created in list ", ListName);
-
-            let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
-            sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
-                console.log("Comment created in list ", ListName);
-
-                let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
-                sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
-                    console.log("IsDeleted created in list ", ListName);
-                }).catch(err => {
-                    console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
-                }); //IsDeleted
-
-            }).catch(err => {
-                console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
-            }); //Comment
-
-        }).catch(err => {
-            console.log("Error while creating column CommentID - ", " in list -", ListName, " Error -", err);
-        }); //CommentID
-    }
+   
 
 
 
@@ -2051,6 +2093,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                     this.addProjectTag(tagName, projectId)
                 }
+            }).catch(err =>{
+                console.log("Error in addProjectTagByTagName -", err);
             });
     }
     addProjectTag(tagName, projectID) {
@@ -2067,7 +2111,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             //     this._showModal();
             // }
             console.log('Project team members added -', response);
-        });
+        }).catch(err =>{
+                console.log("Error in addProjectTag -", err);
+            });
     }
 
     updateProjectTag(TagName, projectId, project, filter) {
@@ -2090,7 +2136,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     console.log(JSON.stringify(result));
                 });
             }
-        });
+        }).catch(err =>{
+                console.log("Error in updateProjectTag -", err);
+            });
     }
     _showModal() {
         this.setState({ showModal: true });
@@ -2402,9 +2450,9 @@ Schedule and Project Team now?
                     <Modal.Footer>
                         <Button onClick={this._closeModal}>I'll Do it Later</Button>
                         <Link to={`/viewProjectDetails/${this.state.savedProjectID}`}>
-                        <Button>Continue</Button>
+                            <Button>Continue</Button>
                         </Link>
-                        
+
                     </Modal.Footer>
                 </Modal>
             </div>

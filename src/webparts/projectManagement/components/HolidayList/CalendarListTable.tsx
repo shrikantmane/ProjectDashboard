@@ -157,10 +157,10 @@ ICalendarProps,
                         Add Event
                     </button>
                     {this.state.showComponent ?
-                        <AddEvent id={this.state.informationID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
+                        <AddEvent id={this.state.informationID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId}  /> :
                         null
                     }
-                    <div className="project-list">
+                    <div className="holiday-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
                             <Column header="Edit" body={this.editTemplate} />
                             <Column header="Title" field="Title" />

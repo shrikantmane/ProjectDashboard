@@ -215,7 +215,7 @@ this.refreshGrid();
                             <span style={{ color:"red" }} >Cannot be Empty</span>   :
                         null
                     } 
-                    <div className="project-list">
+                    <div className="member-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
                             <Column field="AssignedTo" header="Owner" sortable={true} body={this.ownerTemplate} />
 

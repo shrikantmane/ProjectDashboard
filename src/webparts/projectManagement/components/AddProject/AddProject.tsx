@@ -2668,7 +2668,22 @@ Schedule and Project Team now?
                 fields["clonedocuments"] = response ? response[0].Clone_x0020_Documents : false;
                 fields["clonerequirements"] = response ? response[0].Clone_x0020_Requirements : false;
                 fields["clonecalender"] = response ? response[0].Clone_x0020_Calender : false;
-                this.setState({ fields });
+
+                const selectedPeopleList: IPersonaWithMenu[] = [];
+                const selectedTarget: IPersonaWithMenu = {};
+                let tempSelectedPersona = {};
+                if (response[0].AssignedTo.length > 0) {
+                    response[0].AssignedTo.forEach(element => {
+                        tempSelectedPersona = {
+                            key: element.ID,
+                            text: element.Title
+                        }
+                        selectedPeopleList.push(tempSelectedPersona);
+                    });
+                }
+                this.state.fields["ownername"] = selectedPeopleList;
+
+                this.setState({ fields,currentSelectedItems: selectedPeopleList });
             }).catch((e: Error) => {
                 alert(`There was an error : ${e.message}`);
             });

@@ -131,6 +131,7 @@ export default class ProjectListTable extends React.Component<
  
     }
     public render(): React.ReactElement<IInformationState> {
+        console.log('this.state.projectList', this.state.projectList)
         return (
             <div className="PanelContainer">
                 {/* <DataTableSubmenu /> */}
@@ -148,7 +149,7 @@ export default class ProjectListTable extends React.Component<
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
                             <Column header="Edit" body={this.editTemplate} />
                             <Column field="Roles_Responsibility" sortable={true} header="Role/ Responsibility" />
-                            <Column field="Owner" sortable={true} header="Owner"  body={this.ownerTemplate}  />
+                            <Column field="OwnerName" sortable={true} header="Owner"    />
                             <Column field="Department" sortable={true} header="Departments" />
                             <Column header="Remove" body={this.actionTemplate} />
                         </DataTable>
@@ -162,29 +163,61 @@ export default class ProjectListTable extends React.Component<
 
     /* Api Call*/
 
-    getProjectInformation(list) {
-       // var reactHandler=this;
-        if ((list) != "") {
-            sp.web.lists.getByTitle(list).items
-                .select("ID", "Roles_Responsibility", "Owner/ID", "Owner/Title","Owner/EMail").expand("Owner")
-                .get()
-                .then((response) => {
-                    console.log('infor by name', response);
-                   this.setState({ projectList: response });
-                    // for (var i = 0; i < response.length; i++) {
-                    //   //  var Id = response[i].Owner.ID;
-                    //  //   var Title = response[i].Owner.Title;
-                    //   //  var Email = response[i].Owner.EMail;
-                    //    var Responsibility=response[i].Roles_Responsibility;
-                    //    var owner=response[i].Owner;
-                    //     //reactHandler.GetUserProperties(owner,Responsibility);
-                    //   }
+    // getProjectInformation(list) {
+      
+    //     if ((list) != "") {
+    //         sp.web.lists.getByTitle(list).items
+    //             .select("ID", "Roles_Responsibility", "Owner/ID", "Owner/Title","Owner/EMail").expand("Owner")
+    //             .get()
+    //             .then((response) => {
+    //                 console.log('infor by name', response);
+    //               // this.setState({ projectList: response });
+    //                 for (var i = 0; i < response.length; i++) {
+    //                     var Id = response[i].ID;
+    //                  //   var Title = response[i].Owner.Title;
+    //                   //  var Email = response[i].Owner.EMail;
+    //                    var Responsibility=response[i].Roles_Responsibility;
+    //                    var owner=response[i].Owner;
+    //                     this.GetUserProperties(owner,Responsibility,Id);
+    //                   }
 
+    //             });
+    //     }
+    // }
+
+
+    private getProjectInformation(list) {
+        if ((list) != "") {
+        sp.web.lists.getByTitle(list).items
+        .select("ID", "Roles_Responsibility", "Owner/ID", "Owner/Title","Owner/EMail").expand("Owner")
+          .get()
+          .then((response: Array<Information>) => {
+            let currentScope = this;
+            let count = 1;
+            response.forEach(item => {
+              if (item.Owner) {
+                let loginName = "i:0#.f|membership|" + item.Owner.EMail;
+                sp.profiles.getPropertiesFor(loginName).then(function (result) {
+                  item.OwnerName = item.Owner.Title;
+                  item.Department = result.UserProfileProperties[13].Value;
+                  item.Owner.Department = result.UserProfileProperties[13].Value;                
+                  if (count == response.length) {
+                    currentScope.setState({ projectList: response });
+                  }
+                  count++;
                 });
+              } else {
+                if (count == response.length) {
+                  currentScope.setState({ projectList: response });
+                }
+                count++;
+              }
+            });
+          });
         }
-    }
-    // private GetUserProperties(owner,Responsibility) {
-    //     let reactHandler = this;
+      }
+    // private GetUserProperties(owner,Responsibility,Id) {
+      
     //     let loginName = "i:0#.f|membership|" + owner.EMail;
     //     let department1;
     //     let jobTitle;
@@ -197,9 +230,9 @@ export default class ProjectListTable extends React.Component<
     //       jobTitle = response.UserProfileProperties[21].Value;
     //       console.log("department11",department1)
           
-          
-    //      reactHandler.setState(prevState => ({
-    //         projectList: [...prevState.projectList, { Roles_Responsibility: Responsibility, Owner: owner.Title,Department:department1  }]
+    //       console.log('prevState.projectList', this.state.projectList);
+    //      this.setState(prevState => ({
+    //         projectList: [...prevState.projectList, {ID:Id, Roles_Responsibility: Responsibility, Owner: owner.Title,Department:department1  }]
     //        }));
     
     //     }).catch(function (err) {

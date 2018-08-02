@@ -65,7 +65,7 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
                         <div className="col-sm-12">
                           <div className="row">
                             <div className="col-sm-4">
-                              <img className="img-responsive image-style" src={item.Team_x0020_Member.PictureURL} alt="" />
+                              <img className="img-responsive image-style" src="../../../../images/TJMiller_img.png" alt="" />
                             </div>
                             <div className="col-sm-8">
                               <div className="profileDetail">

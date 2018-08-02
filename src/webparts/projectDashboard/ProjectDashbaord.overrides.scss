@@ -551,16 +551,19 @@ div[class^="footerBar_"] {
     height: 500px;
     width: 100%;
   }
- .milestone {
-  line-height: 30px!important;
-  background-color: #d33daf;
-  border: 0 solid #61164f;
-  box-sizing: content-box;
-  border-radius: 3rem;
-  font-size: 10px;
-}
-.ganttStatus{
-  margin: 4px 0;
+  .zoom-bar .radio-label {
+    margin-right: 1rem;
+  }
+  .milestone {
+    line-height: 30px !important;
+    background-color: #d33daf;
+    border: 0 solid #61164f;
+    box-sizing: content-box;
+    border-radius: 3rem;
+    font-size: 10px;
+  }
+  .ganttStatus {
+    margin: 4px 0;
     border-radius: 3rem;
     color: #fff;
     width: 4rem;
@@ -571,27 +574,23 @@ div[class^="footerBar_"] {
     padding-top: 0;
     line-height: 1.5rem;
     font-weight: 600;
-}
+  }
   body {
     background: #eff3f6;
     color: #454545;
     font-family: AvenirLTStd-Book_3;
     overflow-x: auto;
   }
-  @font-face {
-    font-family: AvenirLTStd-Book_3; // src: url(../fonts/AvenirLTStd-Book_3.otf);
+  .ReactTable .rt-tbody .rt-td {
+    border-right: 1px solid rgba(0,0,0,.02);
+    color: #454545;
+    font-size: 13px;
+    font-weight: 800;
   }
-  @font-face {
-    font-family: AvenirLTStd-Heavy_2; // src: url(../fonts/AvenirLTStd-Heavy_2.otf);
-  }
-  @font-face {
-    font-family: AvenirLTStd-Light_3; // src: url(../fonts/AvenirLTStd-Light_3.otf);
-  }
-  /*.btn {
-padding: 7px 20px;
-} */
-  .main-content-section section {
-    /*padding-top: 100px;*/
+  .ReactTable .rt-tbody .rt-td > div > span{
+    font-size: 11px;
+    color: #424860;
+    font-weight: 800;
   }
   .main-content-section section:first-child,
   .main-content-section section#requirement {
@@ -626,18 +625,23 @@ padding: 7px 20px;
     text-align: center;
     padding-top: 0;
     line-height: 1.5rem;
+    margin-right: 0.5rem;
   }
   .project-tabs .projectName {
     font-weight: 600;
-    font-size: 16px;
+    font-size: 1.5rem;
     margin: 10px 0 10px 0;
+  }
+  .project-tabs .tagList {
+    display: inline-block;
+    margin-left: 0.5rem;
   }
   .Status-block {
     background-color: #fff;
   }
   .dark-blue {
-    background: #002441;
-    color: white;
+    background: #1d203a;
+    color: #fff;
     padding: 20px;
     border-radius: 8px 0 0 8px;
   }
@@ -665,8 +669,9 @@ padding: 7px 20px;
     top: 0.5rem;
   }
   .status-title {
-    font-weight: normal;
+    font-weight: 600;
     width: 100%;
+    font-size: 1.2rem;
   }
   .status-title .activityStatus {
     font-size: 1.1rem;
@@ -1049,8 +1054,8 @@ padding: 7px 20px;
   .cardHeading h5 {
     font-weight: 600;
     margin-top: 0;
-    color: #002441;
-    font-size: 0.7rem;
+    color: #1d203a;
+    font-size: .9rem;
   }
   .well .cardHeading+.form-group {
     padding: 0 15px;
@@ -1089,6 +1094,7 @@ padding: 7px 20px;
   .recommendedProjects {
     max-height: 615px;
     margin-bottom: 20px;
+    border: none;
   }
   .tasklist-div {
     display: flex;
@@ -1337,9 +1343,9 @@ padding: 7px 20px;
   .contactIcons .fa {
     color: #ccc;
   }
-//   .conversationTasks .well {
-//     max-height: 400px;
-//   }
+  //   .conversationTasks .well {
+  //     max-height: 400px;
+  //   }
   .taskContainer {
     padding-top: 2px;
     border-top: 1px solid #f5f5f5;
@@ -1394,18 +1400,13 @@ padding: 7px 20px;
     color: #238ef1;
   }
   .all-milestones {
-    border-bottom: 2px solid #002441;
-    border-right: 2px solid #002441;
-    border-top: 2px solid #002441;
+    border: 2px solid #1d203a;
     padding: 12px;
     border-radius: 0 8px 8px 0;
     height: 150px;
     max-height: 150px;
     overflow: hidden;
     overflow-y: auto;
-  }
-  .all-milestones row>div {
-    border-right: 1px solid #f5f5f5;
   }
   .all-milestones thead {
     display: none;
@@ -1427,20 +1428,12 @@ padding: 7px 20px;
     border: none;
     vertical-align: middle;
   }
-  .milestoneList {
-    border-bottom: 1px solid #dcdcdc;
-  }
-  .priority-btn {
-    position: absolute;
-    top: 3px;
-    left: 300px;
-  }
   .search-container {
     margin-top: 10px;
   }
   input[type=text] {
     color: #181818;
-    background-color: #eff3f6; 
+    background-color: #eff3f6;
     background-repeat: no-repeat;
     box-sizing: border-box;
     border: 2px solid #ddd;
@@ -1458,18 +1451,18 @@ padding: 7px 20px;
   }
   .btn-outline {
     border-radius: 5px !important;
-    border-color: #fff;
-    color: hsl(0, 0%, 100%) !important;
+    border-color: #504f6c;
+    color: #fff !important;
     width: auto;
-    background-color: #002441;
+    background-color: #1b1a30;
     height: auto;
     display: inline-block;
-    font-size: 11px;
     text-align: center;
-    padding: 0.3rem 1.2rem;
+    padding: .3rem 1.2rem;
+    font-weight: 600;
   }
   .due-date-style {
-    font-size: 13px;
+    font-size: 1.2rem;
     color: #777;
     margin: 0 8px;
   }
@@ -1553,11 +1546,17 @@ padding: 7px 20px;
     border: 1px solid #fcab47;
     background-color: transparent;
   }
-  .milestones-title {
-    font-size: large !important;
+  .all-milestones .col-sm-4.col-6 {
+    border-left: 1px solid #f8f9fd;
+  }
+  .all-milestones .milestoneList>.milestones-title {
+    font-size: 1rem;
     font-weight: 800 !important;
     margin-bottom: 6px !important;
     margin-top: 12px !important;
+  }
+  .all-milestones .milestoneList>.table-responsive-sm {
+    margin-left: 1.2rem;
   }
   .all-milestones tbody {
     line-height: 1.7;
@@ -1574,11 +1573,11 @@ padding: 7px 20px;
     -webkit-animation: jquery 2s ease-out;
     background-color: #fcab47;
   }
-  .taskGanttContainer{
+  .taskGanttContainer {
     overflow-y: hidden;
     height: 100%;
   }
-  .rt-resizable-header{
+  .rt-resizable-header {
     background-color: #002641;
     color: #fff;
   }

@@ -146,13 +146,13 @@ export default class AddProject extends React.Component<IAddInformationProps, {
         // get Project Documents list items for all projects
         let filterString = "ID eq " + id;
         sp.web.lists.getByTitle(this.props.list).items
-            .select("ID","Roles_Responsibility","Owner/Title","Owner/ID").expand("Owner")
+            .select("ID","Roles_Responsibility","Owner/Title","Owner/ID","Owner/EMail").expand("Owner")
             .filter(filterString)
             .get()
             .then((response) => {
                 let fields = this.state.fields;
                 console.log('Project1 by name', response);
-                console.log('Project11 by name',  response[0].Roles_Responsibility );
+                console.log('Project112 by name',  response[0].Roles_Responsibility );
                 fields["projectname"] = response ? response[0].Roles_Responsibility : '';
                // fields["ownername"]=response?response[0].Owner.Title : '';
                 const selectedPeopleList: IPersonaWithMenu[] = [];

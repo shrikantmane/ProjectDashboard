@@ -135,6 +135,48 @@ export default class ProjectListTable extends React.Component<
     actionTemplate(rowData, column) {
         return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}> Remove</a>;
     }
+    fileTemplate(rowData: Requirement, column) {
+        if (rowData.AttachmentFiles) {
+            let iconClass = "";
+            let type = "";
+            if(rowData.AttachmentFiles[0].length>0){
+            let data = rowData.AttachmentFiles[0].FileName;}
+            // if (data.length > 1) {
+            //     type = data[1];
+            // }
+            // switch (type.toLowerCase()) {
+            //     case "doc":
+            //     case "docx":
+            //         iconClass = "far fa-file-word";
+            //         break;
+            //     case "pdf":
+            //         iconClass = "far fa-file-pdf";
+            //         break;
+            //     case "xls":
+            //     case "xlsx":
+            //         iconClass = "far fa-file-excel";
+            //         break;
+            //     case "png":
+            //     case "jpeg":
+            //     case "gif":
+            //         iconClass = "far fa-file-image";
+            //         break;
+            //     default:
+            //         iconClass = "fa fa-file";
+            //         break;
+            // }
+
+
+            return (
+                <div>
+
+                    <a href={rowData.AttachmentFiles[0].ServerRelativeUrl} >{rowData.AttachmentFiles[0].FileName} </a>
+                    
+                </div>
+            );
+
+        }
+    }
     private onEditProject(rowData, e): any {
         e.preventDefault();
         console.log('Edit :' + rowData);
@@ -176,11 +218,11 @@ export default class ProjectListTable extends React.Component<
                             <Column header="Edit" body={this.editTemplate} />
                             <Column field="Requirement" sortable={true} header="Requirement" />
                             <Column field="Resources" sortable={true} header="Resources" />
-                            <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timeline?" body={this.impactTemplate} />
+                             <Column field="Impact_x0020_On_x0020_Timelines" sortable={true} header="Impact on Timeliness?" body={this.impactTemplate} /> 
                             <Column field="Efforts" header="Efforts" sortable={true} />
-                            <Column field="Attachments" header="Attachment" sortable={true} body={this.attachmentTemplate} />
+                            <Column field="AttachmentFiles" header="Attachment" sortable={true} body={this.attachmentTemplate} />
                             <Column field="Apporval_x0020_Status" sortable={true} header="Approval Status" />
-                            <Column field="Approver" header="Approver" sortable={true} body={this.approverTemplate} />
+                             <Column field="Approver" header="Approver" sortable={true} body={this.approverTemplate} /> 
                             <Column field="Author" header="Created By" sortable={true} body={this.ownerTemplate} />
                             <Column field="Created" header="Created On" sortable={true} body={this.duedateTemplate} />
                             <Column header="Remove" body={this.actionTemplate} />
@@ -229,18 +271,20 @@ export default class ProjectListTable extends React.Component<
         if ((list) != "") {
 
 
-            sp.web.lists.getByTitle(list).items.select("ID", "Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created")
-                .expand("Approver", "Author")
+            sp.web.lists.getByTitle(list).items.select("ID", "Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created","AttachmentFiles","AttachmentFiles/ServerRelativeUrl","AttachmentFiles/FileName")
+                .expand("Approver", "Author","AttachmentFiles")
                 .get().
                 then((response) => {
-                    console.log('member by list', response);
+                    console.log('requiremnts by list', response);
+                   
                     this.setState({ projectList: response });
-
+                 
+                    
+               // }
                 });
-            //}
+            }
         }
     }
 
 
 
-}

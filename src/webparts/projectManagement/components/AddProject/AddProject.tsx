@@ -1607,11 +1607,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(TeamMember).then(res => {
             console.log("TeamMember created in list ", ListName);
 
-            let StartDate = `<Field Name='StartDate' StaticName='StartDate' DisplayName='Start Date' Type='DateTime' Format='DateOnly' ><Default>[Now]</Default></Field>`;
+            let StartDate = `<Field Name='StartDate' StaticName='StartDate' DisplayName='Start Date' Type='DateTime' Format='DateOnly' ></Field>`;
             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(StartDate).then(res => {
                 console.log("StartDate created in list ", ListName);
 
-                let EndDate = `<Field Name='EndDate' StaticName='EndDate' DisplayName='End Date' Type='DateTime' Format='DateOnly' ><Default>[Now]</Default></Field>`;
+                let EndDate = `<Field Name='EndDate' StaticName='EndDate' DisplayName='End Date' Type='DateTime' Format='DateOnly' ></Field>`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(EndDate).then(res => {
                     console.log("EndDate created in list ", ListName);
 

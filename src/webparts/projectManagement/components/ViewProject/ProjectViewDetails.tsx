@@ -37,6 +37,7 @@ export default class ProjectViewDetails extends React.Component<
             Id: "",
             calendarList: "",
             showComponent: false,
+            refreshCalender:false,
             imgURL:"",
             events: [
                 {
@@ -80,6 +81,7 @@ export default class ProjectViewDetails extends React.Component<
             ],
         };
         this.onAddProject = this.onAddProject.bind(this);
+        this.onRefreshCalender = this.onRefreshCalender.bind(this)
     }
     componentDidMount() {
         const { match: { params } } = this.props;
@@ -87,6 +89,9 @@ export default class ProjectViewDetails extends React.Component<
             "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css"
         );
         this.getProjectData(params.id);
+    }
+    onRefreshCalender (refresh){
+        this.setState({refreshCalender : true});
     }
     getProjectData(id){
         console.log('params : ' +id);
@@ -247,7 +252,7 @@ export default class ProjectViewDetails extends React.Component<
                                                 <div className="col-xs-12 col-sm-12 col-md-12 col-lg-6">
                                                     <div className="well recommendedProjects">
                                                         <div className="row">
-                                                            <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id}></CalendarListTable></div>
+                                                            <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id} onRefreshCalender ={this.onRefreshCalender}></CalendarListTable></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -275,7 +280,7 @@ export default class ProjectViewDetails extends React.Component<
                                                                             eventLimit={true} // allow "more" link when too many events
                                                                             events={this.state}
                                                                         /> */}
-                                                                         <CalendarViewListTable list={this.state.calendarList} projectId={this.state.Id}></CalendarViewListTable> 
+                                                                         <CalendarViewListTable list={this.state.calendarList} projectId={this.state.Id} refreshCalender ={this.state.refreshCalender}></CalendarViewListTable> 
                                                                     </div>
                                                                 </div>
                                                             </div>

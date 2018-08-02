@@ -62,6 +62,7 @@ ICalendarProps,
             showComponent: false,
             informationID: null
         })
+        this.props.onRefreshCalender();
         this.getProjectCalendar(this.props.list);
     }
     reopenPanel() {

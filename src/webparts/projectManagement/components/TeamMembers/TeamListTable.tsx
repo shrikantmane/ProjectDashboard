@@ -175,6 +175,9 @@ export default class ProjectListTable extends React.Component<
         }).then((response) => {
             console.log('Item adding-', response);
             this.setState(fields);
+            this.setState({
+                currentSelectedItems : []
+              });
 this.refreshGrid();
 
         });

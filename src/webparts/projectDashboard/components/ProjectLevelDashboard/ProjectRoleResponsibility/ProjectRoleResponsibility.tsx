@@ -65,10 +65,10 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
                       <div className="row">
                         <div className="col-sm-12">
                           <div className="row">
-                            <div className="col-sm-2">
+                            <div className="col-sm-3">
                               <img className="img-responsive image-style" src={item.Owner.PictureURL} alt="" />
                             </div>
-                            <div className="col-sm-6">
+                            <div className="col-sm-5">
                               <div className="profileDetail">
                                 <div className="profileName">
                                   <h4>{item.Owner ? item.Owner.Title : ""}</h4>

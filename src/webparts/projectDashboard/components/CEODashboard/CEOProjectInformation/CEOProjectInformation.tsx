@@ -627,8 +627,10 @@ export default class CEOProjectInformation extends React.Component<
       .expand("AssignedTo", "Status0")
       .getAll()
       .then((response: Array<CEOProjects>) => {
-        // this.getMildStones(response);
-        this.getAllMildStones(response);
+        if (response && response.length > 0)
+          this.getAllMildStones(response);
+        else
+          this.setState({ isLoading: false });
       });
   }
 
@@ -782,26 +784,30 @@ export default class CEOProjectInformation extends React.Component<
       .expand("Team_x0020_Member")
       .get()
       .then((response: Array<TeamMembers>) => {
-        response.forEach(item => {
-          if (item.Team_x0020_Member) {
-            if (item.Team_x0020_Member.EMail) {
-              item.Team_x0020_Member.ImgUrl =
-                "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
-                item.Team_x0020_Member.EMail +
-                "&UA=0&size=HR64x64&sc=1531997060853";
-              // item.Team_x0020_Member.ImgUrl = "/_layouts/15/userphoto.aspx?size=S&username=" + item.Team_x0020_Member.EMail     
-            } else {
-              //item.Team_x0020_Member.ImgUrl = "";
-              item.Team_x0020_Member.ImgUrl = "";
+        if (response && response.length > 0) {
+          response.forEach(item => {
+            if (item.Team_x0020_Member) {
+              if (item.Team_x0020_Member.EMail) {
+                item.Team_x0020_Member.ImgUrl =
+                  "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+                  item.Team_x0020_Member.EMail +
+                  "&UA=0&size=HR64x64&sc=1531997060853";
+                // item.Team_x0020_Member.ImgUrl = "/_layouts/15/userphoto.aspx?size=S&username=" + item.Team_x0020_Member.EMail     
+              } else {
+                //item.Team_x0020_Member.ImgUrl = "";
+                item.Team_x0020_Member.ImgUrl = "";
 
+              }
+              item.Team_x0020_Member.TaskCount = currentProject.MildStoneList.filter(a => a.AssignedTo && a.AssignedTo[0] && a.AssignedTo[0].ID == item.Team_x0020_Member.ID).length;
             }
-            item.Team_x0020_Member.TaskCount = currentProject.MildStoneList.filter(a => a.AssignedTo && a.AssignedTo[0] && a.AssignedTo[0].ID == item.Team_x0020_Member.ID).length;
-          }
-        });
-        let projects = this.state.projectList;
-        let project = find(projects, { ID: currentProject.ID });
-        project.TeamMemberList = response;
-        this.setState({ projectList: projects, isTeamMemberLoaded: true });
+          });
+          let projects = this.state.projectList;
+          let project = find(projects, { ID: currentProject.ID });
+          project.TeamMemberList = response;
+          this.setState({ projectList: projects, isTeamMemberLoaded: true });
+        } else {
+          this.setState({ isTeamMemberLoaded: true });
+        }
       });
   }
   // private getMildStonesByProject(currentProject: CEOProjects): void {
@@ -857,10 +863,14 @@ export default class CEOProjectInformation extends React.Component<
       .expand("File")
       .get()
       .then((response: Array<Documents>) => {
-        let projects = this.state.projectList;
-        let project = find(projects, { ID: currentProject.ID });
-        project.DocumentList = response;
-        this.setState({ projectList: projects, isKeyDocumentLoaded: true });
+        if (response) {
+          let projects = this.state.projectList;
+          let project = find(projects, { ID: currentProject.ID });
+          project.DocumentList = response;
+          this.setState({ projectList: projects, isKeyDocumentLoaded: true });
+        } else {
+          this.setState({ isKeyDocumentLoaded: true });
+        }
       });
   }
 
@@ -870,8 +880,8 @@ export default class CEOProjectInformation extends React.Component<
       .select("Projects/ID", "Tag", "Color").expand("Projects")
       .filter(filterString)
       .get()
-      .then((response) => {      
-        if (response.length > 0) {
+      .then((response) => {
+        if (response && response.length > 0) {
           let tags = new Array<Tags>();
           response.forEach(element => {
             tags.push({
@@ -883,6 +893,8 @@ export default class CEOProjectInformation extends React.Component<
           let project = find(projects, { ID: currentProject.ID });
           project.TagList = tags;
           this.setState({ projectList: projects, isTagLoaded: true });
+        } else {
+          this.setState({ isTagLoaded: true });
         }
       });
   }

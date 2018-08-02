@@ -100,10 +100,9 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
   }
 
   public render(): React.ReactElement<IProjectPlanProps> {
-    console.log('this.state.chart', this.state.chart);
     return (
       <div className="col-lg-12 col-md-12 col-sm-12">
-        <div className="well recommendedProjects  ">
+        <div className="well recommendedProjects" style={{ maxHeight: "none"}}>
           <div className="row">
             <div className="col-sm-12 col-12 cardHeading">
               <div className="tasklist-div">

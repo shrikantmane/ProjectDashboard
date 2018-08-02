@@ -4,5 +4,6 @@ export interface ICalendarViewProps {
     // projectList: Array<CEOProjects>,
     list:any;
     projectId:any;
+    refreshCalender: boolean;
   }
   

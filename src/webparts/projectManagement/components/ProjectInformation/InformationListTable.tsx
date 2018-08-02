@@ -144,7 +144,7 @@ export default class ProjectListTable extends React.Component<
                         <AddInformation id={this.state.informationID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
                         null
                     }
-                    <div className="project-list">
+                    <div className="responsibility-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
                             <Column header="Edit" body={this.editTemplate} />
                             <Column field="Roles_Responsibility" sortable={true} header="Role/ Responsibility" />

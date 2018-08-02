@@ -38,7 +38,8 @@ export default class ProjectViewDetails extends React.Component<
             Id: "",
             calendarList: "",
             showComponent: false,
-            imgURL: "",
+            refreshCalender:false,
+            imgURL:"",
             events: [
                 {
                     id: 10,
@@ -81,6 +82,7 @@ export default class ProjectViewDetails extends React.Component<
             ],
         };
         this.onAddProject = this.onAddProject.bind(this);
+        this.onRefreshCalender = this.onRefreshCalender.bind(this)
     }
 
     violet: any;
@@ -98,9 +100,11 @@ export default class ProjectViewDetails extends React.Component<
         if (elmnt)
             elmnt.scrollIntoView();
     }
-
-    getProjectData(id) {
-        console.log('params : ' + id);
+    onRefreshCalender (refresh){
+        this.setState({refreshCalender : true});
+    }
+    getProjectData(id){
+        console.log('params : ' +id);
         sp.web.lists.getByTitle("Project").items
             .select("ID", "Project", "DueDate", "Priority", "On_x0020_Hold_x0020_Status", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "AssignedTo/EMail", "Priority", "Task_x0020_List", "Project_x0020_Team_x0020_Members", "Project_x0020_Document", "Requirements", "Project_x0020_Infromation", "Project_x0020_Calender", "StartDate").expand("Status0", "AssignedTo")
             .filter('ID eq \'' + id + '\'')
@@ -259,7 +263,7 @@ export default class ProjectViewDetails extends React.Component<
                                                 <div className="col-xs-12 col-sm-12 col-md-12 col-lg-6" ref={(section) => { this.violet = section; }}>
                                                     <div className="well recommendedProjects">
                                                         <div className="row">
-                                                            <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id}></CalendarListTable></div>
+                                                            <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id} onRefreshCalender ={this.onRefreshCalender}></CalendarListTable></div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -287,7 +291,7 @@ export default class ProjectViewDetails extends React.Component<
                                                                             eventLimit={true} // allow "more" link when too many events
                                                                             events={this.state}
                                                                         /> */}
-                                                                        <CalendarViewListTable list={this.state.calendarList} projectId={this.state.Id}></CalendarViewListTable>
+                                                                         <CalendarViewListTable list={this.state.calendarList} projectId={this.state.Id} refreshCalender ={this.state.refreshCalender}></CalendarViewListTable> 
                                                                     </div>
                                                                 </div>
                                                             </div>

@@ -134,7 +134,7 @@ export default class ProjectListTable extends React.Component<
                                 <Column field="Status0" sortable={true} header="Status" body={this.statusTemplate} />
                                 <Column field="AssignedTo" sortable={true} header="Owner" body={this.ownerTemplate} />
                                 <Column field="Priority" sortable={true} header="Priority" />
-                                <Column field="Tag" header="Tags" />
+                                <Column field="Risks" sortable={true} header="Risk" />
                                 <Column header="Project Details" body={this.actionTemplate} />
                             </DataTable>
                         </div>
@@ -159,6 +159,7 @@ export default class ProjectListTable extends React.Component<
             "AssignedTo/Title",
             "AssignedTo/ID",
             "Priority",
+            "Risks",
             "ID")
             .expand("Status0", "AssignedTo")
             .getAll()

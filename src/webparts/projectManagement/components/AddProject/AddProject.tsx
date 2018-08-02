@@ -154,6 +154,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     TaskStatusColor: string;
     roleAssignments: IRoleAssignments[];
     savedProjectID: any;
+    statusList:any;
 }> {
     private _picker: IBasePicker<IPersonaProps>;
     // Added by Ashwini
@@ -217,15 +218,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             ProjectList: '',
             TaskStatusColor: '',
             roleAssignments: [],
-            savedProjectID: 0
+            savedProjectID: 0,
+            statusList:[]
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
+        this.handleBlurOnProjectName = this.handleBlurOnProjectName.bind(this);
     }
     componentDidMount() {
 
         this._getAllSiteUsers();
         this.getAllProject();
+        this.getStatusList();
         this.getAllProjectTags();
         if (this.props.id) {
             this.setState({
@@ -293,7 +297,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     // Get Users Form HBC Owners Group
     private GetUsersFromHBCOwnerGroup() {
         let reactHandler = this;
-        sp.web.siteGroups.getByName('HBC Owners').users.get().then(function (result) {
+        sp.web.siteGroups.getByName('HBC Dev Site Owners').users.get().then(function (result) {
             for (var i = 0; i < result.length; i++) {
                 let ownerName = result[i].Title;
                 let ownerId = result[i].Id;
@@ -337,6 +341,28 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         console.log(`action: ${actionMeta.action}`);
         console.groupEnd();
     };
+    handleBlurOnProjectName(){
+        console.log(this.state.fields['projectname']);
+        let errors = this.state.errors;
+        let errorClass = this.state.errorClass;
+        if(this.state.fields['projectname']){
+            let flag = false;
+            this.state.projectList.forEach(element => {
+                if(element.Project.toLowerCase() === this.state.fields['projectname'].toLowerCase()){
+                    flag = true; 
+                }
+            });
+            if(flag){
+                errors["projectname"] = "Project name is already exist.";
+                errorClass["projectname"] = "classError";
+                this.setState({ errors: errors, errorClass: errorClass });
+            }else{
+                errors["projectname"] = "";
+                errorClass["projectname"] = "";
+                this.setState({ errors: errors, errorClass: errorClass });
+            }
+        }
+    }
     handleChange(field, e, isChecked: boolean) {
         if (field === 'startdate') {
             let fields = this.state.fields;
@@ -427,6 +453,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         let formIsValid = true;
 
         //Name
+        if(this.state.errors["projectname"]){
+            formIsValid = false;
+            errors["projectname"] = "Project name is already exist.";
+            errorClass["projectname"] = "classError";
+        }
         if (!fields["projectname"]) {
             formIsValid = false;
             errors["projectname"] = "Cannot be empty";
@@ -497,6 +528,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
     clearProjectInfo() {
         let fields = this.state.fields;
+        let errors = this.state.errors;
+        let errorClass = this.state.errorClass;
+        const selectedPeopleList: IPersonaWithMenu[] = [];
         fields["project"] = '';
         fields["projectname"] = '';
         fields["priority"] = '';
@@ -511,7 +545,20 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         fields["clonedocuments"] = false;
         fields["clonerequirements"] = false;
         fields["clonecalender"] = false;
-        this.setState({ fields });
+        fields["tags"] = [];
+
+        errors["projectname"] = "";
+        errors["ownername"] = "";
+        errors["startdate"] = "";
+        errors["projectdescription"] = "";
+        errors["duedate"] = "";
+        errors["tags"] = "";
+
+        errorClass["projectname"] = "";
+        errorClass["projectdescription"] = "";
+
+        
+        this.setState({ currentSelectedItems: selectedPeopleList,fields, errors, errorClass});
     }
     projectSubmit(e) {
         e.preventDefault();
@@ -543,8 +590,12 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     ProTypeDeptSpecific: obj.departmentspecific ? obj.departmentspecific : false,
                     On_x0020_Hold_x0020_Status: obj.status ? obj.status : 'On Hold',
                     On_x0020_Hold_x0020_Date: obj.statusdate ? new Date(obj.statusdate).toDateString() : null,
+                    Status0Id:obj.projectstatus ? obj.projectstatus : 1,
+                    Risks:obj.risk ? obj.risk : 'Low',
 
                 }).then(i => {
+                    this._closePanel();
+                    this.props.parentMethod();
                     this.state.fields['tags'].forEach(element => {
                         this.addProjectTagByTagName(element.value, this.props.id);
                     });
@@ -1163,7 +1214,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Clone_x0020_Requirements: obj.clonerequirements ? obj.clonerequirements : false,
             Clone_x0020_Schedule: obj.cloneschedule ? obj.cloneschedule : false,
             Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
-
+            Status0Id:obj.projectstatus ? obj.projectstatus : 1,
+            Risks:obj.risk ? obj.risk : 'Low',
 
             Title: "No Title",
 
@@ -2163,7 +2215,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         const statusContent = this.props.id ?
             <div className="col-lg-6">
                 <div className="form-group">
-                    <label>Status</label>
+                    <label>On Hold Status</label>
                     <select ref="status" className={formControl + " " + (this.state.errorClass["status"] ? this.state.errorClass["status"] : '')}
                         onChange={this.handleChange.bind(this, "status")} value={this.state.fields["status"]}>
                         <option>On Hold</option>
@@ -2271,7 +2323,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                                     <div className="form-group">
                                                                         <label>Project Name</label>
                                                                         <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
-                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
+                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName}>
                                                                         </input>
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
                                                                     </div>
@@ -2395,6 +2447,27 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                                         </div> */}
                                                                     </div>
                                                                 </div>
+                                                                <div className="col-lg-6">
+                                                                    <div className="form-group">
+                                                                        <label>Project Status</label>
+                                                                        <select ref="projectstatus" className={formControl + " " + (this.state.errorClass["projectstatus"] ? this.state.errorClass["projectstatus"] : '')}
+                                                                            onChange={this.handleChange.bind(this, "projectstatus")} value={this.state.fields["projectstatus"]}>
+                                                                            {this.state.statusList.map((obj) =>
+                                                                                <option key={obj.Status} value={obj.Id}>{obj.Status}</option>
+                                                                            )}
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="col-lg-6">
+                                                                    <div className="form-group">
+                                                                        <label>Risk</label>
+                                                                        <select className={formControl + " " + (this.state.errorClass["risk"] ? this.state.errorClass["risk"] : '')} ref="risk" onChange={this.handleChange.bind(this, "risk")} value={this.state.fields["risk"]}>
+                                                                            <option>Low</option>
+                                                                            <option>Medium</option>
+                                                                            <option>High</option>
+                                                                        </select>
+                                                                    </div>
+                                                                </div>
                                                                 <div className="clearfix"></div>
                                                                 {statusContent}
                                                                 {statusDate}
@@ -2465,7 +2538,7 @@ Schedule and Project Team now?
         // get Project Documents list items for all projects
         let filterString = "ID eq " + id;
         sp.web.lists.getByTitle("Project").items
-            .select("Project", "StartDate", "DueDate", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/EMail", "AssignedTo/ID", "Priority", "Clone_x0020_Project", "Clone_x0020_Calender", "Clone_x0020_Documents", "Clone_x0020_Requirements", "Clone_x0020_Schedule", "Body", "Occurance", "Recurring_x0020_Project", "ProTypeDeptSpecific", "On_x0020_Hold_x0020_Date", "On_x0020_Hold_x0020_Status")
+            .select("Project", "StartDate", "DueDate","Risks", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/EMail", "AssignedTo/ID", "Priority", "Clone_x0020_Project", "Clone_x0020_Calender", "Clone_x0020_Documents", "Clone_x0020_Requirements", "Clone_x0020_Schedule", "Body", "Occurance", "Recurring_x0020_Project", "ProTypeDeptSpecific", "On_x0020_Hold_x0020_Date", "On_x0020_Hold_x0020_Status")
             .expand("Status0", "AssignedTo")
             .filter(filterString)
             .getAll()
@@ -2486,6 +2559,8 @@ Schedule and Project Team now?
                 this.state.fields["clonecalender"] = response ? response[0].Clone_x0020_Calender : false;
                 this.state.fields["cloneproject"] = response ? response[0].Clone_x0020_Project : false;
                 this.state.fields["status"] = response ? response[0].On_x0020_Hold_x0020_Status : '';
+                this.state.fields["projectstatus"] = response ? response[0].Status0.ID : '1';
+                this.state.fields["risk"] = response ? response[0].Risks : 'Low';
 
                 const selectedPeopleList: IPersonaWithMenu[] = [];
                 const selectedTarget: IPersonaWithMenu = {};
@@ -2559,6 +2634,16 @@ Schedule and Project Team now?
                 alert(`There was an error : ${e.message}`);
             });
     }
+    getStatusList(){
+        sp.web.lists.getByTitle('Project Status Color').items
+        .select('Sequence','Status', 'Status_x0020_Color', 'ID')
+        .orderBy("Sequence")
+        .get()
+        .then((response: any[]) => {
+            console.log("All Colors -", response);
+            this.setState({statusList : response});
+        });
+    }
     private getProjectByName(name) {
         let filter = "Project eq '" + name + "'";
         sp.web.lists.getByTitle("Project").items
@@ -2570,7 +2655,7 @@ Schedule and Project Team now?
                 console.log('getProjectDetails', response);
                 let fields = this.state.fields;
                 fields["project"] = response ? response[0].Project : '';
-                fields["projectname"] = response ? response[0].Project : '';
+                //fields["projectname"] = response ? response[0].Project : '';
                 fields["priority"] = response ? response[0].Priority : '';
                 fields["duedate"] = response ? new Date(response[0].DueDate) : '';
                 fields["ownername"] = response ? response[0].AssignedTo[0].Title : '';

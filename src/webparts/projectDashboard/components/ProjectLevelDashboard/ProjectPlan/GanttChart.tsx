@@ -144,8 +144,8 @@ export default class Gantt extends React.Component<any, any>{
       css: "gantt_container",
       cols: [
         {
-          width: 300,
-          min_width: 200,
+          width: 330,
+          min_width: 250,
 
           // adding horizontal scrollbar to the grid via the scrollX attribute
           rows: [

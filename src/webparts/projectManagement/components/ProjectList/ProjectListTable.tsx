@@ -22,20 +22,6 @@ export default class ProjectListTable extends React.Component<
     > {
     constructor(props) {
         super(props);
-        // this.state = {
-        //    projectList: new Array<Project>(),
-        //     //   projectTimeLine: new Array<ProjectTimeLine>(),
-        //     projectName: null,
-        //     ownerName: null,
-        //     status: null,
-        //     priority: null,
-        //     isLoading: true,
-        //     isTeamMemberLoaded: false,
-        //     isKeyDocumentLoaded: false,
-        //     isTagLoaded: false,
-        //     expandedRowID: -1,
-        //     expandedRows: []
-        // };
         this.state = {
             projectList: new Array<Project>(),
             showComponent: false
@@ -86,7 +72,14 @@ export default class ProjectListTable extends React.Component<
             );
     }
     actionTemplate(rowData, column) {
-        return <Link to={`/viewProjectDetails/${rowData.ID}`}>View Details</Link>
+        return (
+            <div>
+                <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn btn-primary action-btn-style blue-light-color btn-xs" type="button"><abbr className="tooltip-style" title="Add member"><i className="fas fa-user-plus"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn  btn-primary action-btn-style blue-color btn-xs" type="button"><abbr className="tooltip-style" title="Add Document"><i className="fas fa-file"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn  btn-primary action-btn-style blue-dark-color btn-xs" type="button"><abbr className="tooltip-style" title="Requirments"><i className="fas fa-clipboard-list"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn btn-primary action-btn-style  black-color btn-xs" type="button"><abbr className="tooltip-style" title="View Details"><i className="white fas fa-info"></i></abbr></button></Link>
+            </div>
+        );
     }
     editTemplate(rowData, column) {
         return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i> Edit </a>;

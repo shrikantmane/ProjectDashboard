@@ -57,8 +57,7 @@ ICalendarViewProps,
         if (this.props.list != "" || this.props.list != null) {
            this.getProjectCalendar(this.props.list);
         }
-
-
+        
     }
     refreshGrid() {
    this.getProjectCalendar(this.props.list);
@@ -77,7 +76,7 @@ ICalendarViewProps,
     componentWillReceiveProps(nextProps) {
         if (nextProps.list != "" || nextProps.list != null) {
          this.getProjectCalendar(nextProps.list);
-        }
+        }      
     }
 
     /* Private Methods */

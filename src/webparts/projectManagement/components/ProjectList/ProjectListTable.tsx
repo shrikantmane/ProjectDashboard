@@ -56,7 +56,7 @@ export default class ProjectListTable extends React.Component<
 
     statusTemplate(rowData: Project, column) {
         if (rowData.Status0)
-            return (<div style={{ backgroundColor: rowData.Status0['Status_x0020_Color'], borderRadius: '3rem', textAlign: 'center', padding: '2px', color: 'white' }}>{rowData.Status0['Status']}</div>);
+            return (<div style={{ backgroundColor: rowData.Status0['Status_x0020_Color'], borderRadius: '3rem', textAlign: 'center', padding: '2px', color: 'white',width:'75%' }}>{rowData.Status0['Status']}</div>);
     }
 
     ownerTemplate(rowData: Project, column) {
@@ -74,9 +74,9 @@ export default class ProjectListTable extends React.Component<
     actionTemplate(rowData, column) {
         return (
             <div>
-                <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn btn-primary action-btn-style blue-light-color btn-xs" type="button"><abbr className="tooltip-style" title="Add member"><i className="fas fa-user-plus"></i></abbr></button></Link>
-                <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn  btn-primary action-btn-style blue-color btn-xs" type="button"><abbr className="tooltip-style" title="Add Document"><i className="fas fa-file"></i></abbr></button></Link>
-                <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn  btn-primary action-btn-style blue-dark-color btn-xs" type="button"><abbr className="tooltip-style" title="Requirments"><i className="fas fa-clipboard-list"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID + '_member'}`}><button className="btn btn-primary action-btn-style blue-light-color btn-xs" type="button"><abbr className="tooltip-style" title="Add member"><i className="fas fa-user-plus"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID +'_document'}`}><button className="btn  btn-primary action-btn-style blue-color btn-xs" type="button"><abbr className="tooltip-style" title="Add Document"><i className="fas fa-file"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID +'_requirement'}`}><button className="btn  btn-primary action-btn-style blue-dark-color btn-xs" type="button"><abbr className="tooltip-style" title="Requirments"><i className="fas fa-clipboard-list"></i></abbr></button></Link>
                 <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn btn-primary action-btn-style  black-color btn-xs" type="button"><abbr className="tooltip-style" title="View Details"><i className="white fas fa-info"></i></abbr></button></Link>
             </div>
         );

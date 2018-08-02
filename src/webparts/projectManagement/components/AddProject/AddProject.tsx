@@ -1607,11 +1607,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(TeamMember).then(res => {
             console.log("TeamMember created in list ", ListName);
 
-            let StartDate = `<Field Name='StartDate' StaticName='StartDate' DisplayName='Start Date' Type='DateTime' Format='DateOnly' ><Default>[Now]</Default></Field>`;
+            let StartDate = `<Field Name='StartDate' StaticName='StartDate' DisplayName='Start Date' Type='DateTime' Format='DateOnly' ></Field>`;
             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(StartDate).then(res => {
                 console.log("StartDate created in list ", ListName);
 
-                let EndDate = `<Field Name='EndDate' StaticName='EndDate' DisplayName='End Date' Type='DateTime' Format='DateOnly' ><Default>[Now]</Default></Field>`;
+                let EndDate = `<Field Name='EndDate' StaticName='EndDate' DisplayName='End Date' Type='DateTime' Format='DateOnly' ></Field>`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(EndDate).then(res => {
                     console.log("EndDate created in list ", ListName);
 
@@ -2668,7 +2668,22 @@ Schedule and Project Team now?
                 fields["clonedocuments"] = response ? response[0].Clone_x0020_Documents : false;
                 fields["clonerequirements"] = response ? response[0].Clone_x0020_Requirements : false;
                 fields["clonecalender"] = response ? response[0].Clone_x0020_Calender : false;
-                this.setState({ fields });
+
+                const selectedPeopleList: IPersonaWithMenu[] = [];
+                const selectedTarget: IPersonaWithMenu = {};
+                let tempSelectedPersona = {};
+                if (response[0].AssignedTo.length > 0) {
+                    response[0].AssignedTo.forEach(element => {
+                        tempSelectedPersona = {
+                            key: element.ID,
+                            text: element.Title
+                        }
+                        selectedPeopleList.push(tempSelectedPersona);
+                    });
+                }
+                this.state.fields["ownername"] = selectedPeopleList;
+
+                this.setState({ fields,currentSelectedItems: selectedPeopleList });
             }).catch((e: Error) => {
                 alert(`There was an error : ${e.message}`);
             });

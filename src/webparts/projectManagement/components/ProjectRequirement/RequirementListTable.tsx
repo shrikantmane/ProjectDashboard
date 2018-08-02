@@ -213,16 +213,16 @@ export default class ProjectListTable extends React.Component<
                         <AddRequirement id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
                         null
                     }
-                    <div className="project-list">
+                    <div className="requirement-list">
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
                             <Column header="Edit" body={this.editTemplate} />
                             <Column field="Requirement" sortable={true} header="Requirement" />
                             <Column field="Resources" sortable={true} header="Resources" />
-                             <Column field="Impact_x0020_On_x0020_Timelines" sortable={true} header="Impact on Timeliness?" body={this.impactTemplate} /> 
+                             <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timeliness?" body={this.impactTemplate} /> 
                             <Column field="Efforts" header="Efforts" sortable={true} />
                             <Column field="AttachmentFiles" header="Attachment" sortable={true} body={this.attachmentTemplate} />
-                            <Column field="Apporval_x0020_Status" sortable={true} header="Approval Status" />
-                             <Column field="Approver" header="Approver" sortable={true} body={this.approverTemplate} /> 
+                            {/* <Column field="Apporval_x0020_Status" sortable={true} header="Approval Status" />
+                             <Column field="Approver" header="Approver" sortable={true} body={this.approverTemplate} />  */}
                             <Column field="Author" header="Created By" sortable={true} body={this.ownerTemplate} />
                             <Column field="Created" header="Created On" sortable={true} body={this.duedateTemplate} />
                             <Column header="Remove" body={this.actionTemplate} />

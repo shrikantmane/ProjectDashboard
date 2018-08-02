@@ -37,7 +37,8 @@ export default class ProjectViewDetails extends React.Component<
             Id: "",
             calendarList: "",
             showComponent: false,
-            imgURL: "",
+            refreshCalender:false,
+            imgURL:"",
             events: [
                 {
                     id: 10,
@@ -80,13 +81,26 @@ export default class ProjectViewDetails extends React.Component<
             ],
         };
         this.onAddProject = this.onAddProject.bind(this);
+        this.onRefreshCalender = this.onRefreshCalender.bind(this)
     }
+
+    violet: any;
+    red: any;
     componentDidMount() {
+        console.log('componentDidMount');
         const { match: { params } } = this.props;
         SPComponentLoader.loadCss(
             "https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.9.0/fullcalendar.css"
         );
-        this.getProjectData(params.id);
+        let id = params.id.split('_')[0];
+        let scrollTo = params.id.split('_')[1] ? params.id.split('_')[1] : '';
+        this.getProjectData(id);
+        var elmnt = document.getElementById(scrollTo);
+        if (elmnt)
+            elmnt.scrollIntoView();
+    }
+    onRefreshCalender (refresh){
+        this.setState({refreshCalender : true});
     }
     getProjectData(id) {
         console.log('params : ' + id);
@@ -131,6 +145,7 @@ export default class ProjectViewDetails extends React.Component<
 
 
     public render(): React.ReactElement<IProjectViewProps> {
+        console.log('render');
         return (
             <div className="PanelContainer">
                 <div className="viewProject">
@@ -198,20 +213,19 @@ export default class ProjectViewDetails extends React.Component<
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-12 col-sm-6">
+                                <div className="col-12 col-sm-6" id="member">
                                     <div className="well">
-                                        <div><TeamListTable list={this.state.teammemberlist} projectId={this.state.Id}></TeamListTable></div>
+                                    <div><TeamListTable list={this.state.teammemberlist} projectId={this.state.Id}></TeamListTable></div>
                                     </div>
                                 </div>
-                                <div className="col-12 col-sm-6">
+                                <div className="col-12 col-sm-6" id="document">
                                     <div className="well">
-                                        <div><DocumentListTable list={this.state.documentlist} projectId={this.state.Id}></DocumentListTable></div>
+                                    <div><DocumentListTable list={this.state.documentlist} projectId={this.state.Id}></DocumentListTable></div>
                                     </div>
                                 </div>
-                                <div className="col-12 col-sm-12">
+                                <div className="col-12 col-sm-12" id="requirement">
                                     <div className="well">
-                                        <div>
-                                            <RequirementListTable list={this.state.requirementlist} projectId={this.state.Id}></RequirementListTable></div>
+                                    <div><RequirementListTable list={this.state.requirementlist} projectId={this.state.Id}></RequirementListTable></div>
                                         {/* <div className="col-sm-12 col-md-12 col-lg-12 cardHeading">
                         <div>
                             <h5 className="pull-left heading-style">Requirements</h5>
@@ -222,17 +236,17 @@ export default class ProjectViewDetails extends React.Component<
                                 </div>
                                 <div className="col-12 col-sm-6">
                                     <div className="well">
-                                        <div><InformationListTable list={this.state.informationlist} projectId={this.state.Id}></InformationListTable></div>
+                                    <div><InformationListTable list={this.state.informationlist} projectId={this.state.Id}></InformationListTable></div>
                                     </div>
                                 </div>
-                                <div className="col-12 col-sm-6">
+                                <div className="col-12 col-sm-6" ref={(section) => { this.violet = section; }}>
                                     <div className="well">
-                                        <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id}></CalendarListTable></div>
+                                    <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id} onRefreshCalender ={this.onRefreshCalender}></CalendarListTable></div>
                                     </div>
                                 </div>
-                                <div className="col-12 col-sm-12">
+                                <div className="col-12 col-sm-12" id="content2">
                                     <div className="well">
-                                        <div className="col-sm-12 col-md-12 col-lg-12 cardHeading">
+                                        <div className="col-sm-12 col-12 cardHeading">
                                             <div className="content-section implementation">
                                                 {/* <h5>Events</h5> */}
                                                 {/* <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px",borderRadius: "30px",backgroundColor: "#0078d7", border: "1px solid #0078d7",padding: "4px 10px 6px",color: "white",marginLeft: "20px"}} onClick={this.onAddProject}> Add Holiday </button>
@@ -253,7 +267,7 @@ export default class ProjectViewDetails extends React.Component<
                                                           eventLimit={true} // allow "more" link when too many events
                                                           events={this.state}
                                                           /> */}
-                                                    <CalendarViewListTable list={this.state.calendarList} projectId={this.state.Id}></CalendarViewListTable>
+                                                    <CalendarViewListTable list={this.state.calendarList} projectId={this.state.Id} refreshCalender ={this.state.refreshCalender}></CalendarViewListTable> 
                                                 </div>
                                             </div>
                                         </div>
@@ -264,6 +278,13 @@ export default class ProjectViewDetails extends React.Component<
                     </section>
                 </div>
             </div>
+
+            // <div>
+            //     <button onClick={this.scrollToTopWithCallback}>Go To Violet</button>
+            //      <section id="content1" style={{height : "1000px", backgroundColor: "yellow", width:"500px"}} ref={(section) => { this.violet = section; }}>yellow</section>
+            //     <section id="content2" style={{height : "1000px", backgroundColor: "red", width:"500px"}}  ref={(section) => { this.red = section; }}>Red</section>
+
+            //     </div>
         );
     }
 }

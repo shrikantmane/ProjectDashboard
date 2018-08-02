@@ -722,6 +722,13 @@ body {
     .profile-img-style {
       width: 10%
     }
+    button.btn.btn-primary.action-btn-style.black-color.btn-xs {
+        background-color: #363636;
+        border: 1px solid #363636;
+        border-radius: 3px;
+        padding: 1px 5px;
+        width: 25px;
+    }
     .margin-left {
       margin-left: 12% !important;
     }
@@ -745,6 +752,45 @@ body {
     .view-off {
       display: none;
       visibility: hidden;
+    }
+    button.btn.btn-primary.action-btn-style.blue-dark-color.btn-xs {
+        color: #fff;
+        background-color: #204d74;
+        border-color: #122b40;
+        border-radius: 3px;
+        padding: 1px 5px;
+        margin-right: 10px;
+        width: 25px;
+    }
+    button.btn.btn-primary.action-btn-style.blue-light-color.btn-xs {
+        background-color: #31b0d5;
+        border-color: #31b0d5;
+        border-radius: 3px;
+        padding: 1px 1px;
+        margin-right: 10px;
+        width: 25px;
+    }
+    button.btn.btn-primary.action-btn-style.blue-color.btn-xs {
+        background-color: #337ab7;
+        border-color: #2e6da4;
+        border-radius: 3px;
+        padding: 1px 5px;
+        margin-right: 10px;
+        width: 25px;
+    }
+}
+/*------------------------ END: Project List View -----------------------------*/
+
+
+/*------------------------ Mobile View -----------------------------*/
+@media only screen and (max-width: 768px) {
+    .main-content-section {
+        padding-left: 0px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-right: 0px;
+        height: 100vh;
+        font-size: 0.7rem;
     }
     .view-on {
       display: block;

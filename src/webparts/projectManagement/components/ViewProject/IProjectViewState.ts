@@ -11,6 +11,7 @@ export interface IProjectViewState{
     documentlist:any;
     requirementlist:any;
     teammemberlist:any;
+    refreshCalender:boolean;
     Id:any;
     events:[{
         id?:number,

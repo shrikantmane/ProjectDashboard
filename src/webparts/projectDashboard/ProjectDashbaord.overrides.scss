@@ -551,9 +551,27 @@ div[class^="footerBar_"] {
     height: 500px;
     width: 100%;
   }
-  .milestone {
-    background-color: red;
-  }
+ .milestone {
+  line-height: 30px!important;
+  background-color: #d33daf;
+  border: 0 solid #61164f;
+  box-sizing: content-box;
+  border-radius: 3rem;
+  font-size: 10px;
+}
+.ganttStatus{
+  margin: 4px 0;
+    border-radius: 3rem;
+    color: #fff;
+    width: 4rem;
+    height: 1.5rem;
+    display: inline-block;
+    font-size: 10px;
+    text-align: center;
+    padding-top: 0;
+    line-height: 1.5rem;
+    font-weight: 600;
+}
   body {
     background: #eff3f6;
     color: #454545;

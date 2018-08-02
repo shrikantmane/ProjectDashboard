@@ -25,7 +25,6 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
       .select("File", "Owner/ID", "Owner/Title", "Created").expand("File", "Owner")
       .get()
       .then((response: Array<Document>) => {
-        console.log('Project Documents -', response);
         response.forEach(item => {
           item.FileName = item.File ? item.File.Name :"";
           item.OwnerTitle = item.Owner ? item.Owner.Title :""; 

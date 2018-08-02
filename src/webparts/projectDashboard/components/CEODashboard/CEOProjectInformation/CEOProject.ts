@@ -50,9 +50,9 @@ export class MileStones {
 }
 
 export class Tags {
-    public ID: number;
+    public ID?: number;
     public Tags: string;
-    public Title:string;
+    public Title?:string;
     public Color:string;
 }
 

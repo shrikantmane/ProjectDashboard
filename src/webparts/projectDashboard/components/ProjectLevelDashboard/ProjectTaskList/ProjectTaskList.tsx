@@ -40,7 +40,6 @@ export default class ProjectTaskList extends React.Component<
       .expand("Status0", "AssignedTo")
       .get()
       .then((response: Array<Task>) => {
-        console.log("All Task -", response);
         response.forEach(item => {
           var startOfWeek = moment().startOf("isoWeek");
           var endOfWeek = moment().endOf("isoWeek");

@@ -14,10 +14,6 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
       milstoneList: new Array<Milestone>()
     };
   }
-  // componentDidMount() {
-  //   if(this.props.scheduleList)
-  //   this.getAllMildstones(this.props.scheduleList);
-  // }
 
   componentWillReceiveProps(nextProps) {
     if (this.props.scheduleList != nextProps.scheduleList)
@@ -30,7 +26,6 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
       .filter("Duration eq '0 days'")
       .get()
       .then((mildstones: Array<Milestone>) => {
-        console.log("mildstones -", mildstones);
         this.setState({ milstoneList: mildstones })
       });
   }

@@ -24,7 +24,6 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
       .select("Owner/ID", "Owner/Title", "Owner/EMail", "Roles_Responsibility").expand("Owner")
       .get()
       .then((response: Array<RoleResponsibility>) => {
-        console.log('Responsibility -', response);
         let currentScope = this;
         let count = 1;
         response.forEach(item => {

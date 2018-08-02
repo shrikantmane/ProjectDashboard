@@ -581,6 +581,9 @@ div[class^="footerBar_"] {
     font-family: AvenirLTStd-Book_3;
     overflow-x: auto;
   }
+  .ReactTable.-striped .rt-tr.-odd, .ReactTable.-highlight .rt-tbody .rt-tr:not(.-padRow):hover {
+    background: #fcfcfc !important;
+}
   .ReactTable .rt-tbody .rt-td {
     border-right: 1px solid rgba(0,0,0,.02);
     color: #454545;
@@ -592,6 +595,17 @@ div[class^="footerBar_"] {
     color: #424860;
     font-weight: 800;
   }
+  .ReactTable .rt-thead.-filters .rt-th {
+    border-right: 1px solid rgba(0,0,0,.02);
+    background-color: #002741;
+    padding-top: 0;
+}
+.ReactTable .rt-thead.-filters .rt-th input{
+  width: 100%;
+    background-color: #ccdae2;
+    border: 1px solid #2a404e;
+    height: 1.6rem;
+}
   .main-content-section section:first-child,
   .main-content-section section#requirement {
     padding: 0px;
@@ -635,6 +649,9 @@ div[class^="footerBar_"] {
   .project-tabs .tagList {
     display: inline-block;
     margin-left: 0.5rem;
+  }
+  .project-tabs .tagList > span.priority-btn {
+    width: 7rem;
   }
   .Status-block {
     background-color: #fff;
@@ -681,7 +698,8 @@ div[class^="footerBar_"] {
   .statusPill {
     border-radius: 3rem;
     text-align: center;
-    color: white;
+    color:#fff;
+    font-weight: 400;
   }
   /********************* Top Heading *********************/
   /********************* Task List Table *********************/
@@ -1230,11 +1248,16 @@ div[class^="footerBar_"] {
     border-left: 0;
     border-right: 0;
     font-weight: 600;
+    text-align: center;
   }
   .profileDetails-container .ui-datatable tr.ui-widget-content>td a {
     font-size: 12px;
-    font-weight: 600;
-    color: #1431bd;
+    font-weight: 800;
+    color: #676c84;
+  }
+  .profileDetails-container .ui-datatable tr.ui-widget-content td:last-child{
+    color:#9c9c9c;
+    font-size: 12px;
   }
   .image-style {
     border-radius: 50%;
@@ -1428,18 +1451,9 @@ div[class^="footerBar_"] {
     border: none;
     vertical-align: middle;
   }
-<<<<<<< HEAD
-=======
   .milestoneList {
     border-bottom: 1px solid #dcdcdc;
   }
-  .priority-btn {
-    position: absolute;
-    top: 3px;
-    left: 300px;
-    width: 7rem !important;
-  }
->>>>>>> develop
   .search-container {
     margin-top: 10px;
   }
@@ -1563,9 +1577,10 @@ div[class^="footerBar_"] {
   }
   .all-milestones .milestoneList>.milestones-title {
     font-size: 1rem;
-    font-weight: 800 !important;
-    margin-bottom: 6px !important;
-    margin-top: 12px !important;
+    font-weight: 600;
+    margin-bottom: 6px;
+    margin-top: 12px;
+    color: #384168;
   }
   .all-milestones .milestoneList>.table-responsive-sm {
     margin-left: 1.2rem;

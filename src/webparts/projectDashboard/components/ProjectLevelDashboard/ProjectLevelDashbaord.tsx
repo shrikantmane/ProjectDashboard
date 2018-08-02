@@ -95,9 +95,9 @@ export default class ProjectLevelDashboard extends React.Component<
               <div className="row conversationTasks">
                 <div className="project-tabs col-xs-12 col-sm-12 col-md-12 col-lg-12">
                   <div className="projectName">{this.state.project.Project}
-                <span className="due-date-style">{ new Date(this.state.project.DueDate).toDateString()}</span>
+                <span className="due-date-style">Due on : { new Date(this.state.project.DueDate).toDateString()}</span>
                     <div className="tagList">
-                      <span className="delayedStatus priority-btn">{this.state.project.Priority}</span>
+                      <span className="delayedStatus priority-btn">Priority: {this.state.project.Priority}</span>
                     </div>
                   </div>
                 </div>

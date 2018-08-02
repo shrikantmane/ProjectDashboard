@@ -107,7 +107,7 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
           <div className="row">
             <div className="col-sm-12 col-12 cardHeading">
               <div className="tasklist-div">
-                <h5>Task List</h5>
+                <h5>Project Plan</h5>
               </div>
             </div>
             <div className="col-sm-12 col-12">

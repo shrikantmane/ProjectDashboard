@@ -200,6 +200,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                 this.setState({ isDataSaved: true });
                 this._closePanel();
                 this._showModal();
+                this.props.parentMethod();
             });
         }
     } else {

@@ -156,9 +156,22 @@ export default class ProjectListTable extends React.Component<
         let obj: any = this.state.fields;
         let fields = this.state.fields;
         let tempState: any = this.state.currentSelectedItems;
+        if (!this.state.currentSelectedItems || this.state.currentSelectedItems.length === 0) {
+            
+            this.setState({
+                showComponent: true,
+            })
+        }
+        else{
+            this.setState({
+                showComponent: false,
+            })
+        }
         sp.web.lists.getByTitle(this.props.list).items.add({
 
-            Team_x0020_MemberId: tempState[0].key
+            Team_x0020_MemberId: tempState[0].key,
+            Status:"Active",
+            Start_x0020_Date:new Date().toDateString()
         }).then((response) => {
             console.log('Item adding-', response);
             this.setState(fields);
@@ -190,14 +203,18 @@ this.refreshGrid();
                     <h5>Team Members</h5>
                     <div className="display-line">
                         {this._renderControlledPicker()}
+                        {/* {this.state.showComponent ?
+                            <AddProject parentMethod={this.refreshGrid}/>  :
+                        null
+                    } */}
                         <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
                             Add
                         </button>
                     </div>
-                    {/* {this.state.showComponent ?
-                            <AddProject parentMethod={this.refreshGrid}/>  :
+                     {this.state.showComponent ?
+                            <span style={{ color:"red" }} >Cannot be Empty</span>   :
                         null
-                    } */}
+                    } 
                     <div className="project-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
                             <Column field="AssignedTo" header="Owner" sortable={true} body={this.ownerTemplate} />

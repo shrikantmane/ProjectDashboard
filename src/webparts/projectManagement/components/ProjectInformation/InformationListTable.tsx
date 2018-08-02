@@ -35,7 +35,7 @@ export default class ProjectListTable extends React.Component<
         // };
         this.state = {
             projectList: new Array<Information>(),
-            showComponent: false,
+            showComponent: false, 
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.reopenPanel = this.reopenPanel.bind(this);
@@ -148,7 +148,7 @@ export default class ProjectListTable extends React.Component<
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
                             <Column header="Edit" body={this.editTemplate} />
                             <Column field="Roles_Responsibility" sortable={true} header="Role/ Responsibility" />
-                            <Column field="Owner" sortable={true} header="Owner" body={this.ownerTemplate} />
+                            <Column field="Owner" sortable={true} header="Owner"  body={this.ownerTemplate}  />
                             <Column field="Department" sortable={true} header="Departments" />
                             <Column header="Remove" body={this.actionTemplate} />
                         </DataTable>
@@ -163,31 +163,51 @@ export default class ProjectListTable extends React.Component<
     /* Api Call*/
 
     getProjectInformation(list) {
+       // var reactHandler=this;
         if ((list) != "") {
             sp.web.lists.getByTitle(list).items
-                .select("ID", "Roles_Responsibility", "Owner/ID", "Owner/Title").expand("Owner")
+                .select("ID", "Roles_Responsibility", "Owner/ID", "Owner/Title","Owner/EMail").expand("Owner")
                 .get()
                 .then((response) => {
                     console.log('infor by name', response);
-                    this.setState({ projectList: response });
+                   this.setState({ projectList: response });
+                    // for (var i = 0; i < response.length; i++) {
+                    //   //  var Id = response[i].Owner.ID;
+                    //  //   var Title = response[i].Owner.Title;
+                    //   //  var Email = response[i].Owner.EMail;
+                    //    var Responsibility=response[i].Roles_Responsibility;
+                    //    var owner=response[i].Owner;
+                    //     //reactHandler.GetUserProperties(owner,Responsibility);
+                    //   }
 
                 });
         }
     }
-    //   private GetUserProperties(): void {  
-    //     sp.profiles.myProperties.get().then(function(result) {  
-    //         var userProperties = result.UserProfileProperties;  
-    //         console.log("hello",userProperties);
-    //         var userPropertyValues = "";  
-    //         userProperties.forEach(function(property) {  
-    //             userPropertyValues += property.Key + " - " + property.Value + "<br/>";  
-    //         });  
-    //         document.getElementById("spUserProfileProperties").innerHTML = userPropertyValues;  
-    //     }).catch(function(error) {  
-    //         console.log("Error: " + error);  
-    //     });  
-    // }  
-
+    // private GetUserProperties(owner,Responsibility) {
+    //     let reactHandler = this;
+    //     let loginName = "i:0#.f|membership|" + owner.EMail;
+    //     let department1;
+    //     let jobTitle;
+    //     let pic;
+    //     sp.profiles.getPropertiesFor(loginName).then((response) =>  {
+    //       console.log("result.UserProfileProperties -", response.UserProfileProperties);
+         
+    //       department1 = response.UserProfileProperties[13].Value;
+    //       pic = response.UserProfileProperties[16].Value;
+    //       jobTitle = response.UserProfileProperties[21].Value;
+    //       console.log("department11",department1)
+          
+          
+    //      reactHandler.setState(prevState => ({
+    //         projectList: [...prevState.projectList, { Roles_Responsibility: Responsibility, Owner: owner.Title,Department:department1  }]
+    //        }));
+    
+    //     }).catch(function (err) {
+    //       console.log("Error: " + err);
+    //     });
+    
+    //   }
+   
 
 
 }

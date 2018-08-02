@@ -67,7 +67,7 @@ export class TeamMembers {
 }
 
 export class File {
-    public Name: string;
+    public FileName: string;
     public LinkingUri: string;
     public ServerRelativeUrl: string;
 }
@@ -92,9 +92,9 @@ public Attachments:string;
 public Author:Team_x0020_Member;
 public Created:string;
 public Efforts:number
-public Impact_x0020_on_x0020_Timelines:string;
+public Impact_x0020_on_x0020_Timelines:boolean;
 public Requirement:number;
 public Resources:number;
 public Approver:Team_x0020_Member;
-
+public AttachmentFiles: File;
 }

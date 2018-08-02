@@ -17,5 +17,5 @@ export interface IInformationState {
     //   isTagLoaded :boolean,
     //   expandedRowID : number,
     showComponent: boolean,
-    informationID ?: number
+    informationID ?: any
 }

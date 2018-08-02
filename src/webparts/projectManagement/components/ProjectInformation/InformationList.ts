@@ -78,5 +78,6 @@ export class Documents {
 export class Information{
     public Roles_Responsibility:string;
     public Owner:Team_x0020_Member;
+    public Department:string;
     
 }

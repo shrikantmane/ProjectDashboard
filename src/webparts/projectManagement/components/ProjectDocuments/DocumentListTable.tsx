@@ -158,10 +158,20 @@ export default class ProjectListTable extends React.Component<
 
         var file = this.state.selectedFile;
         if (file != undefined || file != null) {
-
+            if (!this.state.selectedFile || this.state.selectedFile.length === 0) {
+            
+                this.setState({
+                    showComponent: true,
+                })
+            }
+            else{
+                this.setState({
+                    showComponent: false,
+                })
+            }
             //assuming that the name of document library is Documents, change as per your requirement, 
             //this will add the file in root folder of the document library, if you have a folder named test, replace it as "/Documents/test"
-            sp.web.getFolderByServerRelativeUrl("Project Documents").files.add(file.name, file, true).then((result) => {
+            sp.web.getFolderByServerRelativeUrl(this.props.list).files.add(file.name, file, true).then((result) => {
                 console.log(file.name + " upload successfully!");
              
                 this.getProjectDocuments(this.props.list);
@@ -185,8 +195,12 @@ export default class ProjectListTable extends React.Component<
                     </button> */}
                     <input type="file" onChange={this.fileChangedHandler} />
                     <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.UploadFiles}>
-                        Upload
+                        Uploadsss
                     </button>
+                    {this.state.showComponent ?
+                             <span style={{ color:"red" }} > Please Select File</span>   :
+                        null
+                    } 
                     {/* <input type="button" value="Upload" className="btn btn-outline btn-sm" onClick={this.UploadFiles} /> */}
                     <div className="project-list">
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>

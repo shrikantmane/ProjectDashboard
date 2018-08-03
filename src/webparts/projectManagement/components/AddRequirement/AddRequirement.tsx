@@ -137,8 +137,8 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         // get Project Documents list items for all projects
         let filterString = "ID eq " + id;
         sp.web.lists.getByTitle(this.props.list).items
-            .select("ID","Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created")
-            .expand("Approver", "Author")
+            .select("ID","Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created","AttachmentFiles","AttachmentFiles/ServerRelativeUrl","AttachmentFiles/FileName")
+            .expand("Approver", "Author","AttachmentFiles")
             .filter(filterString)
             .get()
             .then((response) => {

@@ -130,13 +130,13 @@ export default class ProjectListTable extends React.Component<
                             <div className="project-list">
                                 <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
                                     <Column header="Action" body={this.editTemplate} style={{ width: "8%" }} />
-                                    <Column field="Project" sortable={true} header="Project" />
+                                    <Column field="Project" sortable={true} header="Project" style={{ width: "19%" }} />
                                     <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} />
                                     <Column field="Status0" sortable={true} header="Status" body={this.statusTemplate} />
                                     <Column field="AssignedTo" sortable={true} header="Owner" body={this.ownerTemplate} />
                                     <Column field="Priority" sortable={true} header="Priority" />
                                     <Column field="Risks" sortable={true} header="Risk" />
-                                    <Column header="Project Details" body={this.actionTemplate} />
+                                    <Column header="Project Details" body={this.actionTemplate} style={{ width: "15%" }} />
                                 </DataTable>
                             </div>
                         </div>

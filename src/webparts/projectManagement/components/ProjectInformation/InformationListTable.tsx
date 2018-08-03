@@ -100,10 +100,10 @@ export default class ProjectListTable extends React.Component<
             );
     }
     actionTemplate(rowData, column) {
-        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}> Remove</a>;
+        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="far fa-times-circle"></i></a>;
     }
     editTemplate(rowData, column) {
-        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}> Edit</a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i> Edit</a>;
     }
     onAddProject() {
         console.log('button clicked');

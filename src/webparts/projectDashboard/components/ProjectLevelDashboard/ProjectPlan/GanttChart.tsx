@@ -3,6 +3,7 @@ import * as React from 'react';
 // import 'dhtmlx-gantt';
 import 'dhtmlx-gantt';
 import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
+import 'dhtmlx-gantt/codebase/ext/dhtmlxgantt_tooltip.js';
 declare var gantt: any;
 
 export default class Gantt extends React.Component<any, any>{
@@ -53,7 +54,6 @@ export default class Gantt extends React.Component<any, any>{
   }
 
   componentDidUpdate() {
-    console.log('componentDidUpdate');
     gantt.render();
   }
 
@@ -101,7 +101,6 @@ export default class Gantt extends React.Component<any, any>{
   // }
 
   componentDidMount() {
-    console.log('componentDidMount');
     gantt.init(this.ganttContainer);
     gantt.parse(this.props.tasks);
     this.initGanttChart()
@@ -126,9 +125,9 @@ export default class Gantt extends React.Component<any, any>{
       {
         name: "status", label: "Status", width: 80,
         template: function (obj) {
-          return ("<div class='ganttStatus' style='background-color:" + obj.statusBackgroudColor +"'>" + obj.status + "</div>")
+          return ("<div class='ganttStatus' style='background-color:" + obj.statusBackgroudColor + "'>" + obj.status + "</div>")
         }
-      },  
+      },
       {
         name: "actualDuration", label: "Duration", align: "center", width: 80,
         template: function (obj) {
@@ -136,10 +135,14 @@ export default class Gantt extends React.Component<any, any>{
         }
       },
     ];
-    gantt.templates.grid_file = function(item) {
+    gantt.templates.grid_file = function (item) {
       return "";
-  };
+    };
     gantt.config.readonly = true;
+    gantt.templates.tooltip_text = function (start, end, task) {
+      let label = task.actualDuration == 0 ? "Milestone" : "Task"
+      return "<b> " + label + "</b> " + task.text + "<br/><b>Start Date :</b> " + new Date(start).toDateString();
+    };
     gantt.config.layout = {
       css: "gantt_container",
       cols: [
@@ -163,17 +166,15 @@ export default class Gantt extends React.Component<any, any>{
         { view: "scrollbar", id: "scrollVer" }
       ]
     };
-      gantt.templates.task_class  = function(start, end, task){       
-        if(task.actualDuration == 0){
-          return "milestone";
-        }
+    gantt.templates.task_class = function (start, end, task) {
+      if (task.actualDuration == 0) {
+        return "milestone";
+      }
     };
   }
 
   render() {
-    console.log('render');
     this.setZoom(this.props.zoom);
-
     return (
       <div
         ref={(input) => { this.ganttContainer = input }}

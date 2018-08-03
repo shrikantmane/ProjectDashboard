@@ -32,20 +32,25 @@
     font-style: normal;
   }
 
-
-div#workbenchPageContent {
-  max-width: 10000px !important;
-  padding-left: 400px !important;
-  padding-right: 2px !important;
-}
-
 body {
   background: #eff3f6;
   color: #454545;
   font-family: 'Poppins', sans-serif;
   overflow-x: auto;
 }
+div#workbenchPageContent {
+  max-width: 10000px !important;
+  padding-left: 400px !important;
+  padding-right: 2px !important;
+}
 
+div[class="commandBarWrapper"] {
+  display: none !important;
+}
+
+div[class^="pageTitle_"] {
+  display: none !important;
+}
 .PanelContainer {
   .ms-Panel-contentInner {
     height: 96%;

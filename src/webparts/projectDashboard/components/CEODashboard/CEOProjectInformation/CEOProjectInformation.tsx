@@ -27,7 +27,7 @@ export default class CEOProjectInformation extends React.Component<
     super(props);
     this.state = {
       projectList: new Array<CEOProjects>(),
-      projectTimeLine: new ProjectTimeLine,
+      projectTimeLine: new ProjectTimeLine(),
       projectName: null,
       ownerName: null,
       status: null,
@@ -38,7 +38,6 @@ export default class CEOProjectInformation extends React.Component<
       isTagLoaded: false,
       expandedRowID: -1,
       expandedRows: [],
-      redirectToProjectDetails: false
     };
     this.handleGlobalSearchChange = this.handleGlobalSearchChange.bind(this);
     this.onProjectNameChange = this.onProjectNameChange.bind(this);
@@ -453,9 +452,7 @@ export default class CEOProjectInformation extends React.Component<
   /* Html UI */
 
   public render(): React.ReactElement<ICEOProjectProps> {
-    if (this.state.redirectToProjectDetails) {
-      return <Redirect to="/project" />
-    }
+
     var header = (
       <div>
         <label className={styles.globalHeading}>CEO Dashboard</label>
@@ -521,82 +518,84 @@ export default class CEOProjectInformation extends React.Component<
     );
 
     return (
-      <div className={styles.CEOProjectDashboard}>
-        {
-          !this.state.isLoading ?
-            <div>
-              {this.state.projectTimeLine && this.state.projectTimeLine.groups.length > 0 ? (
-                <CEOProjectTimeLine groups={this.state.projectTimeLine.groups} items={this.state.projectTimeLine.items} />
-              ) : null}
-              <div style={{ marginTop: "10px" }}>
-                <DataTable
-                  paginator={true}
-                  rows={5}
-                  rowsPerPageOptions={[5, 10, 20]}
-                  ref={el => (this.dt = el)}
-                  globalFilter={this.state.globalFilter}
-                  header={header}
-                  value={this.state.projectList}
-                  responsive={true}
-                  className={styles.datatablePosition}
-                  expandedRows={this.state.expandedRows}
-                  onRowToggle={this.onRowToggle.bind(this)}
-                  rowExpansionTemplate={this.rowExpansionTemplate.bind(this)}
-                >
-                  <Column
-                    expander={true}
-                    style={{ width: "3em" }}
-                    className={styles.firstColExpand}
-                  />
-                  <Column
-                    field="Project"
-                    header="Project Name"
-                    body={this.projectNameTemplate}
-                    style={{ width: "26%" }}
-                    filter={true}
-                    sortable={true}
-                    filterElement={projectNameFilter}
-                  />
-                  <Column
-                    field="OwnerTitle"
-                    header="Owner"
-                    body={this.ownerTemplate}
-                    style={{ width: "20%" }}
-                    filter={true}
-                    sortable={true}
-                    filterElement={ownerNameFilter}
-                  />
-                  <Column
-                    field="MileStone"
-                    header="Mildstone"
-                    body={this.mildstoneTemplate}
-                    style={{ width: "30%" }}
-                    filter={true}
-                    filterElement={milstoneFilter}
-                  />
-                  <Column
-                    field="StatusText"
-                    header="Status"
-                    body={this.statusTemplate}
-                    style={{ width: "10%" }}
-                    filter={true}
-                    sortable={true}
-                    filterElement={statusFilter}
-                  />
-                  <Column
-                    field="Priority"
-                    header="Priority"
-                    body={this.priorityTemplate}
-                    style={{ width: "10%" }}
-                    filter={true}
-                    sortable={true}
-                    filterElement={priorityFilter}
-                  />
-                </DataTable>
+      <div className="CEOProjectDashboardContainer">
+        <div className={styles.CEOProjectDashboard}>
+          {
+            !this.state.isLoading ?
+              <div>
+                {this.state.projectTimeLine && this.state.projectTimeLine.groups && this.state.projectTimeLine.groups.length > 0 ? (
+                  <CEOProjectTimeLine groups={this.state.projectTimeLine.groups} items={this.state.projectTimeLine.items} />
+                ) : null}
+                <div style={{ marginTop: "10px" }}>
+                  <DataTable
+                    paginator={true}
+                    rows={5}
+                    rowsPerPageOptions={[5, 10, 20]}
+                    ref={el => (this.dt = el)}
+                    globalFilter={this.state.globalFilter}
+                    header={header}
+                    value={this.state.projectList}
+                    responsive={true}
+                    className={styles.datatablePosition}
+                    expandedRows={this.state.expandedRows}
+                    onRowToggle={this.onRowToggle.bind(this)}
+                    rowExpansionTemplate={this.rowExpansionTemplate.bind(this)}
+                  >
+                    <Column
+                      expander={true}
+                      style={{ width: "3em" }}
+                      className={styles.firstColExpand}
+                    />
+                    <Column
+                      field="Project"
+                      header="Project Name"
+                      body={this.projectNameTemplate}
+                      style={{ width: "26%" }}
+                      filter={true}
+                      sortable={true}
+                      filterElement={projectNameFilter}
+                    />
+                    <Column
+                      field="OwnerTitle"
+                      header="Owner"
+                      body={this.ownerTemplate}
+                      style={{ width: "20%" }}
+                      filter={true}
+                      sortable={true}
+                      filterElement={ownerNameFilter}
+                    />
+                    <Column
+                      field="MileStone"
+                      header="Mildstone"
+                      body={this.mildstoneTemplate}
+                      style={{ width: "30%" }}
+                      filter={true}
+                      filterElement={milstoneFilter}
+                    />
+                    <Column
+                      field="StatusText"
+                      header="Status"
+                      body={this.statusTemplate}
+                      style={{ width: "10%" }}
+                      filter={true}
+                      sortable={true}
+                      filterElement={statusFilter}
+                    />
+                    <Column
+                      field="Priority"
+                      header="Priority"
+                      body={this.priorityTemplate}
+                      style={{ width: "10%" }}
+                      filter={true}
+                      sortable={true}
+                      filterElement={priorityFilter}
+                    />
+                  </DataTable>
+                </div>
               </div>
-            </div>
-            : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fas fa-spinner"></i></div>
-        }
+              : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fas fa-spinner"></i></div>
+          }
+        </div>
       </div>
     );
   }
@@ -653,8 +652,6 @@ export default class CEOProjectInformation extends React.Component<
             "Body",
             "Status0/Status",
             "Status0/Status_x0020_Color",
-            // "Project/ID",
-            // "Project/Title",
             "AssignedTo/Title",
             "AssignedTo/ID",
             "AssignedTo/EMail"

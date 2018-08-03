@@ -5,6 +5,7 @@ import { IProjectTaskListState } from "./IProjectTaskListState";
 import { Task, Week } from "../Project";
 import ReactTable from "react-table";
 import "react-table/react-table.css";
+import { sortBy } from "lodash";
 import moment from "moment/src/moment";
 export default class ProjectTaskList extends React.Component<
   IProjectTaskListProps,
@@ -14,7 +15,7 @@ export default class ProjectTaskList extends React.Component<
     super(props);
     this.state = {
       taskList: new Array<Task>(),
-      expanded: { 1: true }
+      expanded: { 0: true }
     };
   }
 
@@ -40,20 +41,28 @@ export default class ProjectTaskList extends React.Component<
       .expand("Status0", "AssignedTo")
       .get()
       .then((response: Array<Task>) => {
-        response.forEach(item => {
-          var startOfWeek = moment().startOf("isoWeek");
-          var endOfWeek = moment().endOf("isoWeek");
-          var endOfNextWeek = moment(endOfWeek).add(7, "day");
-          var currentDate = moment(item.StartDate);
+        let sortedResponse = sortBy(response, function (dateObj) {
+          return new Date(dateObj.StartDate);
+        });
+        let pastRecord = false;
+        let currentRecord = false;
+        sortedResponse.forEach(item => {
+          let startOfWeek = moment().startOf("isoWeek");
+          let endOfWeek = moment().endOf("isoWeek");
+          let endOfNextWeek = moment(endOfWeek).add(7, "day");
+          let currentDate = moment(item.StartDate);
+
 
           if (currentDate >= startOfWeek && currentDate <= endOfWeek) {
             item.Week = Week.CurrentWeek;
+            currentRecord = true;
           } else if (currentDate > endOfWeek && currentDate <= endOfNextWeek) {
             item.Week = Week.NextWeek;
           } else if (currentDate > endOfNextWeek) {
             item.Week = Week.Future;
           } else {
             item.Week = Week.Past;
+            pastRecord = true;
           }
 
           if (item.AssignedTo && item.AssignedTo.length > 0) {
@@ -69,10 +78,19 @@ export default class ProjectTaskList extends React.Component<
             });
             item.OwnerName = item.AssignedTo[0].Title
           }
-          item.Status = item.Status0 != null ? item.Status0.Status : "";        
+          item.Status = item.Status0 != null ? item.Status0.Status : "";
         });
-
-        this.setState({ taskList: response });
+        if (pastRecord && currentRecord) {
+          this.setState({
+            expanded: {
+              0: false,
+              1: true,
+            }, 
+            taskList: sortedResponse
+          });
+        } else {
+          this.setState({ taskList: sortedResponse });
+        }
       });
   }
 
@@ -109,7 +127,7 @@ export default class ProjectTaskList extends React.Component<
                     const id = filter.pivotId || filter.id
                     return row[id] !== undefined ? String(row[id]).toLocaleLowerCase().match(filter.value.toLocaleLowerCase()) : true
                   }}
-                  onExpandedChange={(newExpanded, index, event) => this.handleRowExpanded(newExpanded, index)}                 
+                  onExpandedChange={(newExpanded, index, event) => this.handleRowExpanded(newExpanded, index)}
                   columns={[
                     {
                       Header: "",
@@ -119,7 +137,7 @@ export default class ProjectTaskList extends React.Component<
                     },
                     {
                       Header: "Title",
-                      accessor: "Title",
+                      accessor: "Title",                     
                       Aggregated: row => {
                         return (
                           <span></span>

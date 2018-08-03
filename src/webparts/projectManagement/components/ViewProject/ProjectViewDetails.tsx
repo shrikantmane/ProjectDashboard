@@ -246,6 +246,9 @@ export default class ProjectViewDetails extends React.Component<
                                 </div>
                                 <div className="col-12 col-sm-12" id="content2">
                                     <div className="well">
+                                    <div className="content-section implementation">
+                    <h5>Holidays Calender</h5>
+                </div>
                                         <div className="col-sm-12 col-12 cardHeading">
                                             <div className="content-section implementation">
                                                 {/* <h5>Events</h5> */}

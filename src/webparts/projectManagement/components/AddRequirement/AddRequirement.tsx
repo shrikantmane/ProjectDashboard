@@ -270,7 +270,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     type={PanelType.medium}
 
                 >
-                    <div className="PanelContainer">
+                    <div className="">
                         <section className="main-content-section">
 
                             <div className="wrapper">

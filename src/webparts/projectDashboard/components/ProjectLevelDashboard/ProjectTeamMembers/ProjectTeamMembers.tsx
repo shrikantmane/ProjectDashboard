@@ -30,7 +30,10 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
             let loginName = "i:0#.f|membership|" + item.Team_x0020_Member.EMail;
             sp.profiles.getPropertiesFor(loginName).then(function (result) {
               item.Team_x0020_Member.Department = result.UserProfileProperties[13].Value;
-              item.Team_x0020_Member.PictureURL = result.UserProfileProperties[16].Value;
+              //item.Team_x0020_Member.PictureURL = result.UserProfileProperties[16].Value;
+              item.Team_x0020_Member.PictureURL = "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
+              item.Team_x0020_Member.EMail +
+              "&UA=0&size=HR64x64&sc=1531997060853";
               item.Team_x0020_Member.JobTitle = result.UserProfileProperties[21].Value;
               if (count == response.length) {
                 currentScope.setState({ teamMemberList: response });

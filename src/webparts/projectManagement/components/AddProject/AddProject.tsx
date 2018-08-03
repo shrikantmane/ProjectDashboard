@@ -2289,7 +2289,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     type={PanelType.medium}
 
                 >
-                    <div className="PanelContainer">
+                    <div >
                         <section className="main-content-section">
 
                             <div className="wrapper">

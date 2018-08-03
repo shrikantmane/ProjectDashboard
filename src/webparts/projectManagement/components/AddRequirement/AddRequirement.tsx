@@ -197,12 +197,15 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             }).then((response) => {
                 //const formData = new FormData();
                 //formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
-                response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]);
+                response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
+                    this.props.parentMethod();
+                    this._closePanel();
+                })
                 console.log('Item adding-', response);
                 this.setState({ isDataSaved: true });
-                this._closePanel();
+                //this._closePanel();
                 this._showModal();
-                this.props.parentMethod();
+                //this.props.parentMethod();
             });
         }
     } else {

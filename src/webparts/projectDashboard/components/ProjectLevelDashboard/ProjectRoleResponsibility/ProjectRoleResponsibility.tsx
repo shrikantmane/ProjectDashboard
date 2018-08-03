@@ -68,7 +68,7 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
                       <div className="row">
                         <div className="col-sm-12">
                           <div className="row">
-                            <div className="col-sm-2">
+                            <div className="col-sm-1">
                               <img className="img-responsive image-style rolesImage" src={item.Owner.PictureURL} alt="" />
                             </div>
                             <div className="col-sm-2">

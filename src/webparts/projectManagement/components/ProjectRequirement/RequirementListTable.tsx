@@ -96,12 +96,20 @@ export default class ProjectListTable extends React.Component<
     }
 
     impactTemplate(rowData: Requirement, Impact_x0020_on_x0020_Timelines) {
-        if (rowData.Impact_x0020_on_x0020_Timelines)
+        if (rowData.Impact_x0020_on_x0020_Timelines  === true){
             return (
                 <div>
-                    {rowData.Impact_x0020_on_x0020_Timelines.toString()}
+                    Yes
                 </div>
             );
+        }
+            else{
+                return (
+                    <div>
+                        No
+                    </div>
+                );
+            }
     }
 
     ownerTemplate(rowData: Requirement, column) {
@@ -124,7 +132,7 @@ export default class ProjectListTable extends React.Component<
 
 
     editTemplate(rowData, column) {
-        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}> Edit </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i>Edit  </a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -133,7 +141,7 @@ export default class ProjectListTable extends React.Component<
         });
     }
     actionTemplate(rowData, column) {
-        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}> Remove</a>;
+        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="fas fa-trash-alt"></i></a>;
     }
     fileTemplate(rowData: Requirement, column) {
         if (rowData.AttachmentFiles) {
@@ -217,14 +225,15 @@ export default class ProjectListTable extends React.Component<
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
                             <Column header="Edit" body={this.editTemplate} />
                             <Column field="Requirement" sortable={true} header="Requirement" />
+                            <Column field="AttachmentFiles" header="Attachment"  body={this.attachmentTemplate} />
                             <Column field="Resources" sortable={true} header="Resources" />
-                             <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timeliness?" body={this.impactTemplate} /> 
+                             <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timeliness?"  body={this.impactTemplate}  /> 
                             <Column field="Efforts" header="Efforts" sortable={true} />
-                            <Column field="AttachmentFiles" header="Attachment" sortable={true} body={this.attachmentTemplate} />
+                           
                             {/* <Column field="Apporval_x0020_Status" sortable={true} header="Approval Status" />
                              <Column field="Approver" header="Approver" sortable={true} body={this.approverTemplate} />  */}
-                            <Column field="Author" header="Created By" sortable={true} body={this.ownerTemplate} />
-                            <Column field="Created" header="Created On" sortable={true} body={this.duedateTemplate} />
+                            {/* <Column field="Author" header="Created By" sortable={true} body={this.ownerTemplate} />
+                            <Column field="Created" header="Created On" sortable={true} body={this.duedateTemplate} /> */}
                             <Column header="Remove" body={this.actionTemplate} />
                         </DataTable>
                     </div>

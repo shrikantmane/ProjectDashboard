@@ -145,7 +145,7 @@ export default class ProjectListTable extends React.Component<
 
 
     actionTemplate(rowData, column) {
-        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}> Remove</a>;
+        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="fas fa-trash-alt"></i></a>;
     }
     editTemplate(rowData, column) {
         return <a href="#"> Edit </a>;

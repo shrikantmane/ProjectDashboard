@@ -1543,7 +1543,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Resources).then(res => {
                             console.log("Resources created in list ", ListName);
 
-                            let ImpactOnTimelines = `<Field Name='ImpactOnTimelines' StaticName='ImpactOnTimelines' DisplayName='Impact On Timelines' Type='Boolean'><Default>0</Default></Field>`;
+                            let ImpactOnTimelines = `<Field Name='ImpactonTimelines' StaticName='ImpactonTimelines' DisplayName='Impact on Timelines' Type='Boolean'><Default>0</Default></Field>`;
                             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(ImpactOnTimelines).then(res => {
                                 console.log("ImpactOnTimelines created in list ", ListName);
 

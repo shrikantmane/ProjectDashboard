@@ -455,7 +455,7 @@ export default class CEOProjectInformation extends React.Component<
 
     var header = (
       <div>
-        <label className={styles.globalHeading}>CEO Dashboard</label>
+        {/* <label className={styles.globalHeading}>CEO Dashboard</label> */}
         <div className={styles.globalSearch} style={{ textAlign: "left" }}>
           <input
             type="text"

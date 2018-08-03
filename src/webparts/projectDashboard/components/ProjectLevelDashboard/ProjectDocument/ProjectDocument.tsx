@@ -109,18 +109,21 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
                   header="Documents Type"
                   body={this.documentTypeTemplate}
                   sortable={true}
+                  style={{width: "50%"}}
                 />
                 <Column
                   field="OwnerTitle"
                   header="Owner"
                   body={this.ownerTemplate}
                   sortable={true}
+                  style={{width: "25%"}}
                 />
                 <Column
                   field="Date"
                   header="Date"
                   sortable={true}
                   body={this.timeDateTemplate}
+                  style={{width: "25%"}}
                 />
               </DataTable>
             </div>

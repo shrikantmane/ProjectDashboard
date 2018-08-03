@@ -74,10 +74,6 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
                               <td>Status</td>
                               <td>{item.Status0 ? item.Status0.Status : ""}</td>
                             </tr>
-                            <tr>
-                              <td>Stage</td>
-                              <td>Devlopment</td>
-                            </tr>
                           </tbody>
                         </table>
                       </div>

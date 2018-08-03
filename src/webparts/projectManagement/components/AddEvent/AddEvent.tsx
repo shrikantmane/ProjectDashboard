@@ -13,7 +13,9 @@ import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-reac
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Modal } from 'react-bootstrap';
 import ProjectListTable from '../ProjectList/ProjectListTable';
-
+const textcolor = {
+            color: 'red' as 'red',
+          }
 
 
 export default class AddProject extends React.Component<IAddEventProps, {
@@ -287,7 +289,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
 
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
-                                                                        <label>Title</label>
+                                                                        <label>Title <span style={textcolor}>*</span></label>
                                                                         <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} 
                                                                             onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
                                                                         </input>
@@ -307,7 +309,18 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                 </div> */}
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
-                                                                        <label>Start Time</label>
+                                                                        <label>Impact<span style={textcolor}>*</span></label>
+                                                                        <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
+                                                                            <option>Meeting</option>
+                                                                            <option>Business</option>
+                                                                            <option>Holiday</option>
+                                                                        </select>
+                                                                        <span className="error">{this.state.errors["priority"]}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="col-lg-6">
+                                                                    <div className="form-group">
+                                                                        <label>Start Time<span style={textcolor}>*</span> </label>
                                                                         <DatePicker
                                                                             placeholder="Select start date"
                                                                             onSelectDate={this.handleChange.bind(this, "startdate")}
@@ -318,7 +331,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                 </div>
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
-                                                                        <label>End Time</label>
+                                                                        <label>End Time<span style={textcolor}>*</span></label>
                                                                         <DatePicker
                                                                             placeholder="Select end date"
                                                                             onSelectDate={this.handleChange.bind(this, "enddate")}
@@ -327,17 +340,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                         <span className="error">{this.state.errors["enddate"]}</span>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Impact</label>
-                                                                        <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
-                                                                            <option>Meeting</option>
-                                                                            <option>Business</option>
-                                                                            <option>Holiday</option>
-                                                                        </select>
-                                                                        <span className="error">{this.state.errors["priority"]}</span>
-                                                                    </div>
-                                                                </div>
+                                                                
                                                                 
                                                                
                                                               

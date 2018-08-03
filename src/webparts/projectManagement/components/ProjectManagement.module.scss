@@ -70,5 +70,13 @@
       vertical-align: top;
       display: inline-block;
     }
+
+    
   }
+
+  .Responsibility{
+      white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }

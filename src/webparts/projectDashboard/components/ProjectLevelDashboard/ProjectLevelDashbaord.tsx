@@ -132,7 +132,6 @@ export default class ProjectLevelDashboard extends React.Component<
             </div>
           </section>
         </div>
-         {/* <ProjectPlan scheduleList={this.state.project.Schedule_x0020_List}></ProjectPlan> */}
       </div>
     );
   }

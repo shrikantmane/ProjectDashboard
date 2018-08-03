@@ -15,5 +15,4 @@ export interface ICEOProjectState {
   isKeyDocumentLoaded :boolean,
   isTagLoaded :boolean,
   expandedRowID : number,
-  redirectToProjectDetails : boolean,
 }

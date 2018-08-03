@@ -27,7 +27,7 @@ export default class CEOProjectInformation extends React.Component<
     super(props);
     this.state = {
       projectList: new Array<CEOProjects>(),
-      projectTimeLine: new ProjectTimeLine,
+      projectTimeLine: new ProjectTimeLine(),
       projectName: null,
       ownerName: null,
       status: null,
@@ -38,7 +38,6 @@ export default class CEOProjectInformation extends React.Component<
       isTagLoaded: false,
       expandedRowID: -1,
       expandedRows: [],
-      redirectToProjectDetails: false
     };
     this.handleGlobalSearchChange = this.handleGlobalSearchChange.bind(this);
     this.onProjectNameChange = this.onProjectNameChange.bind(this);
@@ -453,9 +452,7 @@ export default class CEOProjectInformation extends React.Component<
   /* Html UI */
 
   public render(): React.ReactElement<ICEOProjectProps> {
-    if (this.state.redirectToProjectDetails) {
-      return <Redirect to="/project" />
-    }
+
     var header = (
       <div>
         <label className={styles.globalHeading}>CEO Dashboard</label>
@@ -525,7 +522,7 @@ export default class CEOProjectInformation extends React.Component<
         {
           !this.state.isLoading ?
             <div>
-              {this.state.projectTimeLine && this.state.projectTimeLine.groups.length > 0 ? (
+              {this.state.projectTimeLine && this.state.projectTimeLine.groups && this.state.projectTimeLine.groups.length > 0 ? (
                 <CEOProjectTimeLine groups={this.state.projectTimeLine.groups} items={this.state.projectTimeLine.items} />
               ) : null}
               <div style={{ marginTop: "10px" }}>
@@ -653,8 +650,6 @@ export default class CEOProjectInformation extends React.Component<
             "Body",
             "Status0/Status",
             "Status0/Status_x0020_Color",
-            // "Project/ID",
-            // "Project/Title",
             "AssignedTo/Title",
             "AssignedTo/ID",
             "AssignedTo/EMail"

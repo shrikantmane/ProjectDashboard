@@ -130,7 +130,7 @@ export default class ProjectListTable extends React.Component<
 
 
             return (
-                <div>
+                <div  style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
 
                     <a href={rowData.File.ServerRelativeUrl} ><i
                         style={{ marginRight: "5px" }}
@@ -204,10 +204,10 @@ export default class ProjectListTable extends React.Component<
                     {/* <input type="button" value="Upload" className="btn btn-outline btn-sm" onClick={this.UploadFiles} /> */}
                     <div className="document-list">
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
-                            <Column field="Title" sortable={true} header="Attachment" body={this.fileTemplate} />
-                            <Column field="Author" sortable={true} header="Created By" body={this.ownerTemplate} />
-                            <Column field="Created" sortable={true} header="Created On" body={this.duedateTemplate} />
-                            <Column header="Remove" body={this.actionTemplate} />
+                            <Column field="Title" sortable={true} header="Documents" body={this.fileTemplate}style={{ width: "47%" }}  />
+                            <Column field="Author" sortable={true} header="Created By" body={this.ownerTemplate}style={{ width: "23%" }} />
+                            <Column field="Created" sortable={true} header="Created On" body={this.duedateTemplate}style={{ width: "23%" }} />
+                            <Column  body={this.actionTemplate}style={{ width: "7%" }}  />
                         </DataTable>
                     </div>
                 </div>

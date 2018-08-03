@@ -223,17 +223,7 @@ export default class ProjectViewDetails extends React.Component<
                                     <div><DocumentListTable list={this.state.documentlist} projectId={this.state.Id}></DocumentListTable></div>
                                     </div>
                                 </div>
-                                <div className="col-12 col-sm-12" id="requirement">
-                                    <div className="well">
-                                    <div><RequirementListTable list={this.state.requirementlist} projectId={this.state.Id}></RequirementListTable></div>
-                                        {/* <div className="col-sm-12 col-md-12 col-lg-12 cardHeading">
-                        <div>
-                            <h5 className="pull-left heading-style">Requirements</h5>
-
-                        </div>
-                        </div> */}
-                                    </div>
-                                </div>
+                                
                                 <div className="col-12 col-sm-6">
                                     <div className="well">
                                     <div><InformationListTable list={this.state.informationlist} projectId={this.state.Id}></InformationListTable></div>
@@ -242,6 +232,12 @@ export default class ProjectViewDetails extends React.Component<
                                 <div className="col-12 col-sm-6" ref={(section) => { this.violet = section; }}>
                                     <div className="well">
                                     <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id} onRefreshCalender ={this.onRefreshCalender}></CalendarListTable></div>
+                                    </div>
+                                </div>
+                                <div className="col-12 col-sm-12" id="requirement">
+                                    <div className="well">
+                                    <div><RequirementListTable list={this.state.requirementlist} projectId={this.state.Id}></RequirementListTable></div>
+                                        
                                     </div>
                                 </div>
                                 <div className="col-12 col-sm-12" id="content2">

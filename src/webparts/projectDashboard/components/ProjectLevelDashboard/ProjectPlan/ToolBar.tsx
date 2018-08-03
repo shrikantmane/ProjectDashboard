@@ -16,12 +16,13 @@ export default class Toolbar extends React.Component<any, any> {
     let zoomRadios = ['Days', 'Months'].map((value) => {
       let isActive = this.props.zoom === value;
       return (
-        <label key={value} className={`radio-label ${isActive ? 'radio-label-active': ''}`}>
+        <label key={value} className={`radioContainer radio-label ${isActive ? 'radio-label-active': ''}`}>
           <input type='radio'
              checked={isActive}
              onChange={this.handleZoomChange}
              value={value}/>
           {value}
+          <span className="checkmark"></span>
         </label>
       );
     });

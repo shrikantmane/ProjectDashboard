@@ -54,7 +54,7 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
 
   public render(): React.ReactElement<IProjectRoleResponsibilityProps> {
     return (
-      <div className="col-xs-12 col-sm-4">
+      <div className="col-xs-12 col-sm-9">
         <div className="well recommendedProjects userFeedback">
           <div className="row">
             <div className="col-sm-12 cardHeading">
@@ -68,21 +68,21 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
                       <div className="row">
                         <div className="col-sm-12">
                           <div className="row">
-                            <div className="col-sm-3">
-                              <img className="img-responsive image-style" src={item.Owner.PictureURL} alt="" />
+                            <div className="col-sm-2">
+                              <img className="img-responsive image-style rolesImage" src={item.Owner.PictureURL} alt="" />
                             </div>
-                            <div className="col-sm-5">
+                            <div className="col-sm-2">
                               <div className="profileDetail">
                                 <div className="profileName">
                                   <h4>{item.Owner ? item.Owner.Title : ""}</h4>
                                 </div>
-                                <ul className="profileRoles">
-                                  <li>{item.Roles_Responsibility}</li>
-                                </ul>
+                                <h5 className="deptName">{item.Owner ? item.Owner.Department : ""}</h5>
                               </div>
                             </div>
-                            <div className="col-sm-4 float-left">
-                              <h5 className="deptName">{item.Owner ? item.Owner.Department : ""}</h5>
+                            <div className="col-sm-8 float-left">
+                            <ul className="profileRoles">
+                                  <li>{item.Roles_Responsibility}</li>
+                                </ul>
                             </div>
                           </div>
                         </div>

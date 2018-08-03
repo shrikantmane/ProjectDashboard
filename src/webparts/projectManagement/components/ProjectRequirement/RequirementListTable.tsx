@@ -209,8 +209,9 @@ export default class ProjectListTable extends React.Component<
            sp.web.lists.getByTitle(this.props.list).
            items.getById(rowData.ID).delete().then((response) => {
              console.log(this.props.list + ` item deleted`);
+             this.getScheduleList(this.props.list);
            });
-       this.getScheduleList(this.props.list);
+      // this.getScheduleList(this.props.list);
          
        }
     
@@ -232,7 +233,7 @@ export default class ProjectListTable extends React.Component<
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
                             <Column body={this.editTemplate}style={{ width: "6%" }} />
                             <Column field="Requirement" sortable={true} header="Requirement"style={{ width: "24%" }} />
-                            <Column field="AttachmentFiles" header="Attachment"  body={this.attachmentTemplate}style={{ width: "24%" }} />
+                            <Column field="AttachmentFiles" header="Attachment"  body={this.fileTemplate}style={{ width: "24%" }} />
                             <Column field="Resources" sortable={true} header="Resources"style={{ width: "12%", align: "center" }} body={this.resourceTemplate}  />
                             
                              <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timelines?"  body={this.impactTemplate} style={{ width: "21%" }} /> 

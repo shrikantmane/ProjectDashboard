@@ -334,11 +334,11 @@ div#workbenchPageContent {
   font-family: 'Conv_AVENIRLTSTD-BOOK' !important;
 }
 
-tr.ui-widget-content>td:first-child {
-  padding: 0;
-  background-color: #248ef1;
-  color: #fff;
-}
+// tr.ui-widget-content>td:first-child {
+//   padding: 0;
+//   background-color: #248ef1;
+//   color: #fff;
+// }
 
 div[class^="feedback_"] {
   display: none !important;
@@ -1702,5 +1702,13 @@ div[class^="footerBar_"] {
     .activityTime {
       padding-right: 42px;
     }
+  }
+}
+
+.CEOProjectDashboardContainer {
+  tr.ui-widget-content>td:first-child {
+    padding: 0;
+    background-color: #248ef1;
+    color: #fff;
   }
 }

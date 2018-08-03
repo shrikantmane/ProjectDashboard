@@ -14,7 +14,9 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Modal } from 'react-bootstrap';
 import ProjectListTable from '../ProjectList/ProjectListTable';
 
-
+const textcolor = {
+    color: 'red' as 'red',
+  }
 
 export default class AddProject extends React.Component<IAddRequirementProps, {
     showPanel: boolean;
@@ -291,16 +293,16 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
 
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
-                                                                        <label>Requirement</label>
-                                                                        <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
+                                                                        <label>Requirement</label><span style={textcolor}>*</span>
+                                                                        <textarea ref="projectname"  className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
                                                                             onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
-                                                                        </input>
+                                                                        </textarea>
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-lg-6">
                                                         <div className="form-group">
-                                                          <label>Attachments</label>
+                                                          <label>Attachments</label><span style={textcolor}>*</span>
                                                              <div className="form-control fileupload" data-provides="fileupload">
                                                              <input ref="filedescription" type="file" id="uploadFile" className={formControl + " " + (this.state.errorClass["filedescription"] ? this.state.errorClass["filedescription"] : '')} 
                                                                            onChange={this.handleChange.bind(this, "filedescription")} >
@@ -312,7 +314,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                              </div>
                                                              <div className="col-lg-6">
                                                                     <div className="form-group">
-                                                                        <label>Number Of Resources</label>
+                                                                        <label>Number Of Resources</label><span style={textcolor}>*</span>
                                                                         <input ref="projectdescription" type="number" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Total Number Of People"
                                                                             onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}>
                                                                         </input>
@@ -321,7 +323,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                 </div>
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
-                                                                        <label>Efforts</label>
+                                                                        <label>Efforts</label><span style={textcolor}>*</span>
                                                                         <input ref="effortdescription" type="number" className={formControl + " " + (this.state.errorClass["effortdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Enter Number Of Day"
                                                                             onChange={this.handleChange.bind(this, "effortdescription")} value={this.state.fields["effortdescription"]}>
                                                                         </input>

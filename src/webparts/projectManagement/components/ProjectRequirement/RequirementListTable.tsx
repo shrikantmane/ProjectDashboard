@@ -89,7 +89,7 @@ export default class ProjectListTable extends React.Component<
     attachmentTemplate(rowData: Requirement, Attachments) {
         if (rowData.Attachments)
             return (
-                <div>
+                <div style={{textAlign : "center"}}> 
                     {rowData.Attachments.toString()}
                 </div>
             );
@@ -98,14 +98,14 @@ export default class ProjectListTable extends React.Component<
     impactTemplate(rowData: Requirement, Impact_x0020_on_x0020_Timelines) {
         if (rowData.Impact_x0020_on_x0020_Timelines  === true){
             return (
-                <div>
+                <div style={{textAlign : "center"}}>
                     Yes
                 </div>
             );
         }
             else{
                 return (
-                    <div>
+                    <div style={{textAlign : "center"}}>
                         No
                     </div>
                 );
@@ -120,15 +120,22 @@ export default class ProjectListTable extends React.Component<
                 </div>
             );
     }
-    approverTemplate(rowData: Requirement, column) {
-        if (rowData.Approver)
+    resourceTemplate(rowData: Requirement, column) {
+        if (rowData.Resources)
             return (
-                <div>
-                    {rowData.Approver.Title}
+                <div style={{textAlign : "center"}}>
+                    {rowData.Resources}
                 </div>
             );
     }
-
+    effortsTemplate(rowData: Requirement, column) {
+        if (rowData.Efforts)
+            return (
+                <div style={{textAlign : "center"}}>
+                    {rowData.Efforts}
+                </div>
+            );
+    }
 
 
     editTemplate(rowData, column) {
@@ -141,7 +148,7 @@ export default class ProjectListTable extends React.Component<
         });
     }
     actionTemplate(rowData, column) {
-        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="fas fa-trash-alt"></i></a>;
+        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="fas fa-trash-alt" ></i></a>;
     }
     fileTemplate(rowData: Requirement, column) {
         if (rowData.AttachmentFiles) {
@@ -223,18 +230,19 @@ export default class ProjectListTable extends React.Component<
                     }
                     <div className="requirement-list">
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
-                            <Column header="Edit" body={this.editTemplate} />
-                            <Column field="Requirement" sortable={true} header="Requirement" />
-                            <Column field="AttachmentFiles" header="Attachment"  body={this.attachmentTemplate} />
-                            <Column field="Resources" sortable={true} header="Resources" />
-                             <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timeliness?"  body={this.impactTemplate}  /> 
-                            <Column field="Efforts" header="Efforts" sortable={true} />
+                            <Column body={this.editTemplate}style={{ width: "6%" }} />
+                            <Column field="Requirement" sortable={true} header="Requirement"style={{ width: "24%" }} />
+                            <Column field="AttachmentFiles" header="Attachment"  body={this.attachmentTemplate}style={{ width: "24%" }} />
+                            <Column field="Resources" sortable={true} header="Resources"style={{ width: "12%", align: "center" }} body={this.resourceTemplate}  />
+                            
+                             <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timelines?"  body={this.impactTemplate} style={{ width: "21%" }} /> 
+                            <Column field="Efforts" header="Efforts" sortable={true}style={{ width: "16%" }}body={this.effortsTemplate}   />
                            
                             {/* <Column field="Apporval_x0020_Status" sortable={true} header="Approval Status" />
                              <Column field="Approver" header="Approver" sortable={true} body={this.approverTemplate} />  */}
                             {/* <Column field="Author" header="Created By" sortable={true} body={this.ownerTemplate} />
                             <Column field="Created" header="Created On" sortable={true} body={this.duedateTemplate} /> */}
-                            <Column header="Remove" body={this.actionTemplate} />
+                            <Column  body={this.actionTemplate}style={{ width: "3%" }} />
                         </DataTable>
                     </div>
                 </div>

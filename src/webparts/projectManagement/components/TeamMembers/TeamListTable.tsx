@@ -220,13 +220,13 @@ this.refreshGrid();
                     } 
                     <div className="member-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
-                            <Column field="AssignedTo" header="Owner" sortable={true} body={this.ownerTemplate} />
+                            <Column field="AssignedTo" header="Name" sortable={true} body={this.ownerTemplate}style={{ width: "35%" }} />
 
-                            <Column field="Start_x0020_Date" sortable={true} header="Start Date" body={this.duedateTemplate} />
-                            <Column field="End_x0020_Date" sortable={true} header="End Date" body={this.enddateTemplate} />
-                            <Column field="Status" sortable={true} header="Status" />
+                            <Column field="Start_x0020_Date" sortable={true} header="Assigned Date" body={this.duedateTemplate}style={{ width: "32%" }} />
+                            {/* <Column field="End_x0020_Date" sortable={true} header="End Date" body={this.enddateTemplate}style={{ width: "21%" }} /> */}
+                            <Column field="Status" sortable={true} header="Status"style={{ width: "26%" }} />
 
-                            <Column header="Remove" body={this.actionTemplate} />
+                            <Column body={this.actionTemplate}style={{ width: "7%" }} />
                         </DataTable>
                     </div>
                 </div>

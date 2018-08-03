@@ -13,6 +13,10 @@ import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 //import AddProject from '../AddProject/AddProject';
 import AddInformation from '../AddInformation/AddInformation';
+
+
+
+
 export default class ProjectListTable extends React.Component<
     IInformationProps,
     IInformationState
@@ -42,6 +46,7 @@ export default class ProjectListTable extends React.Component<
         this.editTemplate = this.editTemplate.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
         this.actionTemplate = this.actionTemplate.bind(this);
+        this.RoleTemplate = this.RoleTemplate.bind(this);
     }
     dt: any;
     componentDidMount() {
@@ -91,14 +96,7 @@ export default class ProjectListTable extends React.Component<
     //         );
     // }
 
-    ownerTemplate(rowData: Information, column) {
-        if (rowData.Owner)
-            return (
-                <div>
-                    {rowData.Owner.Title}
-                </div>
-            );
-    }
+  
     actionTemplate(rowData, column) {
         return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="far fa-times-circle"></i></a>;
     }
@@ -130,6 +128,29 @@ export default class ProjectListTable extends React.Component<
         });
  
     }
+
+  ownerTemplate(rowData: Information, column) {
+        if (rowData.Owner)
+            return (
+                <div>
+                    {rowData.Owner.Title}
+                </div>
+            );
+    }
+    
+     RoleTemplate(rowData: Information, column) {
+        if (rowData.Roles_Responsibility)
+            return (
+                // <div className={styles.Responsibility}>
+                <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                    {rowData.Roles_Responsibility}
+                </div>
+            );
+    }
+
+    
+
+
     public render(): React.ReactElement<IInformationState> {
         console.log('this.state.projectList', this.state.projectList)
         return (
@@ -147,11 +168,11 @@ export default class ProjectListTable extends React.Component<
                     }
                     <div className="responsibility-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
-                            <Column header="Edit" body={this.editTemplate} />
-                            <Column field="Roles_Responsibility" sortable={true} header="Role/ Responsibility" />
-                            <Column field="OwnerName" sortable={true} header="Owner"    />
-                            <Column field="Department" sortable={true} header="Departments" />
-                            <Column header="Remove" body={this.actionTemplate} />
+                            <Column header="Edit" body={this.editTemplate} style={{width: "15%"}}/>
+                            <Column field="Roles_Responsibility" sortable={true} header="Responsibility"  body={this.RoleTemplate} />
+                            <Column field="OwnerName" sortable={true} header="Owner" style={{width: "22%"}}   />
+                            <Column field="Department" sortable={true} header="Department" style={{width: "25%"}}/>
+                            <Column header="" body={this.actionTemplate} style={{width: "7%"}}/>
                         </DataTable>
                     </div>
                 </div>

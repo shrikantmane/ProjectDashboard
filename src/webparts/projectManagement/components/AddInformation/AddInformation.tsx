@@ -33,6 +33,9 @@ import { IPersonaWithMenu } from 'office-ui-fabric-react/lib/components/pickers/
 //import { people, mru } from './PeoplePickerExampleData';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Promise } from 'es6-promise';
+const  textcolor = {
+            color: 'red' as 'red',
+          }
   
   const suggestionProps: IBasePickerSuggestionsProps = {
     //suggestionsHeaderText: 'Suggested People',
@@ -72,6 +75,8 @@ export default class AddProject extends React.Component<IAddInformationProps, {
     currentSelectedItems?: IPersonaProps[];
 }> {
     private _picker: IBasePicker<IPersonaProps>;
+    
+  
     constructor(props) {
         super(props);
         const peopleList: IPersonaWithMenu[] = [];
@@ -369,7 +374,7 @@ if(tempState.length>0){
 
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
-                                                                        <label>Information</label>
+                                                                        <label>Information<span style={textcolor}>*</span></label>
                                                                         <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
                                                                             onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
                                                                         </input>
@@ -378,7 +383,7 @@ if(tempState.length>0){
                                                                 </div>
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
-                                                                        <label>Assigned To</label>
+                                                                        <label>Assigned To<span style={textcolor}>*</span></label>
                                                                         {this._renderControlledPicker()}
                                                                          {/* <span className="calendar-style"><i className="fas fa-user icon-style"></i>
                                                                             {/* <input ref="ownername"  className={paddingInputStyle + " " + formControl + " " + (this.state.errorClass["ownername"] ? this.state.errorClass["ownername"] : '')}
@@ -448,6 +453,8 @@ Schedule and Project Team now?
 
         );
     }
+
+    
     private _closePanel = (): void => {
         this.setState({ showPanel: false });
         if (!this.state.isDataSaved) {
@@ -688,5 +695,6 @@ Schedule and Project Team now?
     /*End: People Picker Methods */
      
     /* Api Call*/
+
 
 }

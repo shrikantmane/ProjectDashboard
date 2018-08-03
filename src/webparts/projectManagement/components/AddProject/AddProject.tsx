@@ -154,7 +154,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     TaskStatusColor: string;
     roleAssignments: IRoleAssignments[];
     savedProjectID: any;
-    statusList:any;
+    statusList: any;
 }> {
     private _picker: IBasePicker<IPersonaProps>;
     // Added by Ashwini
@@ -219,7 +219,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             TaskStatusColor: '',
             roleAssignments: [],
             savedProjectID: 0,
-            statusList:[]
+            statusList: []
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -341,22 +341,22 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         console.log(`action: ${actionMeta.action}`);
         console.groupEnd();
     };
-    handleBlurOnProjectName(){
+    handleBlurOnProjectName() {
         console.log(this.state.fields['projectname']);
         let errors = this.state.errors;
         let errorClass = this.state.errorClass;
-        if(this.state.fields['projectname']){
+        if (this.state.fields['projectname']) {
             let flag = false;
             this.state.projectList.forEach(element => {
-                if(element.Project.toLowerCase() === this.state.fields['projectname'].toLowerCase()){
-                    flag = true; 
+                if (element.Project.toLowerCase() === this.state.fields['projectname'].toLowerCase()) {
+                    flag = true;
                 }
             });
-            if(flag){
+            if (flag) {
                 errors["projectname"] = "Project name is already exist.";
                 errorClass["projectname"] = "classError";
                 this.setState({ errors: errors, errorClass: errorClass });
-            }else{
+            } else {
                 errors["projectname"] = "";
                 errorClass["projectname"] = "";
                 this.setState({ errors: errors, errorClass: errorClass });
@@ -453,7 +453,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         let formIsValid = true;
 
         //Name
-        if(this.state.errors["projectname"]){
+        if (this.state.errors["projectname"]) {
             formIsValid = false;
             errors["projectname"] = "Project name is already exist.";
             errorClass["projectname"] = "classError";
@@ -557,8 +557,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         errorClass["projectname"] = "";
         errorClass["projectdescription"] = "";
 
-        
-        this.setState({ currentSelectedItems: selectedPeopleList,fields, errors, errorClass});
+
+        this.setState({ currentSelectedItems: selectedPeopleList, fields, errors, errorClass });
     }
     projectSubmit(e) {
         e.preventDefault();
@@ -590,8 +590,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     ProTypeDeptSpecific: obj.departmentspecific ? obj.departmentspecific : false,
                     On_x0020_Hold_x0020_Status: obj.status ? obj.status : 'On Hold',
                     On_x0020_Hold_x0020_Date: obj.statusdate ? new Date(obj.statusdate).toDateString() : null,
-                    Status0Id:obj.projectstatus ? obj.projectstatus : 1,
-                    Risks:obj.risk ? obj.risk : 'Low',
+                    Status0Id: obj.projectstatus ? obj.projectstatus : 1,
+                    Risks: obj.risk ? obj.risk : 'Low',
 
                 }).then(i => {
                     this._closePanel();
@@ -678,7 +678,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     // Add Item to project list & other list creation
                     let projectName = ProName.split(' ').join('_');
                     //if (reactHandler.state.fields['cloneproject'] !== true) {
-                        reactHandler.CreateNewProject(projectName);
+                    reactHandler.CreateNewProject(projectName);
                     // }
                     // else {
                     //     reactHandler.getProjectDetails(projectName);
@@ -1074,9 +1074,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             //.select("ID", "Project", "Schedule_x0020_List", "Requirements", "Project_x0020_Document", "Project_x0020_Calender")
             //  "Department",
             .select("ID", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "PercentComplete", "AssignedTo/ID", "AssignedTo/Title",
-            "StartDate", "DueDate", "Body", "Priority", "ProTypeDeptSpecific", "Recurring_x0020_Project", "Occurance", "Parent",
-            "IsActive", "On_x0020_Hold_x0020_Status", "On_x0020_Hold_x0020_Date", "Schedule_x0020_List", "Requirements", "Project_x0020_Document",
-            "Project_x0020_Calender")
+                "StartDate", "DueDate", "Body", "Priority", "ProTypeDeptSpecific", "Recurring_x0020_Project", "Occurance", "Parent",
+                "IsActive", "On_x0020_Hold_x0020_Status", "On_x0020_Hold_x0020_Date", "Schedule_x0020_List", "Requirements", "Project_x0020_Document",
+                "Project_x0020_Calender")
             .expand("Status0", "AssignedTo")
             .filter(filter)
             .getAll()
@@ -1134,7 +1134,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         console.log("CloneProjectData", this.state.CloneProjectData);
         let obj: any = this.state.fields;
-        	  let TaskListClmn = ProName + this.TaskList;
+        let TaskListClmn = ProName + this.TaskList;
         let ScheduleListClmn = ProName + this.ScheduleList;
         let ProjectDocumentClmn = ProName + this.ProjectDocument;
         let RequirementsClmn = ProName + this.Requirements;
@@ -1186,7 +1186,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     private CreateNewProject(ProName) {
 
         let obj: any = this.state.fields;
-      	  let TaskListClmn = ProName + this.TaskList;
+        let TaskListClmn = ProName + this.TaskList;
         let ScheduleListClmn = ProName + this.ScheduleList;
         let ProjectDocumentClmn = ProName + this.ProjectDocument;
         let RequirementsClmn = ProName + this.Requirements;
@@ -1214,8 +1214,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Clone_x0020_Requirements: obj.clonerequirements ? obj.clonerequirements : false,
             Clone_x0020_Schedule: obj.cloneschedule ? obj.cloneschedule : false,
             Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
-            Status0Id:obj.projectstatus ? obj.projectstatus : 1,
-            Risks:obj.risk ? obj.risk : 'Low',
+            Status0Id: obj.projectstatus ? obj.projectstatus : 1,
+            Risks: obj.risk ? obj.risk : 'Low',
 
             Title: "No Title",
 
@@ -1232,7 +1232,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Task_x0020_Comments: TaskCommentsClmn,
             Task_x0020_Comments_x0020_Histor: TaskCommentsHistoryClmn
         }).then((iar: ItemAddResult) => {
-            
+
             this.CreateTaskList(ProName);
             this.setState({ isDataSaved: true, savedProjectID: iar.data.Id });
             this.state.fields['tags'].forEach(element => {
@@ -1247,26 +1247,26 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         //let spWeb = new Web(this.context.pageContext.site.absoluteUrl);
         let spEnableCT = false;
         let reactHandler = this;
-        	  let TaskList = ProName + this.TaskList;
+        let TaskList = ProName + this.TaskList;
         let TaskListDesc = TaskList + " Description";
         let TaskTemplateId = 171;
 
 
         sp.web.lists.add(TaskList, TaskListDesc, TaskTemplateId, spEnableCT).then(function (splist) {
             console.log(TaskList, " created successfuly !");
-            
-            reactHandler.AddTaskListColumns(TaskList, ProName, sp.web, spEnableCT,splist.list);
-            
-           
+
+            reactHandler.AddTaskListColumns(TaskList, ProName, sp.web, spEnableCT, splist.list);
+
+
         }).catch(err => {
             console.log("Error while creating task List, Error -", err);
         });
     }
 
 
-    private AddTaskListColumns(ListName, ProName, spWeb, spEnableCT,list) {
+    private AddTaskListColumns(ListName, ProName, spWeb, spEnableCT, list) {
 
-        
+
         let ScheduleList = ProName + this.ScheduleList;
         this.TaskObj = list;
 
@@ -1314,19 +1314,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         spWeb.lists.add(ScheduleList, ScheduleListDesc, TaskTemplateId, spEnableCT).then(function (splist) {
             console.log(ScheduleList, " created successfuly !");
             let ScheduleListID = "'{" + splist.data.Id + "}'";
-            reactHandler.AddScheduleListIDColumns(ScheduleList, ProName, spWeb, spEnableCT, ScheduleListID,splist.list);
-           
+            reactHandler.AddScheduleListIDColumns(ScheduleList, ProName, spWeb, spEnableCT, ScheduleListID, splist.list);
+
         }).catch(err => {
             console.log("Error while creating Schedule List, Error -", err);
         });
     }
 
-    private AddScheduleListIDColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID,list) {
+    private AddScheduleListIDColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID, list) {
 
-        
+
         let TaskComments = ProName + this.TaskComments;
-         this.ScheduleObj = list;
-            
+        this.ScheduleObj = list;
+
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + `/>`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1371,16 +1371,16 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             console.log(TaskComments, " created successfuly !");
             let TaskCommentsID = "'{" + splist.data.Id + "}'";
             reactHandler.AddTaskCommentsColumns(TaskComments, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID, splist.list);
-            
+
         }).catch(err => {
             console.log("Error while creating Task Comments List, Error -", err);
         });
     }
 
 
-    private AddTaskCommentsColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID,list) {
+    private AddTaskCommentsColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID, list) {
 
-        
+
         let TaskCommentsHistory = ProName + this.TaskCommentsHistory;
         this.TaskCommentObj = list;
 
@@ -1391,8 +1391,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
                 console.log("Comment created in list ", ListName);
-                
-            this.AddPermissionsToTaskCommentList(ListName, ProName);
+
+                this.AddPermissionsToTaskCommentList(ListName, ProName);
                 this.CreateTaskCommentHistory(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID);
             }).catch(err => {
                 console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
@@ -1410,18 +1410,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         // Create Project Calender List & Columns
         spWeb.lists.add(TaskCommentsHistory, TaskCommentsHistoryDesc, TaskCommentsHistoryTemplateId, spEnableCT, ).then(function (splist) {
             console.log(TaskCommentsHistory, " created successfuly !");
-            reactHandler.AddTaskCommentsHistoryColumns(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID,splist.list);
-           
+            reactHandler.AddTaskCommentsHistoryColumns(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID, splist.list);
+
         }).catch(err => {
             console.log("Error while creating Task Comments History List, Error -", err);
         });
     }
 
-    private AddTaskCommentsHistoryColumns(ListName, ProName, spWeb, spEnableCT, TaskCommentsID,list) {
+    private AddTaskCommentsHistoryColumns(ListName, ProName, spWeb, spEnableCT, TaskCommentsID, list) {
 
-        
+
         let ProjectDocument = ProName + this.ProjectDocument;
-         this.TaskCommentHisObj = list;
+        this.TaskCommentHisObj = list;
 
         let TaskCommentID = `<Field Name="Task Comment ID" DisplayName="Task Comment ID" Type="Lookup" Required="FALSE" ShowField="ID" List=` + TaskCommentsID + `/>`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(TaskCommentID).then(res => {
@@ -1434,8 +1434,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
                     console.log("IsDeleted created in list ", ListName);
-                    
-            this.AddPermissionsToTaskCommentHisList(ListName, ProName);
+
+                    this.AddPermissionsToTaskCommentHisList(ListName, ProName);
                     this.CreateProjectDocument(ProName, ProjectDocument, spWeb, spEnableCT);
                 }).catch(err => {
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
@@ -1457,18 +1457,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         spWeb.lists.add(ProjectDocument, ProjectDocumentDesc, DocTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectDocument, " created successfuly !");
-            reactHandler.AddProjectDocColumns(ProjectDocument, ProName, spWeb, spEnableCT,splist.list);
+            reactHandler.AddProjectDocColumns(ProjectDocument, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
             console.log("Error while creating Project Doc List, Error -", err);
         });
     }
 
-    private AddProjectDocColumns(ListName, ProName, spWeb, spEnableCT,list) {
+    private AddProjectDocColumns(ListName, ProName, spWeb, spEnableCT, list) {
         //let Risks = ProName + " Risks";
-        
+
         let Requirements = ProName + this.Requirements;
-        
-            this.DocumentObj = list;
+
+        this.DocumentObj = list;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1477,7 +1477,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         let Owner = `<Field Name='Owner' StaticName='Owner' DisplayName='Owner' Type='User'/>`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Owner).then(res => {
             console.log("Owner created in list ", ListName);
-             
+
             this.AddPermissionsToDocumentList(ListName, ProName);
             this.CreateRequirements(ProName, Requirements, spWeb, spEnableCT);
 
@@ -1498,19 +1498,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         spWeb.lists.add(Requirements, RequirementsDesc, RequirementsTemplateId, spEnableCT).then(function (splist) {
             console.log(Requirements, " created successfuly !");
             // reactHandler.AddRequirementColumns(Requirements);
-            reactHandler.AddRequirementColumns(Requirements, ProName, spWeb, spEnableCT,splist.list);
+            reactHandler.AddRequirementColumns(Requirements, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
             console.log("Error while creating Requirement List, Error -", err);
         });
     }
 
     // private AddRequirementColumns(ListName){
-    private AddRequirementColumns(ListName, ProName, spWeb, spEnableCT,list) {
+    private AddRequirementColumns(ListName, ProName, spWeb, spEnableCT, list) {
 
-        
+
         let ProjectTeamMembers = ProName + this.ProjectTeamMembers;
-        
-            this.RequirementObj = list;
+
+        this.RequirementObj = list;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1547,8 +1547,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(ImpactOnTimelines).then(res => {
                                 console.log("ImpactOnTimelines created in list ", ListName);
 
-                                
-            this.AddPermissionsToRequirementList(ListName, ProName);
+
+                                this.AddPermissionsToRequirementList(ListName, ProName);
                                 this.CreateProjectTeamMembers(ProName, ProjectTeamMembers, spWeb, spEnableCT);
                             }).catch(err => {
                                 console.log("Error while creating column ImpactOnTimelines - ", " in list -", ListName, " Error -", err);
@@ -1586,18 +1586,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         spWeb.lists.add(ProjectTeamMembers, TeamMembersDesc, TeamMembersTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectTeamMembers, " created successfuly !");
-            reactHandler.AddTeamMemberColumns(ProjectTeamMembers, ProName, spWeb, spEnableCT,splist.list);
+            reactHandler.AddTeamMemberColumns(ProjectTeamMembers, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
             console.log("Error while creating Team Members List, Error -", err);
         });
     }
 
     // private AddTeamMemberColumns(ListName){
-    private AddTeamMemberColumns(ListName, ProName, spWeb, spEnableCT,list) {
-        
+    private AddTeamMemberColumns(ListName, ProName, spWeb, spEnableCT, list) {
+
         let ProjectInfo = ProName + this.ProjectInfo;
-        
-            this.TeamMemberObj = list;
+
+        this.TeamMemberObj = list;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1624,8 +1624,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                         </Field>`;
                     sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Status).then(res => {
                         console.log("Status created in list ", ListName);
-                        
-            this.AddPermissionsToTeamMemberList(ListName, ProName);
+
+                        this.AddPermissionsToTeamMemberList(ListName, ProName);
                         this.CreateProjectInfo(ProName, ProjectInfo, spWeb, spEnableCT);
 
                     }).catch(err => {
@@ -1657,18 +1657,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         spWeb.lists.add(ProjectInfo, ProjectInfoDesc, ProjectInfoTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectInfo, " created successfuly !");
-            reactHandler.AddProjectInfoColumns(ProjectInfo, ProName, spWeb, spEnableCT,splist.list);
+            reactHandler.AddProjectInfoColumns(ProjectInfo, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
             console.log("Error while creating Team Members List, Error -", err);
         });
     }
 
     // private AddProjectInfoColumns(ListName){
-    private AddProjectInfoColumns(ListName, ProName, spWeb, spEnableCT,list) {
-        
+    private AddProjectInfoColumns(ListName, ProName, spWeb, spEnableCT, list) {
+
         let ProjectCal = ProName + this.ProjectCal;
-        
-            this.ProjectInfoObj =list ;
+
+        this.ProjectInfoObj = list;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1681,8 +1681,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             let Roles_Responsibility = `<Field Name='Roles_Responsibility' StaticName='Roles_Responsibility' DisplayName='Roles_Responsibility' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Roles_Responsibility).then(res => {
                 console.log("Roles_Responsibility created in list ", ListName);
-                
-            this.AddPermissionsToProjectInfoList(ListName, ProName);
+
+                this.AddPermissionsToProjectInfoList(ListName, ProName);
                 this.CreateProjectCalender(ProName, ProjectCal, spWeb, spEnableCT);
 
             }).catch(err => {
@@ -1702,7 +1702,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         var reactHandler = this;
         let ProjectCalenderDesc = ProjectCalender + " Description";
         let ProjectCalenderTemplateId = 106;
-        
+
         let ProjectComments = ProName + this.ProjectComments;
 
         spWeb.lists.add(ProjectCalender, ProjectCalenderDesc, ProjectCalenderTemplateId, spEnableCT).then(function (splist) {
@@ -1748,11 +1748,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         });
     }
 
-    private AddProjectCommentsColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID,list) {
-        
+    private AddProjectCommentsColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID, list) {
+
         let ProjectCommentsHistory = ProName + this.ProjectCommentsHistory;
-        
-            this.ProjectCommentObj =list;
+
+        this.ProjectCommentObj = list;
 
         // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
@@ -1769,8 +1769,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
                     console.log("IsDeleted created in list ", ListName);
-                    
-            this.AddPermissionsToProjectCommentList(ListName, ProName);
+
+                    this.AddPermissionsToProjectCommentList(ListName, ProName);
                     this.CreateProjectCommentHistory(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID);
                 }).catch(err => {
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
@@ -1793,18 +1793,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         // Create Project Comment History List & Columns
         spWeb.lists.add(ProjectCommentsHistory, ProjectCommentsHistoryDesc, ProjectCommentsHistoryTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectCommentsHistory, " created successfuly !");
-            reactHandler.AddProjectCommentsHistoryColumns(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID,splist.list);
-           
+            reactHandler.AddProjectCommentsHistoryColumns(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID, splist.list);
+
             //reactHandler.cloneListItems(ProName);
         }).catch(err => {
             console.log("Error while creating Project Comments History List, Error -", err);
         });
     }
 
-     private AddProjectCommentsHistoryColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID,list) {
+    private AddProjectCommentsHistoryColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID, list) {
 
-         
-         this.ProjectCommentHisObj = list;
+
+        this.ProjectCommentHisObj = list;
 
         let CommentID = `<Field Name="CommentID" DisplayName="CommentID" Type="Lookup" Required="FALSE" ShowField="CommentID" List="` + ProjectListID + `" />`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(CommentID).then(res => {
@@ -1817,9 +1817,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
                     console.log("IsDeleted created in list ", ListName);
-                        
-            this.AddPermissionsToProjectCommentHisList(ListName, ProName);
-                     
+
+                    this.AddPermissionsToProjectCommentHisList(ListName, ProName);
+
                 }).catch(err => {
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
                 }); //IsDeleted
@@ -1952,7 +1952,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         let ApporvalStatus;
         sp.web.lists.getByTitle(oldRequirementsList).items
             .select("Requirement", "Efforts", "Impact_x0020_On_x0020_Timelines", "Resources", "Attachments",
-            "Approver/ID", "Approver/Title", "Apporval_x0020_Status")
+                "Approver/ID", "Approver/Title", "Apporval_x0020_Status")
             .expand("Approver")
             .get()
             .then(res => {
@@ -2018,7 +2018,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         sp.web.lists.getByTitle(oldScheduleList).items
             .select("StartDate", "DueDate", "Duration", "AssignedTo/Title", "AssignedTo/ID", "Status0/ID", "Status0/Status",
-            "Status0/Status_x0020_Color", "Priority", "Body", "Predecessors/ID", "Predecessors/Title", "Comment", "Status")
+                "Status0/Status_x0020_Color", "Priority", "Body", "Predecessors/ID", "Predecessors/Title", "Comment", "Status")
             .expand("AssignedTo", "Status0", "Predecessors")
             .get()
             .then(res => {
@@ -2107,7 +2107,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 console.log("Error while copying document in list ", newDocumentList, " - ", err);
             });
     }
-   
+
 
 
 
@@ -2145,7 +2145,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                     this.addProjectTag(tagName, projectId)
                 }
-            }).catch(err =>{
+            }).catch(err => {
                 console.log("Error in addProjectTagByTagName -", err);
             });
     }
@@ -2163,9 +2163,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             //     this._showModal();
             // }
             console.log('Project team members added -', response);
-        }).catch(err =>{
-                console.log("Error in addProjectTag -", err);
-            });
+        }).catch(err => {
+            console.log("Error in addProjectTag -", err);
+        });
     }
 
     updateProjectTag(TagName, projectId, project, filter) {
@@ -2188,9 +2188,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     console.log(JSON.stringify(result));
                 });
             }
-        }).catch(err =>{
-                console.log("Error in updateProjectTag -", err);
-            });
+        }).catch(err => {
+            console.log("Error in updateProjectTag -", err);
+        });
     }
     _showModal() {
         this.setState({ showModal: true });
@@ -2289,216 +2289,166 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     type={PanelType.medium}
 
                 >
-                    <div >
+                    <div className="PanelContainer">
                         <section className="main-content-section">
-
-                            <div className="wrapper">
-
-                                <div className="row">
-
-                                    <div className="col-md-12">
-                                        <section id="step1">
-                                            <div className="well">
-                                                <div className="row">
-                                                    <h3>Project Details</h3>
-                                                    <div >
-                                                        <form name="projectform" onSubmit={this.projectSubmit.bind(this)}>
-                                                            <div className="row">
-                                                                <div className="col-lg-12">
-                                                                    <div className="form-group">
-                                                                        <label>Clone Project</label>
-                                                                        <div>
-                                                                            <Checkbox checked={this.state.fields["cloneproject"]} onChange={this.handleChange.bind(this, "cloneproject")} value={this.state.fields["cloneproject"]} />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                {selectProjectContent}
-                                                                {chechbox1Content}
-                                                                {chechbox2Content}
-                                                                {chechbox3Content}
-                                                                {chechbox4Content}
-
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Project Name</label>
-                                                                        <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
-                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName}>
-                                                                        </input>
-                                                                        <span className="error">{this.state.errors["projectname"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Owner</label>
-                                                                        <span className="calendar-style">
-                                                                            {/* <i className="fas fa-user icon-style"></i> */}
-                                                                            {/* <input ref="ownername" type="text" className={paddingInputStyle + " " + formControl + " " + (this.state.errorClass["ownername"] ? this.state.errorClass["ownername"] : '')} placeholder="Enter owners name"
-                                                                                onChange={this.handleChange.bind(this, "ownername")} value={this.state.fields["ownername"]}>
-                                                                            </input> */}
-                                                                            {/* <NormalPeoplePicker
-                                                                                onResolveSuggestions={this._onFilterChanged}
-                                                                                onEmptyInputFocus={this._returnMostRecentlyUsed}
-                                                                                getTextFromItem={this._getTextFromItem}
-                                                                                pickerSuggestionsProps={suggestionProps}
-                                                                                className={'ms-PeoplePicker'}
-                                                                                key={'normal'}
-                                                                                onRemoveSuggestion={this._onRemoveSuggestion}
-                                                                                onValidateInput={this._validateInput}
-                                                                                removeButtonAriaLabel={'Remove'}
-                                                                                inputProps={{
-                                                                                    onBlur: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onBlur called'),
-                                                                                    onFocus: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onFocus called'),
-                                                                                    'aria-label': 'People Picker'
-                                                                                }}
-                                                                                //componentRef={this._resolveRef('_picker')}
-                                                                                onInputChange={this._onInputChange}
-                                                                                onChange={this.handleChange.bind(this, "ownername")}
-                                                                                resolveDelay={300}
-                                                                                defaultSelectedItems={selectedPeopleList}
-                                                                            /> */}
-                                                                            {this._renderControlledPicker()}
-                                                                        </span>
-                                                                        <span className="error">{this.state.errors["ownername"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-lg-12">
-                                                                    <div className="form-group">
-                                                                        <label>Project Description</label>
-                                                                        <textarea ref="projectdescription" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Brief the owner about the project"
-                                                                            onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}></textarea>
-                                                                        <span className="error">{this.state.errors["projectdescription"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Start Date</label>
-                                                                        <DatePicker
-                                                                            placeholder="Select start date"
-                                                                            onSelectDate={this.handleChange.bind(this, "startdate")}
-                                                                            value={this.state.fields["startdate"]}
-                                                                        />
-                                                                        <span className="error">{this.state.errors["startdate"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Due Date</label>
-                                                                        <DatePicker
-                                                                            placeholder="Select due date"
-                                                                            onSelectDate={this.handleChange.bind(this, "duedate")}
-                                                                            value={this.state.fields["duedate"]}
-                                                                        />
-                                                                        <span className="error">{this.state.errors["duedate"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Priority</label>
-                                                                        <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
-                                                                            <option>Low</option>
-                                                                            <option>Medium</option>
-                                                                            <option>High</option>
-                                                                        </select>
-                                                                        <span className="error">{this.state.errors["priority"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Project Type</label>
-                                                                        <div>
-                                                                            <Checkbox checked={this.state.fields["departmentspecific"]} label="Department Specific" onChange={this.handleChange.bind(this, "departmentspecific")} value={this.state.fields["departmentspecific"]} />
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="clearfix"></div>
-
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Tags</label>
-                                                                        {/* <input ref="tags" type="text" className={formControl + " " + (this.state.errorClass["tags"] ? this.state.errorClass["tags"] : '')} placeholder="Enter Tags"
-                                                                            onChange={this.handleChange.bind(this, "tags")} value={this.state.fields["tags"]}>
-                                                                        </input> */}
-                                                                        <CreatableSelect
-                                                                            isMulti
-                                                                            onChange={this.handleChange2}
-                                                                            options={this.state.tagOptions}
-                                                                            value={this.state.fields["tags"]}
-                                                                        />
-                                                                        <span className="error">{this.state.errors["tags"]}</span>
-                                                                    </div>
-                                                                </div>
-
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Requring Project?</label>
-                                                                        <div>
-                                                                            <Checkbox label="Yes" checked={this.state.fields["requringproject"]} onChange={this.handleChange.bind(this, "requringproject")} value={this.state.fields["requringproject"]} />
-                                                                        </div>
-                                                                        {/* <div className="display-line">
-                                                                            <span className="col-lg-12 col-sm-12 radBtn">
-                                                                                <input ref="requringproject" type="checkbox" id="2" name="selectorAssignor"
-                                                                                    onChange={this.handleChange.bind(this, "requringproject")} value={this.state.fields["requringproject"]}>
-                                                                                </input>
-                                                                                <div className="check"></div>
-                                                                                <p className="checkbox-title">Yes	</p>
-                                                                            </span>
-                                                                        </div> */}
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Project Status</label>
-                                                                        <select ref="projectstatus" className={formControl + " " + (this.state.errorClass["projectstatus"] ? this.state.errorClass["projectstatus"] : '')}
-                                                                            onChange={this.handleChange.bind(this, "projectstatus")} value={this.state.fields["projectstatus"]}>
-                                                                            {this.state.statusList.map((obj) =>
-                                                                                <option key={obj.Status} value={obj.Id}>{obj.Status}</option>
-                                                                            )}
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Risk</label>
-                                                                        <select className={formControl + " " + (this.state.errorClass["risk"] ? this.state.errorClass["risk"] : '')} ref="risk" onChange={this.handleChange.bind(this, "risk")} value={this.state.fields["risk"]}>
-                                                                            <option>Low</option>
-                                                                            <option>Medium</option>
-                                                                            <option>High</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="clearfix"></div>
-                                                                {statusContent}
-                                                                {statusDate}
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Occurance</label>
-                                                                        <select ref="occurance" className={formControl + " " + (this.state.errorClass["occurance"] ? this.state.errorClass["occurance"] : '')}
-                                                                            onChange={this.handleChange.bind(this, "occurance")} value={this.state.fields["occurance"]}>
-                                                                            <option>Daily</option>
-                                                                            <option>Weekly </option>
-                                                                            <option>Months</option>
-                                                                        </select>
-                                                                        <span className="error">{this.state.errors["occurance"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-lg-12">
-                                                                    <div className="btn-sec">
-                                                                        <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
-                                                                        <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </form>
+                            <div className="row">
+                                <div className="col-sm-12 col-12">
+                                    <h3>Project Details</h3>
+                                    <form name="projectform" onSubmit={this.projectSubmit.bind(this)}>
+                                        <div className="row addSection">
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Project Name</label>
+                                                    <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
+                                                        onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName}>
+                                                    </input>
+                                                    <span className="error">{this.state.errors["projectname"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Owner</label>
+                                                    <span className="calendar-style">
+                                                        {this._renderControlledPicker()}
+                                                    </span>
+                                                    <span className="error">{this.state.errors["ownername"]}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row addSection">
+                                            <div className="col-sm-12 col-12">
+                                                <div className="form-group">
+                                                    <label>Clone Project</label>
+                                                    <div>
+                                                        <Checkbox checked={this.state.fields["cloneproject"]} onChange={this.handleChange.bind(this, "cloneproject")} value={this.state.fields["cloneproject"]} />
                                                     </div>
                                                 </div>
                                             </div>
 
-                                        </section>
-                                    </div>
+                                            {selectProjectContent}
+                                            {chechbox1Content}
+                                            {chechbox2Content}
+                                            {chechbox3Content}
+                                            {chechbox4Content}
+                                        </div>
+                                        <div className="row addSection">
+                                            <div className="col-sm-12 col-12">
+                                                <div className="form-group">
+                                                    <label>Project Description</label>
+                                                    <textarea ref="projectdescription" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Brief the owner about the project"
+                                                        onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}></textarea>
+                                                    <span className="error">{this.state.errors["projectdescription"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Start Date</label>
+                                                    <DatePicker
+                                                        placeholder="Select start date"
+                                                        onSelectDate={this.handleChange.bind(this, "startdate")}
+                                                        value={this.state.fields["startdate"]}
+                                                    />
+                                                    <span className="error">{this.state.errors["startdate"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Due Date</label>
+                                                    <DatePicker
+                                                        placeholder="Select due date"
+                                                        onSelectDate={this.handleChange.bind(this, "duedate")}
+                                                        value={this.state.fields["duedate"]}
+                                                    />
+                                                    <span className="error">{this.state.errors["duedate"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Project Type</label>
+                                                    <div>
+                                                        <Checkbox checked={this.state.fields["departmentspecific"]} label="Department Specific" onChange={this.handleChange.bind(this, "departmentspecific")} value={this.state.fields["departmentspecific"]} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Tags</label>
+                                                    <CreatableSelect
+                                                        isMulti
+                                                        onChange={this.handleChange2}
+                                                        options={this.state.tagOptions}
+                                                        value={this.state.fields["tags"]}
+                                                    />
+                                                    <span className="error">{this.state.errors["tags"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Priority</label>
+                                                    <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
+                                                        <option>Low</option>
+                                                        <option>Medium</option>
+                                                        <option>High</option>
+                                                    </select>
+                                                    <span className="error">{this.state.errors["priority"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Project Status</label>
+                                                    <select ref="projectstatus" className={formControl + " " + (this.state.errorClass["projectstatus"] ? this.state.errorClass["projectstatus"] : '')}
+                                                        onChange={this.handleChange.bind(this, "projectstatus")} value={this.state.fields["projectstatus"]}>
+                                                        {this.state.statusList.map((obj) =>
+                                                            <option key={obj.Status} value={obj.Id}>{obj.Status}</option>
+                                                        )}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Risk</label>
+                                                    <select className={formControl + " " + (this.state.errorClass["risk"] ? this.state.errorClass["risk"] : '')} ref="risk" onChange={this.handleChange.bind(this, "risk")} value={this.state.fields["risk"]}>
+                                                        <option>Low</option>
+                                                        <option>Medium</option>
+                                                        <option>High</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            {statusContent}
+                                            {statusDate}
+                                        </div>
+                                        <div className="row addSection">
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Requring Project?</label>
+                                                    <div>
+                                                        <Checkbox label="Yes" checked={this.state.fields["requringproject"]} onChange={this.handleChange.bind(this, "requringproject")} value={this.state.fields["requringproject"]} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Occurance</label>
+                                                    <select ref="occurance" className={formControl + " " + (this.state.errorClass["occurance"] ? this.state.errorClass["occurance"] : '')}
+                                                        onChange={this.handleChange.bind(this, "occurance")} value={this.state.fields["occurance"]}>
+                                                        <option>Daily</option>
+                                                        <option>Weekly </option>
+                                                        <option>Months</option>
+                                                    </select>
+                                                    <span className="error">{this.state.errors["occurance"]}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row addSection">
+                                            <div className="col-sm-12 col-12">
+                                                <div className="btn-sec">
+                                                    <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
+                                                    <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
-
                             </div>
                         </section>
                     </div>
@@ -2518,7 +2468,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     </Modal.Header>
                     <Modal.Body>
                         Project Created Successfully! Do you want to configure Project
-Schedule and Project Team now?
+    Schedule and Project Team now?
                     </Modal.Body>
                     <Modal.Footer>
                         <Button onClick={this._closeModal}>I'll Do it Later</Button>
@@ -2528,7 +2478,7 @@ Schedule and Project Team now?
 
                     </Modal.Footer>
                 </Modal>
-            </div>
+            </div >
 
         );
     }
@@ -2538,7 +2488,7 @@ Schedule and Project Team now?
         // get Project Documents list items for all projects
         let filterString = "ID eq " + id;
         sp.web.lists.getByTitle("Project").items
-            .select("Project", "StartDate", "DueDate","Risks", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/EMail", "AssignedTo/ID", "Priority", "Clone_x0020_Project", "Clone_x0020_Calender", "Clone_x0020_Documents", "Clone_x0020_Requirements", "Clone_x0020_Schedule", "Body", "Occurance", "Recurring_x0020_Project", "ProTypeDeptSpecific", "On_x0020_Hold_x0020_Date", "On_x0020_Hold_x0020_Status")
+            .select("Project", "StartDate", "DueDate", "Risks", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/EMail", "AssignedTo/ID", "Priority", "Clone_x0020_Project", "Clone_x0020_Calender", "Clone_x0020_Documents", "Clone_x0020_Requirements", "Clone_x0020_Schedule", "Body", "Occurance", "Recurring_x0020_Project", "ProTypeDeptSpecific", "On_x0020_Hold_x0020_Date", "On_x0020_Hold_x0020_Status")
             .expand("Status0", "AssignedTo")
             .filter(filterString)
             .getAll()
@@ -2634,15 +2584,15 @@ Schedule and Project Team now?
                 alert(`There was an error : ${e.message}`);
             });
     }
-    getStatusList(){
+    getStatusList() {
         sp.web.lists.getByTitle('Project Status Color').items
-        .select('Sequence','Status', 'Status_x0020_Color', 'ID')
-        .orderBy("Sequence")
-        .get()
-        .then((response: any[]) => {
-            console.log("All Colors -", response);
-            this.setState({statusList : response});
-        });
+            .select('Sequence', 'Status', 'Status_x0020_Color', 'ID')
+            .orderBy("Sequence")
+            .get()
+            .then((response: any[]) => {
+                console.log("All Colors -", response);
+                this.setState({ statusList: response });
+            });
     }
     private getProjectByName(name) {
         let filter = "Project eq '" + name + "'";
@@ -2683,7 +2633,7 @@ Schedule and Project Team now?
                 }
                 this.state.fields["ownername"] = selectedPeopleList;
 
-                this.setState({ fields,currentSelectedItems: selectedPeopleList });
+                this.setState({ fields, currentSelectedItems: selectedPeopleList });
             }).catch((e: Error) => {
                 alert(`There was an error : ${e.message}`);
             });

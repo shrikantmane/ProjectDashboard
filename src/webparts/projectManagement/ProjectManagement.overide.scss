@@ -222,7 +222,7 @@ body {
   }
   .table tbody>tr>td:first-child:hover {
     cursor: pointer;
-    color: #0078d7;
+    //color: #0078d7;
   }
   .table tbody>tr>td:last-child:hover {
     cursor: pointer;
@@ -662,10 +662,18 @@ body {
     background-color: #1c2432;
     color: #fff !important;
   }
-  .project-list thead.ui-datatable-thead {
+  .project-list thead.ui-datatable-thead,
+  .member-list thead.ui-datatable-thead,
+  .responsibility-list thead.ui-datatable-thead,
+  .requirement-list thead.ui-datatable-thead,
+  .document-list thead.ui-datatable-thead,
+  .holiday-list thead.ui-datatable-thead {
     background-color: #1b2431;
     color: #fff;
   }
+
+
+
   .implementation h5 {
     font-weight: 600;
     float: left;
@@ -695,6 +703,13 @@ body {
     border-style: none !important;
     border-width: 0;
   }
+
+  tr.ui-widget-content.ui-datatable-odd > td {
+    border: 0px;
+}
+tr.ui-widget-content.ui-datatable-even > td {
+  border: 0px;
+}
   @media only screen and (min-width: 1367px) {
     .margin-left {
       margin-left: 18% !important;

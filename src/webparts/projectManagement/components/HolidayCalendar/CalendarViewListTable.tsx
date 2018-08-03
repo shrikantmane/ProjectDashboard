@@ -14,7 +14,7 @@ import { SPComponentLoader } from "@microsoft/sp-loader";
 import AddProject from '../AddProject/AddProject';
 
 export default class ProjectListTable extends React.Component<
-ICalendarViewProps,
+    ICalendarViewProps,
     ICalendarViewState
     > {
     constructor(props) {
@@ -44,10 +44,10 @@ ICalendarViewProps,
                 //     title: 'All Day Event',
                 //     start: '2018-07-01'
                 // }
-        ],
-    }
+            ],
+        }
         this.refreshGrid = this.refreshGrid.bind(this);
-       
+
     }
     dt: any;
     componentDidMount() {
@@ -55,54 +55,54 @@ ICalendarViewProps,
             "https://use.fontawesome.com/releases/v5.1.0/css/all.css"
         );
         if (this.props.list != "" || this.props.list != null) {
-           this.getProjectCalendar(this.props.list);
+            this.getProjectCalendar(this.props.list);
         }
-        
+
     }
     refreshGrid() {
-   this.getProjectCalendar(this.props.list);
+        this.getProjectCalendar(this.props.list);
     }
 
-   
-    private deleteListItem(rowData,e):any {
+
+    private deleteListItem(rowData, e): any {
         e.preventDefault();
-           console.log('Edit :' + rowData);
-           sp.web.lists.getByTitle(this.props.list).
-           items.getById(rowData.ID).delete().then((response) => {
-             console.log(this.props.list + ` item deleted`);
-            this.getProjectCalendar(this.props.list);
-           });
-       }
+        console.log('Edit :' + rowData);
+        sp.web.lists.getByTitle(this.props.list).
+            items.getById(rowData.ID).delete().then((response) => {
+                console.log(this.props.list + ` item deleted`);
+                this.getProjectCalendar(this.props.list);
+            });
+    }
     componentWillReceiveProps(nextProps) {
         if (nextProps.list != "" || nextProps.list != null) {
-         this.getProjectCalendar(nextProps.list);
-        }      
+            this.getProjectCalendar(nextProps.list);
+        }
     }
 
     /* Private Methods */
 
     /* Html UI */
-   
 
-   
+
+
     public render(): React.ReactElement<ICalendarViewState> {
         return (
-            <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12" >
-            
-             <FullCalendar
+           
+                <div className="col-xs-12 col-sm-12 col-md-12 col-lg-12" >
 
-                header={{
-                    left: 'prev,next today myCustomButton',
-                    center: 'title',
-                    right: 'month,agendaWeek,agendaDay,listWeek'
-                }}
-                navLinks={true} // can click day/week names to navigate views
-               // editable={true}
-                eventLimit={true} // allow "more" link when too many events
-               events={this.state.events}
-            /> 
+                    <FullCalendar
 
-        </div>
+                        header={{
+                            left: 'prev,next today myCustomButton',
+                            center: 'title',
+                            right: 'month,agendaWeek,agendaDay,listWeek'
+                        }}
+                        navLinks={true} // can click day/week names to navigate views
+                        // editable={true}
+                        eventLimit={true} // allow "more" link when too many events
+                        events={this.state.events}
+                    />
+                </div>
         );
     }
 
@@ -113,23 +113,23 @@ ICalendarViewProps,
     getProjectCalendar(list) {
         if ((list) != "") {
             sp.web.lists.getByTitle(list).items
-                .select("ID", "Title","EndDate","EventDate")
+                .select("ID", "Title", "EndDate", "EventDate")
                 .get()
                 .then((response) => {
                     let tempArray = {};
                     let tempList = [];
-                    response.forEach(element => {    
-                    tempArray = {
-                             title:element.Title,start:element.EventDate,end:element.EndDate
+                    response.forEach(element => {
+                        tempArray = {
+                            title: element.Title, start: element.EventDate, end: element.EndDate
                         }
-                    tempList.push(tempArray);
-                    console.log('information by name', response);
-                    this.setState({ events: tempList });
+                        tempList.push(tempArray);
+                        console.log('information by name', response);
+                        this.setState({ events: tempList });
 
-                });
-        })
+                    });
+                })
+        }
     }
-}
 
     getProjectDocuments(list) {
         if ((list) != "") {

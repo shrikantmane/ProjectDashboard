@@ -202,7 +202,7 @@ export default class ProjectListTable extends React.Component<
                         null
                     } 
                     {/* <input type="button" value="Upload" className="btn btn-outline btn-sm" onClick={this.UploadFiles} /> */}
-                    <div className="project-list">
+                    <div className="document-list">
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
                             <Column field="Title" sortable={true} header="Attachment" body={this.fileTemplate} />
                             <Column field="Author" sortable={true} header="Created By" body={this.ownerTemplate} />

@@ -79,7 +79,7 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
                                 <h5 className="deptName">{item.Owner ? item.Owner.Department : ""}</h5>
                               </div>
                             </div>
-                            <div className="col-sm-8 float-left">
+                            <div className="col-sm-9 float-left">
                             <ul className="profileRoles">
                                   <li>{item.Roles_Responsibility}</li>
                                 </ul>

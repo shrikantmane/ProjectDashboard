@@ -1689,16 +1689,6 @@ div[class^="footerBar_"] {
     background-color: #002641;
     color: #fff;
   }
-  .ui-datatable .ui-paginator {
-    margin-top: 1.2rem;
-  }
-  .ui-dropdown .ui-dropdown-label {
-    width: 100%;
-    padding-right: 0;
-  }
-  .ui-dropdown .ui-dropdown-trigger {
-    padding: 0 .25em 0 0;
-  }
   /*------------------------ Mobile View -----------------------------*/
   @media only screen and (min-width: 1400px) {
     .detail-box :nth-child(even) {
@@ -1801,5 +1791,15 @@ div[class^="footerBar_"] {
     padding: 0;
     background-color: #248ef1;
     color: #fff;
+  }
+  .ui-datatable .ui-paginator {
+    margin-top: 1.2rem;
+  }
+  .ui-dropdown .ui-dropdown-label {
+    width: 100%;
+    padding-right: 0;
+  }
+  .ui-dropdown .ui-dropdown-trigger {
+    padding: 0 .25em 0 0;
   }
 }

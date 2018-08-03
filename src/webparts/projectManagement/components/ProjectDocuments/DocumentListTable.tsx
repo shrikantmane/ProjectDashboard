@@ -194,7 +194,7 @@ export default class ProjectListTable extends React.Component<
                         Add Document
                     </button> */}
                     <input type="file" onChange={this.fileChangedHandler} />
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.UploadFiles}>
+                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px",marginLeft : "5%"  }} onClick={this.UploadFiles}>
                         Upload
                     </button>
                     {this.state.showComponent ?

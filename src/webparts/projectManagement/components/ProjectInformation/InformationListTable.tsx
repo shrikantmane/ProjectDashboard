@@ -159,7 +159,7 @@ export default class ProjectListTable extends React.Component<
 
                 <div className="content-section implementation">
                     <h5>Responsibilities</h5>
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px", marginLeft : "35%" }} onClick={this.onAddProject}>
                         Add Role/Responsibility
                     </button>
                     {this.state.showComponent ?

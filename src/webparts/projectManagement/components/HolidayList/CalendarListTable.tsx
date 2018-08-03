@@ -154,7 +154,7 @@ ICalendarProps,
 
                 <div className="content-section implementation">
                     <h5>Holidays</h5>
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px", marginLeft : "62%" }} onClick={this.onAddProject}>
                         Add Event
                     </button>
                     {this.state.showComponent ?

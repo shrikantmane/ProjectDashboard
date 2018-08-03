@@ -204,13 +204,13 @@ this.refreshGrid();
                 {/* <DataTableSubmenu /> */}
                 <div className="content-section implementation">
                     <h5>Team Members</h5>
-                    <div className="display-line">
+                    <div className="display-line" style={{ marginBottom: "10px", marginLeft : "45%" }}>
                         {this._renderControlledPicker()}
                         {/* {this.state.showComponent ?
                             <AddProject parentMethod={this.refreshGrid}/>  :
                         null
                     } */}
-                        <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                        <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px", marginLeft : "5%" }} onClick={this.onAddProject}>
                             Add
                         </button>
                     </div>

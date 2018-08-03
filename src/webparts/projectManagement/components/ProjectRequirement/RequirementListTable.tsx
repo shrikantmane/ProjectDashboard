@@ -221,7 +221,7 @@ export default class ProjectListTable extends React.Component<
 
                 <div className="content-section implementation">
                     <h5>Requirements</h5>
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px"}} onClick={this.onAddProject}>
+                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px", marginLeft : "73%" }} onClick={this.onAddProject}>
                         Add Requirement
                     </button>
                     {this.state.showComponent ?

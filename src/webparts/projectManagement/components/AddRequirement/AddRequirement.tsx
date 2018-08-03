@@ -22,10 +22,11 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
     showPanel: boolean;
     fields: {},
     errors: {},
-    errorClass:{},
+    errorClass: {},
     cloneProjectChecked: boolean,
-    showModal: boolean;
-    isDataSaved: boolean;
+    showModal: boolean,
+    isDataSaved: boolean,
+    attachmentFiles: any,
 }> {
 
     constructor(props) {
@@ -34,10 +35,11 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             showPanel: true,
             fields: {},
             errors: {},
-            errorClass:{},
+            errorClass: {},
             cloneProjectChecked: false,
             showModal: false,
-            isDataSaved: false
+            isDataSaved: false,
+            attachmentFiles: []
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -56,7 +58,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             let fields = this.state.fields;
             fields[field] = e.target.value;
             this.setState({ fields, cloneProjectChecked: !this.state.cloneProjectChecked });
-        } else if(field === 'filedescription'){
+        } else if (field === 'filedescription') {
             let fields = this.state.fields;
             fields[field] = e.target.files[0]
             this.setState({ fields });
@@ -66,13 +68,13 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             this.setState({ fields });
         }
     }
-    componentDidMount() { 
+    componentDidMount() {
         if (this.props.id) {
             this.getProjectByID(this.props.id);
             this.setState({
                 fields: {}
             })
-            
+
         } else {
             this.setState({
                 fields: {}
@@ -107,8 +109,8 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             errors["filedescription"] = "Cannot be empty";
             errorClass["filedescription"] = "classError";
         }
-       
-        
+
+
 
         // if (typeof fields["name"] !== "undefined") {
         //     if (!fields["name"].match(/^[a-zA-Z]+$/)) {
@@ -139,78 +141,76 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         // get Project Documents list items for all projects
         let filterString = "ID eq " + id;
         sp.web.lists.getByTitle(this.props.list).items
-            .select("ID","Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created","AttachmentFiles","AttachmentFiles/ServerRelativeUrl","AttachmentFiles/FileName")
-            .expand("Approver", "Author","AttachmentFiles")
+            .select("ID", "Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created", "AttachmentFiles", "AttachmentFiles/ServerRelativeUrl", "AttachmentFiles/FileName")
+            .expand("Approver", "Author", "AttachmentFiles")
             .filter(filterString)
             .get()
             .then((response) => {
                 let fields = this.state.fields;
                 console.log('Project1 by name', response);
-                console.log('Project112 by name',  response[0].Requirement );
+                console.log('Project112 by name', response[0].Requirement);
                 fields["projectname"] = response ? response[0].Requirement : '';
                 fields["projectdescription"] = response ? response[0].Resources : '';
                 fields["effortdescription"] = response ? response[0].Efforts : '';
-               console.log("hieee",this.state.fields["projectname"]);
-               this.setState(fields);
-            //    this.setState({
-            //     fields: response[0].Roles_Responsibility
-            //    })
+
+                this.setState({ fields, attachmentFiles: response[0].AttachmentFiles });
+                //    this.setState({
+                //     fields: response[0].Roles_Responsibility
+                //    })
             }).catch((e: Error) => {
                 alert(`There was an error : ${e.message}`);
             });
-            
+
     }
 
     projectSubmit(e) {
         e.preventDefault();
         if (this.handleValidation()) {
-            
+
             let obj: any = this.state.fields;
             if (this.props.id) {
-            sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
-                Requirement: obj.projectname ? obj.projectname : '',
-                //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
-                Resources: obj.projectdescription ? obj.projectdescription : '',
-                Efforts: obj.effortdescription ? obj.effortdescription : '',
-               // Attachments: obj.filedescription ? obj.effortdescription : '',
-                //Owner: obj.ownername?obj.ownername:'',
-               // Impact: obj.priority ? obj.priority : '',
-               // Mitigation: obj.projectdescription ? obj.projectdescription : '',
-                //Department_x0020_Specific: obj.departmentspecific ? (obj.departmentspecific === 'on' ? true : false) : null,
-                //Recurring_x0020_Project: obj.requringproject ? (obj.requringproject === 'on' ? true : false) : null,
-                //Occurance: obj.occurance ? obj.occurance : '',
-                //DepartmentId: 2,
-                //Status0Id: 2
+                sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
+                    Requirement: obj.projectname ? obj.projectname : '',
+                    //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
+                    Resources: obj.projectdescription ? obj.projectdescription : '',
+                    Efforts: obj.effortdescription ? obj.effortdescription : '',
+                    // Attachments: obj.filedescription ? obj.effortdescription : '',
+                    //Owner: obj.ownername?obj.ownername:'',
+                    // Impact: obj.priority ? obj.priority : '',
+                    // Mitigation: obj.projectdescription ? obj.projectdescription : '',
+                    //Department_x0020_Specific: obj.departmentspecific ? (obj.departmentspecific === 'on' ? true : false) : null,
+                    //Recurring_x0020_Project: obj.requringproject ? (obj.requringproject === 'on' ? true : false) : null,
+                    //Occurance: obj.occurance ? obj.occurance : '',
+                    //DepartmentId: 2,
+                    //Status0Id: 2
 
-            }).then((response) => {
-                //response.item.attachmentFiles.add(this.state.fields["filedescription"], this.state.selectedFile);
-                this._closePanel();
-                this.props.parentMethod();
-                this.props.parentReopen();
-            });
-        } else {
-            sp.web.lists.getByTitle(this.props.list).items.add({
-                Requirement: obj.projectname ? obj.projectname : '',
-                //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
-                Resources: obj.projectdescription ? obj.projectdescription : '',
-                Efforts: obj.effortdescription ? obj.effortdescription : '',
-            }).then((response) => {
-                //const formData = new FormData();
-                //formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
-                response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
-                    this.props.parentMethod();
+                }).then((response) => {
+                    //response.item.attachmentFiles.add(this.state.fields["filedescription"], this.state.selectedFile);
                     this._closePanel();
-                })
-                console.log('Item adding-', response);
-                this.setState({ isDataSaved: true });
-                //this._closePanel();
-                this._showModal();
-                //this.props.parentMethod();
+                    this.props.parentMethod();
+                    this.props.parentReopen();
+                });
+            } else {
+                sp.web.lists.getByTitle(this.props.list).items.add({
+                    Requirement: obj.projectname ? obj.projectname : '',
+                    //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
+                    Resources: obj.projectdescription ? obj.projectdescription : '',
+                    Efforts: obj.effortdescription ? obj.effortdescription : '',
+                }).then((response) => {
+                    //const formData = new FormData();
+                    //formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
+                    response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
+                        this.props.parentMethod();
+                        this._closePanel();
+                    })
+                    console.log('Item adding-', response);
+                    this.setState({ isDataSaved: true });
+                    //this._closePanel();
+                    this._showModal();
+                    //this.props.parentMethod();
             });
+            }
         }
-    } else {
-        console.log("Form has errors.")
-    }
     }
     _showModal() {
         this.setState({ showModal: true });
@@ -218,22 +218,27 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
     _closeModal() {
         this.setState({ showModal: false });
     };
-
+    removeAttachment(i, event) {
+        console.log('index1', i);
+        let tempAttachment = this.state.attachmentFiles;
+        tempAttachment.splice(i, 1);
+        this.setState({ attachmentFiles: tempAttachment });
+    }
     public render(): React.ReactElement<IAddRequirementProps> {
         let formControl = 'form-control';
         let paddingInputStyle = 'padding-input-style';
-        // const selectProjectContent = this.state.cloneProjectChecked ?
-        //     <div className="col-lg-12">
-        //         <div className="form-group">
-        //             <label>Select Project</label>
-        //             <select className="form-control" ref="project" onChange={this.handleChange.bind(this, "project")} value={this.state.fields["project"]}>
-        //                 <option>Project 1</option>
-        //                 <option>Project 2</option>
-        //                 <option>Project 3</option>
-        //             </select>
-        //         </div>
-        //     </div> : null;
-
+        const attachmentDiv = this.state.attachmentFiles.length > 0 ?
+            <div className="col-lg-6">
+                {this.state.attachmentFiles.map((obj, i) =>
+                    <div className="form-group">
+                        <label style={{ float: 'left' }}>{obj.FileName}</label>
+                        <i className="far fa-times-circle" style={{ float: 'right', cursor: 'pointer' }} onClick={this.removeAttachment.bind(this, i)}></i>
+                    </div>
+                )}
+            </div> : null;
+        const emptyDiv = this.state.attachmentFiles.length > 0 ?
+            <div className="col-lg-6">
+            </div> : null;
         // const chechbox1Content = this.state.cloneProjectChecked ?
         //     <div className="col-lg-6">
         //         <div className="form-group">
@@ -277,11 +282,8 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                 >
                     <div className="">
                         <section className="main-content-section">
-
                             <div className="wrapper">
-
                                 <div className="row">
-
                                     <div className="col-md-12">
                                         <section id="step1">
                                             <div className="well">
@@ -290,10 +292,6 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                     <div >
                                                         <form name="projectform" onSubmit={this.projectSubmit.bind(this)}>
                                                             <div className="row">
-                                                                
-
-                                                                
-
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
                                                                         <label>Requirement</label><span style={textcolor}>*</span>
@@ -304,18 +302,19 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-lg-6">
-                                                        <div className="form-group">
-                                                          <label>Attachments</label><span style={textcolor}>*</span>
-                                                             <div className="form-control fileupload" data-provides="fileupload">
-                                                             <input ref="filedescription" type="file" id="uploadFile" className={formControl + " " + (this.state.errorClass["filedescription"] ? this.state.errorClass["filedescription"] : '')} 
-                                                                           onChange={this.handleChange.bind(this, "filedescription")} >
-                                                                        </input>
-                                                                        <span className="error">{this.state.errors["filedescription"]}</span>
-                                                                 </div>
-
-                                                             </div>
-                                                             </div>
-                                                             <div className="col-lg-6">
+                                                                    <div className="form-group">
+                                                                        <label>Attachments</label>
+                                                                        <div className="form-control fileupload" data-provides="fileupload">
+                                                                            <input ref="filedescription" type="file" id="uploadFile" className={formControl + " " + (this.state.errorClass["filedescription"] ? this.state.errorClass["filedescription"] : '')}
+                                                                                onChange={this.handleChange.bind(this, "filedescription")} >
+                                                                            </input>
+                                                                            <span className="error">{this.state.errors["filedescription"]}</span>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                                {emptyDiv}
+                                                                {attachmentDiv}
+                                                                <div className="col-lg-6">
                                                                     <div className="form-group">
                                                                         <label>Number Of Resources</label><span style={textcolor}>*</span>
                                                                         <input ref="projectdescription" type="number" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Total Number Of People"
@@ -332,40 +331,11 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                         </input>
                                                                         <span className="error">{this.state.errors["effortdescription"]}</span>
                                                                     </div>
-                                                                </div> 
+                                                                </div>
                                                                 <div className="col-lg-12">
-                                        {/* <div className="form-group">
-                                            <label className="label-color">Will It Impact Timelines</label>
-													<div className="display-line">
-                                                    <span className="col-lg-6 col-sm-6 radBtn">
-                                                        <input type="radio" id="8" name="selectorAssignor">
-                                                        </input>
-                                                        <div className="check"></div>
-														<p className="checkbox-title">YES</p>
-													</span>
-													<span className="col-lg-6 col-sm-6 radBtn">
-                                                        <input type="radio" id="9" name="selectorAssignor">
-                                                       </input>
-                                                        <div className="check"></div>
-														<p className="checkbox-title">NO</p>
-													</span>
-													</div>
-									 </div> */}
-									</div>
-                                                             
-                                                                
-                                                               
-                                                              
-                                                               
-                                                                
-
+                                                                </div>
                                                                 <div className="clearfix"></div>
-
-                                                                
-
-                                                               
                                                                 <div className="clearfix"></div>
-                                                                
                                                                 <div className="col-lg-12">
                                                                     <div className="btn-sec">
                                                                         <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
@@ -377,7 +347,6 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                     </div>
                                                 </div>
                                             </div>
-
                                         </section>
                                     </div>
                                 </div>
@@ -386,28 +355,6 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                         </section>
                     </div>
                 </Panel>
-
-                {/* <Modal
-                    show={this.state.showModal}
-                    onHide={this._closeModal}
-                    container={this}
-                    aria-labelledby="contained-modal-title"
-                    animation={false}
-                > */}
-                    {/* <Modal.Header>
-                        <Modal.Title id="contained-modal-title">
-                            Risk Created
-                        </Modal.Title>
-                    </Modal.Header> */}
-                    {/* <Modal.Body>
-                        Project Created Successfully! Do you want to configure Project
-Schedule and Project Team now?
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button onClick={this._closeModal}>I'll Do it Later</Button>
-                        <Button onClick={this._closeModal}>Continue</Button>
-                    </Modal.Footer> */}
-                {/* </Modal> */}
             </div>
 
         );
@@ -415,7 +362,7 @@ Schedule and Project Team now?
     private _closePanel = (): void => {
         this.setState({ showPanel: false });
         if (!this.state.isDataSaved) {
-             this.props.parentReopen();
+            this.props.parentReopen();
         }
     };
     /* Api Call*/

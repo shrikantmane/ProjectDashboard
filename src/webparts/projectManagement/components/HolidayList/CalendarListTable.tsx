@@ -149,7 +149,7 @@ ICalendarProps,
     }
     public render(): React.ReactElement<ICalendarState> {
         return (
-            <div className="PanelContainer">
+            <div className="">
                 {/* <DataTableSubmenu /> */}
 
                 <div className="content-section implementation">

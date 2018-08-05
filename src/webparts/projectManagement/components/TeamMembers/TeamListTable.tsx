@@ -193,7 +193,7 @@ export default class ProjectListTable extends React.Component<
        }
     public render(): React.ReactElement<ITeamState> {
         return (
-            <div className="PanelContainer">
+            <div className="">
                 {/* <DataTableSubmenu /> */}
                 <div className="content-section implementation">
                     <h5>Team Members</h5>

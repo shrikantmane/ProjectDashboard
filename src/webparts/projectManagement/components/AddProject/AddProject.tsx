@@ -3518,7 +3518,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         </Modal.Footer>
                     </Modal>
                 </div >
-                : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fas fa-spinner"></i></div>
+                : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div>
         );
     }
 

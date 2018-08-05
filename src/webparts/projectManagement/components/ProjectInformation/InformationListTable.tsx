@@ -98,10 +98,10 @@ export default class ProjectListTable extends React.Component<
 
   
     actionTemplate(rowData, column) {
-        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="far fa-times-circle"></i></a>;
+        return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="fas fa-trash-alt"></i></a>;
     }
     editTemplate(rowData, column) {
-        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i> Edit</a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i></a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -168,11 +168,11 @@ export default class ProjectListTable extends React.Component<
                     }
                     <div className="responsibility-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
-                            <Column header="Edit" body={this.editTemplate} style={{width: "15%"}}/>
-                            <Column field="Roles_Responsibility" sortable={true} header="Responsibility"  body={this.RoleTemplate} />
-                            <Column field="OwnerName" sortable={true} header="Owner" style={{width: "22%"}}   />
-                            <Column field="Department" sortable={true} header="Department" style={{width: "25%"}}/>
-                            <Column header="" body={this.actionTemplate} style={{width: "7%"}}/>
+                            <Column header="" body={this.editTemplate} style={{width: "5%", textAlign:"center"}}/>
+                            <Column field="Roles_Responsibility" sortable={true} header="Responsibility"  body={this.RoleTemplate}  style={{width: "60%"}} />
+                            <Column field="OwnerName" sortable={true} header="Owner" style={{width: "15%"}}   />
+                            <Column field="Department" sortable={true} header="Department" style={{width: "15%"}}/>
+                            <Column header="" body={this.actionTemplate} style={{width: "5%" , textAlign:"center"}}/>
                         </DataTable>
                     </div>
                 </div>

@@ -2367,7 +2367,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                             <div className="row">
                                 <div className="col-sm-12 col-12">
                                     <h3 className="hbc-form-header">Project Details</h3>
-                                    <form name="projectform" onSubmit={this.projectSubmit.bind(this)}>
+                                    <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
                                         <div className="row addSection">
                                             <div className="col-sm-6 col-12">
                                                 <div className="form-group">

@@ -738,10 +738,13 @@ span.error {
 input.form-control.classError {
   border: 1px solid red !important;
 }
-
+form.hbc-form {
+  padding-left: 25px;
+  padding-right: 25px;
+}
 h3.hbc-form-header {
   margin-left: 7px;
-  color: #4b8cc3;
+  color: #0078d7;
 }
 .half-list-left{
   padding-right: 5px;
@@ -766,6 +769,7 @@ h3.hbc-form-header {
 div.fc-center h2 {
   font-size: 20px !important;
 }
+
 /* END: Styles added on 05-Aug-2018 */
 
 

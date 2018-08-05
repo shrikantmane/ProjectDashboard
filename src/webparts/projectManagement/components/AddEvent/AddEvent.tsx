@@ -268,26 +268,26 @@ export default class AddProject extends React.Component<IAddEventProps, {
                     type={PanelType.medium}
 
                 >
-                    <div className="">
+                    <div className="PanelContainer">
                         <section className="main-content-section">
 
-                            <div className="wrapper">
+                            {/* <div className="wrapper"> */}
 
                                 <div className="row">
 
-                                    <div className="col-md-12">
-                                        <section id="step1">
+                                    <div className="col-sm-12 col-12">
+                                        {/* <section id="step1">
                                             <div className="well">
-                                                <div className="row">
-                                                    <h3>Events</h3>
-                                                    <div >
-                                                        <form name="projectform" onSubmit={this.projectSubmit.bind(this)}>
-                                                            <div className="row">
+                                                <div className="row"> */}
+                                                    <h3 className="hbc-form-header">Events</h3>
+                                                    {/* <div > */}
+                                                        <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
+                                                            <div className="row addSection">
                                                                 
 
                                                                 
 
-                                                                <div className="col-lg-6">
+                                                                <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>Title <span style={textcolor}>*</span></label>
                                                                         <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} 
@@ -307,7 +307,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                         <span className="error">{this.state.errors["ownername"]}</span>
                                                                     </div>
                                                                 </div> */}
-                                                                <div className="col-lg-6">
+                                                                <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>Impact<span style={textcolor}>*</span></label>
                                                                         <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
@@ -318,7 +318,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                         <span className="error">{this.state.errors["priority"]}</span>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-lg-6">
+                                                                <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>Start Time<span style={textcolor}>*</span> </label>
                                                                         <DatePicker
@@ -329,7 +329,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                         <span className="error">{this.state.errors["startdate"]}</span>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-lg-6">
+                                                                <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>End Time<span style={textcolor}>*</span></label>
                                                                         <DatePicker
@@ -340,37 +340,26 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                         <span className="error">{this.state.errors["enddate"]}</span>
                                                                     </div>
                                                                 </div>
-                                                                
-                                                                
                                                                
-                                                              
-                                                               
-                                                                
-
-                                                                <div className="clearfix"></div>
-
-                                                                
-
-                                                               
-                                                                <div className="clearfix"></div>
-                                                                
-                                                                <div className="col-lg-12">
+                                                            </div>
+                                                            <div className="row addSection">
+                                                                <div className="col-sm-12 col-12">
                                                                     <div className="btn-sec">
                                                                         <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
                                                                         <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                                </div>
                                                         </form>
-                                                    </div>
-                                                </div>
+                                                    {/* </div> */}
+                                                {/* </div>
                                             </div>
 
-                                        </section>
+                                        </section> */}
                                     </div>
                                 </div>
 
-                            </div>
+                            {/* </div> */}
                         </section>
                     </div>
                 </Panel>

@@ -353,26 +353,22 @@ if(tempState.length>0){
                     type={PanelType.medium}
 
                 >
-                    <div className="">
+                    <div className="PanelContainer">
                         <section className="main-content-section">
 
-                            <div className="wrapper">
+                            {/* <div className="wrapper"> */}
 
                                 <div className="row">
 
-                                    <div className="col-md-12">
-                                        <section id="step1">
-                                            <div className="well">
-                                                <div className="row">
-                                                    <h3>Project Information</h3>
-                                                    <div >
-                                                        <form name="projectform" onSubmit={this.projectSubmit.bind(this)}>
-                                                            <div className="row">
-                                                                
-
-                                                                
-
-                                                                <div className="col-lg-6">
+                                    <div className="col-sm-12 col-12">
+                                        {/* <section id="step1">
+                                            <div className="well"> */}
+                                                {/* <div className="row"> */}
+                                                <h3 className="hbc-form-header">Project Roles/Responsibility</h3>
+                                                    {/* <div > */}
+                                                        <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
+                                                            <div className="row addSection">
+                                                                <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>Information<span style={textcolor}>*</span></label>
                                                                         <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
@@ -381,7 +377,7 @@ if(tempState.length>0){
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-lg-6">
+                                                                <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>Assigned To<span style={textcolor}>*</span></label>
                                                                         {this._renderControlledPicker()}
@@ -394,36 +390,26 @@ if(tempState.length>0){
                                                                         <span className="error">{this.state.errors["ownername"]}</span>
                                                                     </div>
                                                                 </div>
-                                                                
                                                                
-                                                              
-                                                               
-                                                                
-
-                                                                <div className="clearfix"></div>
-
-                                                                
-
-                                                               
-                                                                <div className="clearfix"></div>
-                                                                
-                                                                <div className="col-lg-12">
+                                                            </div>
+                                                            <div className="row addSection">
+                                                                <div className="col-sm-12 col-12">
                                                                     <div className="btn-sec">
                                                                         <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
                                                                         <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
                                                                     </div>
                                                                 </div>
-                                                            </div>
+                                                                </div>
                                                         </form>
-                                                    </div>
-                                                </div>
-                                            </div>
+                                                    {/* </div>
+                                                </div> */}
+                                            {/* </div>
 
-                                        </section>
+                                        </section> */}
                                     </div>
                                 </div>
 
-                            </div>
+                            {/* </div> */}
                         </section>
                     </div>
                 </Panel>

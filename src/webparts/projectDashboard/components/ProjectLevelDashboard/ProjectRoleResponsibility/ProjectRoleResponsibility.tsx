@@ -54,7 +54,7 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
 
   public render(): React.ReactElement<IProjectRoleResponsibilityProps> {
     return (
-      <div className="col-xs-12 col-sm-9">
+      <div className="col-xs-12 col-sm-5 rolesListPadding">
         <div className="well recommendedProjects userFeedback">
           <div className="row">
             <div className="col-sm-12 cardHeading">
@@ -64,22 +64,23 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
               <div className="profileDetails-container">
                 {this.state.roleResponsibilityList != null
                   ? this.state.roleResponsibilityList.map((item, key) => {
+                    let email = "https://uatalpha-my.sharepoint.com/_layouts/15/me.aspx/?p=" + item.Owner.EMail + "&v=work";
                     return (
                       <div className="row">
                         <div className="col-sm-12">
                           <div className="row">
-                            <div className="col-sm-1">
+                            <div className="col-sm-2">
                               <img className="img-responsive image-style rolesImage" src={item.Owner.PictureURL} alt="" />
                             </div>
                             <div className="col-sm-2">
                               <div className="profileDetail">
                                 <div className="profileName">
-                                  <h4>{item.Owner ? item.Owner.Title : ""}</h4>
+                                  <a href={email} target="_blank">{item.Owner ? item.Owner.Title : ""}</a>
                                 </div>
                                 <h5 className="deptName">{item.Owner ? item.Owner.Department : ""}</h5>
                               </div>
                             </div>
-                            <div className="col-sm-9 float-left">
+                            <div className="col-sm-8 float-left">
                             <ul className="profileRoles">
                                   <li>{item.Roles_Responsibility}</li>
                                 </ul>

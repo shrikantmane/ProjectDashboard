@@ -5,6 +5,7 @@ import { Column } from "primereact/components/column/Column";
 import { IProjectDocumentProps } from './IProjectDocumentProps';
 import { IProjectDocumentState } from './IProjectDocumentState';
 import { Document } from '../Project';
+import moment from 'moment/src/moment';
 
 export default class ProjectDocument extends React.Component<IProjectDocumentProps, IProjectDocumentState> {
 
@@ -16,19 +17,19 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
   }
 
   componentWillReceiveProps(nextProps) {
-    if(this.props.projectDocument != nextProps.projectDocument)
+    if (this.props.projectDocument != nextProps.projectDocument)
       this.getAllMildstones(nextProps.projectDocument);
   }
 
   private getAllMildstones(projectDocument: string) {
     sp.web.lists.getByTitle(projectDocument).items
-      .select("File", "Owner/ID", "Owner/Title", "Created").expand("File", "Owner")
+      .select("File", "Author/ID", "Author/Title").expand("File", "Author")
       .get()
       .then((response: Array<Document>) => {
         response.forEach(item => {
-          item.FileName = item.File ? item.File.Name :"";
-          item.OwnerTitle = item.Owner ? item.Owner.Title :""; 
-          item.Date = new Date(item.Created);         
+          item.FileName = item.File ? item.File.Name : "";
+          item.OwnerTitle = item.Author ? item.Author.Title : "";
+          item.Date = new Date(item.Created);
         });
         this.setState({ documentList: response })
       });
@@ -36,9 +37,11 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
   }
 
   private ownerTemplate(rowData: Document, column) {
-    return (
-      <span>{rowData.Owner ? rowData.Owner.Title : ""}</span>
-    );
+    if (rowData.Author) {
+      return (
+        <div className="taskListTitle"><span title={rowData.Author.Title}>{ rowData.Author.Title}</span></div>
+      );
+    }
   }
 
   private documentTypeTemplate(rowData: Document, column) {
@@ -67,33 +70,33 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
           iconClass = "far fa-file-image";
           break;
         default:
-          iconClass = "fa fa-file";
+          iconClass = "far fa-file";
           break;
       }
       return (
-        <div>
+        <div className="taskListTitle">
           <i
             className={iconClass}
             style={{ marginRight: "5px" }}
           />
-          <a href={rowData.File.ServerRelativeUrl} target="_blank">
+          <a href={rowData.File.ServerRelativeUrl} target="_blank" title={rowData.File.Name}>
             {rowData.File.Name}
           </a>
         </div>
         // <span>{rowData.File.Name}</span>
       );
-    } 
+    }
   }
 
   private timeDateTemplate(rowData: Document, column) {
     return (
-      <span>{new Date(rowData.Created).toDateString()}</span>
+      <span>{moment(rowData.Created).format("MMM DD YYYY")}</span>
     );
   }
 
   public render(): React.ReactElement<IProjectDocumentProps> {
     return (
-      <div className="col-xs-12 col-md-5">
+      <div className="col-xs-12 col-md-5 documentListPadding">
         <div className="well recommendedProjects">
           <div className="row">
             <div className="col-sm-12 col-12 cardHeading">
@@ -109,21 +112,21 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
                   header="Documents Type"
                   body={this.documentTypeTemplate}
                   sortable={true}
-                  style={{width: "50%"}}
+                  style={{ width: "50%" }}
                 />
                 <Column
                   field="OwnerTitle"
                   header="Owner"
                   body={this.ownerTemplate}
                   sortable={true}
-                  style={{width: "25%"}}
+                  style={{ width: "25%" }}
                 />
                 <Column
                   field="Date"
                   header="Date"
                   sortable={true}
                   body={this.timeDateTemplate}
-                  style={{width: "25%"}}
+                  style={{ width: "25%" }}
                 />
               </DataTable>
             </div>

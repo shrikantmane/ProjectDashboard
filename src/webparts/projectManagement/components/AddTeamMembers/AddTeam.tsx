@@ -217,7 +217,7 @@ export default class AddProject extends React.Component<IAddTeamProps, {
             });
             if (flag) {
                 formIsValid = false;
-                errors["ownername"] = "team name is already exist.";
+                errors["ownername"] = "Team member is already exist.";
                 errorClass["ownername"] = "classError";
                 this.setState({ errors: errors, errorClass: errorClass });
             } else {

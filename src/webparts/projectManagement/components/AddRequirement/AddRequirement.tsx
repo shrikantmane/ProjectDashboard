@@ -222,11 +222,14 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         this.setState({ showModal: false });
     };
     removeAttachment(i, event) {
+        var result = confirm("Are you sure you want to delete item?");
+        if (result) {
         console.log('index1', i);
         let tempAttachment = this.state.attachmentFiles;
         tempAttachment.splice(i, 1);
         this.setState({ attachmentFiles: tempAttachment });
     }
+}
     public render(): React.ReactElement<IAddRequirementProps> {
         let formControl = 'form-control';
         let paddingInputStyle = 'padding-input-style';

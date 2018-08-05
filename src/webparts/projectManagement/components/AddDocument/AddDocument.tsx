@@ -333,7 +333,7 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
 
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
-                                                                        <label>Documents <span style={textcolor}>*</span></label>
+                                                                        <label>Document <span style={textcolor}>*</span></label>
                                                                         <input type="file" onChange={this.fileChangedHandler} />
                                                             <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.UploadFiles}>
                                                                         Upload

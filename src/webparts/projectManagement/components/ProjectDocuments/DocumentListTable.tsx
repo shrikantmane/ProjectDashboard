@@ -62,6 +62,8 @@ export default class ProjectListTable extends React.Component<
 
    
     private deleteListItem(rowData,e):any {
+        var result = confirm("Are you sure you want to delete item?");
+        if (result) {
         e.preventDefault();
            console.log('Edit :' + rowData);
            sp.web.lists.getByTitle(this.props.list).
@@ -70,6 +72,7 @@ export default class ProjectListTable extends React.Component<
              this.getProjectDocuments(this.props.list);
            });
        }
+    }
     componentWillReceiveProps(nextProps) {
         if (nextProps.list != "" || nextProps.list != null) {
             this.getProjectDocuments(nextProps.list);

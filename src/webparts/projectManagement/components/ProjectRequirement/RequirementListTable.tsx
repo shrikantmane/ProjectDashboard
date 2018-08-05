@@ -201,6 +201,8 @@ export default class ProjectListTable extends React.Component<
         });
     }
     private deleteListItem(rowData,e):any {
+        var result = confirm("Are you sure you want to delete item?");
+        if (result) {
         e.preventDefault();
            console.log('Edit :' + rowData);
            
@@ -214,6 +216,7 @@ export default class ProjectListTable extends React.Component<
       // this.getScheduleList(this.props.list);
          
        }
+    }
     
     public render(): React.ReactElement<IRequirementState> {
         return (

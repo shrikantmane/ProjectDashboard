@@ -27,6 +27,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
     showModal: boolean,
     isDataSaved: boolean,
     attachmentFiles: any,
+    isLoading: boolean
 }> {
 
     constructor(props) {
@@ -39,7 +40,8 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             cloneProjectChecked: false,
             showModal: false,
             isDataSaved: false,
-            attachmentFiles: []
+            attachmentFiles: [],
+            isLoading: false
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -169,6 +171,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
 
             let obj: any = this.state.fields;
             if (this.props.id) {
+                this.setState({ isLoading: true });
                 sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
                     Requirement: obj.projectname ? obj.projectname : '',
                     //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
@@ -185,8 +188,10 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     //Status0Id: 2
 
                 }).then((response) => {
+                    
                     //response.item.attachmentFiles.add(this.state.fields["filedescription"], this.state.selectedFile);
                     response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
+                        this.setState({ isLoading: false });
                         this._closePanel();
                         this.props.parentMethod();
                         this.props.parentReopen();
@@ -194,6 +199,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
 
                 });
             } else {
+                this.setState({ isLoading: true });
                 sp.web.lists.getByTitle(this.props.list).items.add({
                     Requirement: obj.projectname ? obj.projectname : '',
                     //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
@@ -203,6 +209,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     //const formData = new FormData();
                     //formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
                     response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
+                        this.setState({ isLoading: false });
                         this.props.parentMethod();
                         this._closePanel();
                     })
@@ -281,6 +288,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         //     </div> : null;
         return (
             // className="PanelContainer"
+            !this.state.isLoading ?
             <div>
                 <Panel
                     isOpen={this.state.showPanel}
@@ -288,19 +296,19 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     type={PanelType.medium}
 
                 >
-                    <div className="">
+                    <div className="PanelContainer">
                         <section className="main-content-section">
-                            <div className="wrapper">
+                            {/* <div className="wrapper"> */}
                                 <div className="row">
-                                    <div className="col-md-12">
-                                        <section id="step1">
+                                    <div className="col-sm-12 col-12">
+                                        {/* <section id="step1">
                                             <div className="well">
-                                                <div className="row">
-                                                    <h3>Project Requirements</h3>
-                                                    <div >
-                                                        <form name="projectform" onSubmit={this.projectSubmit.bind(this)}>
-                                                            <div className="row">
-                                                                <div className="col-lg-6">
+                                                <div className="row"> */}
+                                                    <h3 className="hbc-form-header">Project Requirements</h3>
+                                                    {/* <div > */}
+                                                        <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
+                                                            <div className="row addSection">
+                                                                <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>Requirement</label><span style={textcolor}>*</span>
                                                                         <textarea ref="projectname" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
@@ -309,7 +317,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-lg-6">
+                                                                <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>Attachments</label>
                                                                         <div className="form-control fileupload" data-provides="fileupload">
@@ -322,16 +330,16 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                 </div>
                                                                 {emptyDiv}
                                                                 {attachmentDiv}
-                                                                <div className="col-lg-6">
+                                                                <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
-                                                                        <label>Number Of Resources</label><span style={textcolor}>*</span>
+                                                                        <label>Number Of Resourcess</label><span style={textcolor}>*</span>
                                                                         <input ref="projectdescription" type="number" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Total Number Of People"
                                                                             onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}>
                                                                         </input>
                                                                         <span className="error">{this.state.errors["projectdescription"]}</span>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-lg-6">
+                                                                <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>Efforts</label><span style={textcolor}>*</span>
                                                                         <input ref="effortdescription" type="number" className={formControl + " " + (this.state.errorClass["effortdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Enter Number Of Day"
@@ -340,11 +348,13 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                         <span className="error">{this.state.errors["effortdescription"]}</span>
                                                                     </div>
                                                                 </div>
-                                                                <div className="col-lg-12">
                                                                 </div>
-                                                                <div className="clearfix"></div>
-                                                                <div className="clearfix"></div>
-                                                                <div className="col-lg-12">
+                                                                <div className="row addSection">
+                                                                {/* <div className="col-sm-12 col-12">
+                                                                </div> */}
+                                                                {/* <div className="clearfix"></div>
+                                                                <div className="clearfix"></div> */}
+                                                                <div className="col-sm-12 col-12">
                                                                     <div className="btn-sec">
                                                                         <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
                                                                         <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
@@ -352,19 +362,19 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                 </div>
                                                             </div>
                                                         </form>
-                                                    </div>
-                                                </div>
+                                                    {/* </div> */}
+                                                {/* </div>
                                             </div>
-                                        </section>
+                                        </section> */}
                                     </div>
                                 </div>
 
-                            </div>
+                            {/* </div> */}
                         </section>
                     </div>
                 </Panel>
             </div>
-
+: <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div>
         );
     }
     private _closePanel = (): void => {

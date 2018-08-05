@@ -28,6 +28,7 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
     isDataSaved: boolean;
     selectedFile:any,
     showDiv: boolean,
+    isLoading: boolean
 }> {
 
     constructor(props) {
@@ -41,7 +42,8 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
             showModal: false,
             isDataSaved: false,
             selectedFile: "",
-            showDiv:false
+            showDiv:false,
+            isLoading: false
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -172,28 +174,26 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
 
         var file = this.state.selectedFile;
         if (file != undefined || file != null) {
-            if (!this.state.selectedFile || this.state.selectedFile.length === 0) {
+           
             
                 this.setState({
-                    showDiv: true,
+                    isLoading:true 
                 })
-            }
-            else{
-                this.setState({
-                    showDiv: false,
-                })
-            }
+            
+            
             //assuming that the name of document library is Documents, change as per your requirement, 
             //this will add the file in root folder of the document library, if you have a folder named test, replace it as "/Documents/test"
             sp.web.getFolderByServerRelativeUrl(this.props.list).files.add(file.name, file, true).then((result) => {
                 console.log(file.name + " upload successfully!");
                 this.setState({
-                    selectedFile :""
+                    selectedFile :"",
+                    isLoading:false
                   });
                   this._closePanel();
                   this.props.parentMethod();
                   this.props.parentReopen();
                 // this.getProjectDocuments(this.props.list);
+                //this.setState({ isLoading: false });
     
 
             });
@@ -305,43 +305,53 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
         //     </div> : null;
         return (
             // className="PanelContainer"
+            !this.state.isLoading ?
             <div>
                 <Panel
-                    isOpen={this.state.showPanel}
-                    onDismiss={this._closePanel}
-                    type={PanelType.medium}
+          isOpen={this.state.showPanel}
+          onDismiss={this._closePanel}
+          type={PanelType.medium}
+        >
+          <div className="PanelContainer">
+            <section className="main-content-section">
+              {/* <div className="wrapper"> */}
 
-                >
-                    <div className="">
-                        <section className="main-content-section">
-
-                            <div className="wrapper">
-
-                                <div className="row">
-
-                                    <div className="col-md-12">
-                                        <section id="step1">
+              <div className="row">
+                <div className="col-sm-12 col-12">
+                  {/* <section id="step1">
                                             <div className="well">
-                                                <div className="row">
-                                                    <h3>Documents</h3>
-                                                    <div >
-                                                        <form name="projectform" onSubmit={this.projectSubmit.bind(this)}>
-                                                            <div className="row">
-                                                                
-
-                                                                
-
-                                                                <div className="col-lg-6">
-                                                                    <div className="form-group">
-                                                                        <label>Document <span style={textcolor}>*</span></label>
-                                                                        <input type="file" onChange={this.fileChangedHandler} />
-                                                            <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.UploadFiles}>
-                                                                        Upload
-                                                                          </button>
-                                                                        <span className="error">{this.state.errors["projectname"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                {/* <div className="col-lg-6">
+                                                <div className="row"> */}
+                  <h3 className="hbc-form-header">Documents</h3>
+                  {/* <div > */}
+                  <form
+                    name="projectform"
+                    className="hbc-form"
+                    onSubmit={this.projectSubmit.bind(this)}
+                  >
+                    <div className="row addSection">
+                      <div className="col-sm-6 col-12">
+                        <div className="form-group">
+                          <label>
+                            Documents <span style={textcolor}>*</span>
+                          </label>
+                          <input
+                            type="file"
+                            onChange={this.fileChangedHandler}
+                          />
+                          <button
+                            type="button"
+                            className="btn-style btn btn-success"
+                            style={{ marginBottom: "10px" }}
+                            onClick={this.UploadFiles}
+                          >
+                            Upload
+                          </button>
+                          <span className="error">
+                            {this.state.errors["projectname"]}
+                          </span>
+                        </div>
+                      </div>
+                      {/* <div className="col-lg-6">
                                                                     <div className="form-group">
                                                                         <label>Description</label>
                                                                         <span className="calendar-style"><i className="fas fa-user icon-style"></i>
@@ -352,37 +362,21 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
                                                                         <span className="error">{this.state.errors["ownername"]}</span>
                                                                     </div>
                                                                 </div> */}
-                                                               
-                                                                
-                                                              
-                                                                
-                                                               
-                                                              
-                                                               
-                                                                
-
-                                                                <div className="clearfix"></div>
-
-                                                                
-
-                                                               
-                                                                <div className="clearfix"></div>
-                                                                
-                                                                
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
+                    </div>
+                    
+                  </form>
+                  {/* </div> */}
+                  {/* </div>
                                             </div>
 
-                                        </section>
-                                    </div>
-                                </div>
+                                        </section> */}
+                </div>
+              </div>
 
-                            </div>
-                        </section>
-                    </div>
-                </Panel>
+              {/* </div> */}
+            </section>
+          </div>
+        </Panel>
 
                 {/* <Modal
                     show={this.state.showModal}
@@ -406,7 +400,7 @@ Schedule and Project Team now?
                     </Modal.Footer> */}
                 {/* </Modal> */}
             </div>
-
+ : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div>
         );
     }
     private _closePanel = (): void => {

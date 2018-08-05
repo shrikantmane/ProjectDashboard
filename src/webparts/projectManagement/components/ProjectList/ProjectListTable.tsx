@@ -73,7 +73,7 @@ export default class ProjectListTable extends React.Component<
     }
     actionTemplate(rowData, column) {
         return (
-            <div>
+            <div style={{textAlign:'center'}}>
                 <Link to={`/viewProjectDetails/${rowData.ID + '_member'}`}><button className="btn btn-primary action-btn-style blue-light-color btn-xs" type="button"><abbr className="tooltip-style" title="Add member"><i className="fas fa-user-plus"></i></abbr></button></Link>
                 <Link to={`/viewProjectDetails/${rowData.ID +'_document'}`}><button className="btn  btn-primary action-btn-style blue-color btn-xs" type="button"><abbr className="tooltip-style" title="Add Document"><i className="fas fa-file"></i></abbr></button></Link>
                 <Link to={`/viewProjectDetails/${rowData.ID +'_requirement'}`}><button className="btn  btn-primary action-btn-style blue-dark-color btn-xs" type="button"><abbr className="tooltip-style" title="Requirments"><i className="fas fa-clipboard-list"></i></abbr></button></Link>
@@ -82,7 +82,7 @@ export default class ProjectListTable extends React.Component<
         );
     }
     editTemplate(rowData, column) {
-        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i> Edit </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i> </a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -129,14 +129,14 @@ export default class ProjectListTable extends React.Component<
                             }
                             <div className="project-list">
                                 <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
-                                    <Column header="Action" body={this.editTemplate} style={{ width: "8%" }} />
+                                    <Column body={this.editTemplate} style={{ width: "3%" }} />
                                     <Column field="Project" sortable={true} header="Project" style={{ width: "19%" }} />
-                                    <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} />
+                                    <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} style={{ width: "8%" }}/>
                                     <Column field="Status0" sortable={true} header="Status" body={this.statusTemplate} />
                                     <Column field="AssignedTo" sortable={true} header="Owner" body={this.ownerTemplate} />
-                                    <Column field="Priority" sortable={true} header="Priority" />
-                                    <Column field="Risks" sortable={true} header="Risk" />
-                                    <Column header="Project Details" body={this.actionTemplate} style={{ width: "15%" }} />
+                                    <Column field="Priority" sortable={true} header="Priority" style={{ width: "8%" }}/>
+                                    <Column field="Risks" sortable={true} header="Risk" style={{ width: "8%" }}/>
+                                    <Column header="Action" body={this.actionTemplate} style={{ width: "15%" }} />
                                 </DataTable>
                             </div>
                         </div>

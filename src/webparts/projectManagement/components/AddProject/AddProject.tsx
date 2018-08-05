@@ -156,7 +156,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     savedProjectID: any,
     statusList: any,
     departmentList: any,
-    showDepartment: boolean
+    showDepartment: boolean,
+    isLoading: boolean
 }> {
     private _picker: IBasePicker<IPersonaProps>;
     // Added by Ashwini
@@ -186,6 +187,10 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     public ProjectCommentsHistory = "_Project_Comments_History";
     public TaskComments = "_Task_Comments";
     public TaskCommentsHistory = "_Task_Comments_History";
+    public HBCAdminGrpID: string | number;
+    public DepartmentHeadGrpID: string | number;
+    public CEO_COOGrpID: string | number;
+    public ProjectOwnerGrpID: string | number;
 
 
     constructor(props) {
@@ -206,7 +211,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             delayResults: false,
             currentPicker: 1,
             isDataSaved: false,
-            showStatusDate: true,
+            showStatusDate: false,
             selectedOption: null,
             inputValue: '',
             value: [],
@@ -223,15 +228,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             savedProjectID: 0,
             statusList: [],
             departmentList: [],
-            showDepartment: false
+            showDepartment: false,
+            isLoading: false,
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
         this.handleBlurOnProjectName = this.handleBlurOnProjectName.bind(this);
 
-        this.state.fields['status'] = true;
+        this.state.fields['status'] = false;
+        this.state.fields['project'] = '';
     }
     componentDidMount() {
+
+        this.getGroupID();
 
         this._getAllSiteUsers();
         this.getAllProject();
@@ -257,6 +266,23 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
     componentWillReceiveProps(nextProps) {
 
+    }
+
+    // get group IDs by group name
+    private getGroupID() {
+        let reactHandler = this;
+        sp.web.siteGroups.getByName("HBC Admin").get().then(function (result) {
+            reactHandler.HBCAdminGrpID = result.Id;
+            sp.web.siteGroups.getByName("Department Head").get().then(function (result) {
+                reactHandler.DepartmentHeadGrpID = result.Id;
+                sp.web.siteGroups.getByName("CEO_COO").get().then(function (result) {
+                    reactHandler.CEO_COOGrpID = result.Id;
+                    sp.web.siteGroups.getByName("Project Owner").get().then(function (result) {
+                        reactHandler.ProjectOwnerGrpID = result.Id;
+                    });
+                });
+            });
+        });
     }
 
     private getListIDs() {
@@ -384,7 +410,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             fields[field] = isChecked;
             this.setState({ fields, cloneProjectChecked: !this.state.cloneProjectChecked });
             if (isChecked) {
-                this.getProjectByName(this.state.projectList ? this.state.projectList[0].Project : '');
+                //this.getProjectByName(this.state.projectList ? this.state.projectList[0].Project : '');
             } else if (this.props.id === undefined) {
                 this.clearProjectInfo();
             }
@@ -453,7 +479,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         } else if (field === 'projectoutline') {
             let fields = this.state.fields;
-            fields[field] = e.target.files[0]
+            fields[field] = e.target.files[0];
             this.setState({ fields });
         } else {
             let fields = this.state.fields;
@@ -463,9 +489,12 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
     removeAttachment(i, event) {
         console.log('index1', i);
-        let fields = this.state.fields;
-        fields['projectoutline'].splice(i, 1);
-        this.setState(fields);
+        var result = confirm("Want to delete?");
+        if (result) {
+            let fields = this.state.fields;
+            fields['projectoutline'].splice(i, 1);
+            this.setState(fields);
+        }
     }
     handleValidation() {
         let fields = this.state.fields;
@@ -509,6 +538,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         //     errors["tags"] = "Cannot be empty";
         //     errorClass["tags"] = "classError";
         // }
+        if ((!fields["project"] || fields["project"] === '') && this.state.cloneProjectChecked) {
+            formIsValid = false;
+            errors["project"] = "Please select Project Name";
+            errorClass["project"] = "classError";
+        }
         if (fields["startdate"] && fields["duedate"]) {
             if (fields["duedate"] < fields["startdate"]) {
                 formIsValid = false;
@@ -595,6 +629,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             fields['ownername'] = ownerArray;
             this.setState({ fields });
             if (this.props.id) {
+                this.setState({ isLoading: true });
                 sp.web.lists.getByTitle("Project").items.getById(this.props.id).update({
                     StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : null,
                     DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : null,
@@ -617,6 +652,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     DepartmentId: obj.departmentname && this.state.showDepartment ? obj.departmentname : 1
 
                 }).then(i => {
+                    this.setState({ isLoading: false });
                     this._closePanel();
                     this.props.parentMethod();
                     if (this.state.fields["projectoutline"].length > 0) {
@@ -657,7 +693,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 //     // this._closePanel();
                 //     // this._showModal();
                 // });
-
+                this.setState({ isLoading: true });
                 this.CreateProjectGroup();
                 // this._closePanel();
                 // this._showModal();
@@ -713,12 +749,15 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     //     reactHandler.getProjectDetails(projectName);
                     // }
                 }).catch(e => {
+                    this.setState({ isLoading: false });
                     console.log("Error while creating " + OwnersGroup + " group: " + e);
                 });
             }).catch(e => {
+                this.setState({ isLoading: false });
                 console.log("Error while creating " + ContributersGroup + " group: " + e);
             });
         }).catch(e => {
+            this.setState({ isLoading: false });
             console.log("Error while creating " + ViewersGroup + " group: " + e);
         });
     }
@@ -734,359 +773,360 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     console.log("HBCOwner added");
 
                 }).catch(e => {
+                    this.setState({ isLoading: false });
                     console.log("error while adding HBCOwner " + loginName + " to owner group");
                 });
         }
     }
-    private AddPermissionsToTaskList(ListName, ProName) {
+    // private AddPermissionsToTaskList(ListName, ProName) {
 
-        this.TaskObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.TaskObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.TaskObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.TaskObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.TaskObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.TaskObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.TaskObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.TaskObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
-    private AddPermissionsToScheduleList(ListName, ProName) {
+    // private AddPermissionsToScheduleList(ListName, ProName) {
 
-        this.ScheduleObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.ScheduleObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.ScheduleObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.ScheduleObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.ScheduleObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.ScheduleObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.ScheduleObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.ScheduleObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
 
-    private AddPermissionsToTaskCommentList(ListName, ProName) {
+    // private AddPermissionsToTaskCommentList(ListName, ProName) {
 
-        this.TaskCommentObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.TaskCommentObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.TaskCommentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.TaskCommentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.TaskCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.TaskCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.TaskCommentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.TaskCommentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
 
-    private AddPermissionsToTaskCommentHisList(ListName, ProName) {
+    // private AddPermissionsToTaskCommentHisList(ListName, ProName) {
 
-        this.TaskCommentHisObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.TaskCommentHisObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.TaskCommentHisObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.TaskCommentHisObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.TaskCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.TaskCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.TaskCommentHisObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.TaskCommentHisObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
-    private AddPermissionsToProjectCommentList(ListName, ProName) {
+    // private AddPermissionsToProjectCommentList(ListName, ProName) {
 
-        this.ProjectCommentObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.ProjectCommentObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.ProjectCommentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.ProjectCommentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.ProjectCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.ProjectCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.ProjectCommentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.ProjectCommentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
 
-    private AddPermissionsToProjectCommentHisList(ListName, ProName) {
-        let reactHandler = this;
+    // private AddPermissionsToProjectCommentHisList(ListName, ProName) {
+    //     let reactHandler = this;
 
-        this.ProjectCommentHisObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.ProjectCommentHisObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.ProjectCommentHisObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.ProjectCommentHisObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.ProjectCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.ProjectCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.ProjectCommentHisObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.ProjectCommentHisObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                        reactHandler.cloneListItems(ProName);
+    //                     reactHandler.cloneListItems(ProName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
 
-    private AddPermissionsToDocumentList(ListName, ProName) {
+    // private AddPermissionsToDocumentList(ListName, ProName) {
 
-        this.DocumentObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.DocumentObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.DocumentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.DocumentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.DocumentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.DocumentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.DocumentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.DocumentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
 
 
-    private AddPermissionsToTeamMemberList(ListName, ProName) {
+    // private AddPermissionsToTeamMemberList(ListName, ProName) {
 
-        this.TeamMemberObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.TeamMemberObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.TeamMemberObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.TeamMemberObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.TeamMemberObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.TeamMemberObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.TeamMemberObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.TeamMemberObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
-    private AddPermissionsToRequirementList(ListName, ProName) {
+    // private AddPermissionsToRequirementList(ListName, ProName) {
 
-        this.RequirementObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.RequirementObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.RequirementObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.RequirementObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.RequirementObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.RequirementObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.RequirementObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.RequirementObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
-    private AddPermissionsToProjectInfoList(ListName, ProName) {
+    // private AddPermissionsToProjectInfoList(ListName, ProName) {
 
-        this.ProjectInfoObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.ProjectInfoObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.ProjectInfoObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.ProjectInfoObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.ProjectInfoObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.ProjectInfoObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.ProjectInfoObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.ProjectInfoObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
-    private AddPermissionsToProjectCalendarList(ListName, ProName) {
+    // private AddPermissionsToProjectCalendarList(ListName, ProName) {
 
-        this.ProjectCalendarObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
+    //     this.ProjectCalendarObj.breakRoleInheritance().then(res => {
+    //         console.log("breakRoleInheritance for - ", ListName);
 
-            this.ProjectCalendarObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
+    //         this.ProjectCalendarObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
+    //             console.log(ProName, " Owners - permissions added for -", ListName);
 
-                this.ProjectCalendarObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
+    //             this.ProjectCalendarObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
+    //                 console.log(ProName, " Contributers - permissions added", ListName);
 
-                    this.ProjectCalendarObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
+    //                 this.ProjectCalendarObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
+    //                     console.log(ProName, " View Only - permissions added", ListName);
 
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
+    //                 }).catch(err => {
+    //                     console.log("Error while creating ", ProName, " View Only ");
+    //                 });// View Only
 
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
+    //             }).catch(err => {
+    //                 console.log("Error while creating ", ProName, " Contributers ");
+    //             });// Contribute
 
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
+    //         }).catch(err => {
+    //             console.log("Error while creating ", ProName, " Owners ");
+    //         });; // Owners
 
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
+    //     }).catch(err => {
+    //         console.log("Error while breakRoleInheritance for list - ", ListName)
+    //     });
+    // }
 
     private getProjectDetails(ProName) {
         // let filter = "ID eq 175";
@@ -1278,6 +1318,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 });
             }
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while adding items for ", ProName, " to Project List -", err);
         });
     }
@@ -1298,6 +1339,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating task List, Error -", err);
         });
     }
@@ -1328,14 +1370,17 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this.CreateScheduleList(ScheduleList, ProName, spWeb, spEnableCT);
 
                 }).catch(err => {
+                    this.setState({ isLoading: false });
                     console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
                 }); //Comment
 
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("Error while creating column Duration - ", " in list -", ListName, " Error -", err);
             }); //Duration
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
         }); //Status
         // }).catch(err => {
@@ -1356,6 +1401,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             reactHandler.AddScheduleListIDColumns(ScheduleList, ProName, spWeb, spEnableCT, ScheduleListID, splist.list);
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating Schedule List, Error -", err);
         });
     }
@@ -1386,14 +1432,17 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this.CreateTaskComments(TaskComments, ProName, spWeb, spEnableCT, ScheduleListID);
 
                 }).catch(err => {
+                    this.setState({ isLoading: false });
                     console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
                 }); //Comment
 
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("Error while creating column Duration - ", " in list -", ListName, " Error -", err);
             }); //Duration
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
         }); //Status
         // }).catch(err => {
@@ -1412,6 +1461,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             reactHandler.AddTaskCommentsColumns(TaskComments, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID, splist.list);
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating Task Comments List, Error -", err);
         });
     }
@@ -1434,10 +1484,12 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this.AddPermissionsToTaskCommentList(ListName, ProName);
                 this.CreateTaskCommentHistory(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID);
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
             }); //Comment
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating column task - ", " in list -", ListName, " Error -", err);
         }); //Task Name
     }
@@ -1452,6 +1504,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             reactHandler.AddTaskCommentsHistoryColumns(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID, splist.list);
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating Task Comments History List, Error -", err);
         });
     }
@@ -1477,14 +1530,17 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this.AddPermissionsToTaskCommentHisList(ListName, ProName);
                     this.CreateProjectDocument(ProName, ProjectDocument, spWeb, spEnableCT);
                 }).catch(err => {
+                    this.setState({ isLoading: false });
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
                 }); //IsDeleted 
 
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
             }); //Comment
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating column Task Comment ID - ", " in list -", ListName, " Error -", err);
         }); //Task Comment ID
     }
@@ -1498,6 +1554,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             console.log(ProjectDocument, " created successfuly !");
             reactHandler.AddProjectDocColumns(ProjectDocument, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating Project Doc List, Error -", err);
         });
     }
@@ -1521,6 +1578,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             this.CreateRequirements(ProName, Requirements, spWeb, spEnableCT);
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating column Owner - ", " in list -", ListName, " Error -", err);
         }); //Owner
 
@@ -1539,6 +1597,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             // reactHandler.AddRequirementColumns(Requirements);
             reactHandler.AddRequirementColumns(Requirements, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating Requirement List, Error -", err);
         });
     }
@@ -1582,7 +1641,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Resources).then(res => {
                             console.log("Resources created in list ", ListName);
 
-                            let ImpactOnTimelines = `<Field Name='ImpactonTimelines' StaticName='ImpactonTimelines' DisplayName='Impact on Timelines' Type='Boolean'><Default>0</Default></Field>`;
+                            let ImpactOnTimelines = `<Field Name='ImpactonTimelines' StaticName='ImpactonTimelines' DisplayName='Impact On Timelines' Type='Boolean'><Default>0</Default></Field>`;
                             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(ImpactOnTimelines).then(res => {
                                 console.log("ImpactOnTimelines created in list ", ListName);
 
@@ -1590,26 +1649,32 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                 this.AddPermissionsToRequirementList(ListName, ProName);
                                 this.CreateProjectTeamMembers(ProName, ProjectTeamMembers, spWeb, spEnableCT);
                             }).catch(err => {
+                                this.setState({ isLoading: false });
                                 console.log("Error while creating column ImpactOnTimelines - ", " in list -", ListName, " Error -", err);
                             }); //ImpactOnTimelines  
 
                         }).catch(err => {
+                            this.setState({ isLoading: false });
                             console.log("Error while creating column Resources - ", " in list -", ListName, " Error -", err);
                         }); //Resources     
 
                     }).catch(err => {
+                        this.setState({ isLoading: false });
                         console.log("Error while creating column  Efforts - ", " in list -", ListName, " Error -", err);
                     }); //Efforts
 
                 }).catch(err => {
+                    this.setState({ isLoading: false });
                     console.log("Error while creating column Apporval Status - ", " in list -", ListName, " Error -", err);
                 }); //Apporval Status
 
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("Error while creating column Approver - ", " in list -", ListName, " Error -", err);
             }); //Approver
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating column Requirement - ", " in list -", ListName, " Error -", err);
         }); //Requirement
         // }).catch(err => {
@@ -1627,6 +1692,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             console.log(ProjectTeamMembers, " created successfuly !");
             reactHandler.AddTeamMemberColumns(ProjectTeamMembers, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating Team Members List, Error -", err);
         });
     }
@@ -1668,18 +1734,22 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         this.CreateProjectInfo(ProName, ProjectInfo, spWeb, spEnableCT);
 
                     }).catch(err => {
+                        this.setState({ isLoading: false });
                         console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
                     }); //Status
 
                 }).catch(err => {
+                    this.setState({ isLoading: false });
                     console.log("Error while creating column EndDate - ", " in list -", ListName, " Error -", err);
                 }); //EndDate
 
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("Error while creating column StartDate - ", " in list -", ListName, " Error -", err);
             }); //StartDate
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating column TeamMember - ", " in list -", ListName, " Error -", err);
         }); //TeamMember
 
@@ -1698,6 +1768,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             console.log(ProjectInfo, " created successfuly !");
             reactHandler.AddProjectInfoColumns(ProjectInfo, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating Team Members List, Error -", err);
         });
     }
@@ -1725,10 +1796,12 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this.CreateProjectCalender(ProName, ProjectCal, spWeb, spEnableCT);
 
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("Error while creating column Roles_Responsibility - ", " in list -", ListName, " Error -", err);
             }); //Roles_Responsibility
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating column Owner - ", " in list -", ListName, " Error -", err);
         }); //Owner
 
@@ -1752,6 +1825,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             reactHandler.CreateProjectComments(ProjectComments, ProName, spWeb, spEnableCT);
             //reactHandler.AddPermissionsToList(ProjectCalender, ProName, splist.list);
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating Project Calender List, Error -", err);
         });
     }
@@ -1783,6 +1857,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             let ProjectListID = "{" + splist.data.Id + "}";
             reactHandler.AddProjectCommentsColumns(ProjectComments, ProName, spWeb, spEnableCT, ProjectListID, splist.list);
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating Project Comments List, Error -", err);
         });
     }
@@ -1812,12 +1887,15 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this.AddPermissionsToProjectCommentList(ListName, ProName);
                     this.CreateProjectCommentHistory(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID);
                 }).catch(err => {
+                    this.setState({ isLoading: false });
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
                 }); //IsDeleted 
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("Error while creating column Comment ID - ", " in list -", ListName, " Error -", err);
             }); //CommentID
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
         }); //Comment
         // }).catch(err => {
@@ -1836,6 +1914,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
             //reactHandler.cloneListItems(ProName);
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating Project Comments History List, Error -", err);
         });
     }
@@ -1860,60 +1939,627 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this.AddPermissionsToProjectCommentHisList(ListName, ProName);
 
                 }).catch(err => {
+                    this.setState({ isLoading: false });
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
                 }); //IsDeleted
 
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
             }); //Comment
 
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("Error while creating column CommentID - ", " in list -", ListName, " Error -", err);
         }); //CommentID
     }
 
-    private cloneListItems(ProName) {
+    // Add permissions to list
+    private AddPermissionsToTaskList(ListName, ProName) {
+        this.TaskObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
 
-        //if (this.state.isCalender === true) {
-        //    this.getCalenderItems(this.state.CloneProject + " Project Calender", ProName + " Project Calender");
-        //}
-        //if (this.state.isRequirement === true) {
-        //    this.getRequirementItems(this.state.CloneProject + " Requirements",ProName + " Requirements");
-        //}
-        //if (this.state.isSchedule === true) {
-        //    this.getScheduleItems(this.state.CloneProject + " Schedule List",ProName + " Schedule List");
-        //}
-        //if (this.state.isDocument === true) {
-        //    this.copyDocumentListItems(this.state.CloneProject + " Project Document",ProName + " Project Document");
-        //}
+            this.TaskObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TaskObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TaskObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.TaskObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.TaskObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                this.setState({ isLoading: false });
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            this.setState({ isLoading: false });
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToScheduleList(ListName, ProName) {
+
+        this.ScheduleObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ScheduleObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ScheduleObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ScheduleObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.ScheduleObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.ScheduleObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                this.setState({ isLoading: false });
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            this.setState({ isLoading: false });
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+    private AddPermissionsToTaskCommentList(ListName, ProName) {
+
+        this.TaskCommentObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.TaskCommentObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TaskCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TaskCommentObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.TaskCommentObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.TaskCommentObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            this.setState({ isLoading: false });
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+    private AddPermissionsToTaskCommentHisList(ListName, ProName) {
+
+        this.TaskCommentHisObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.TaskCommentHisObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TaskCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TaskCommentHisObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.TaskCommentHisObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.TaskCommentHisObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                this.setState({ isLoading: false });
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            this.setState({ isLoading: false });
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToProjectCommentList(ListName, ProName) {
+
+        this.ProjectCommentObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectCommentObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectCommentObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.ProjectCommentObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.ProjectCommentObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                this.setState({ isLoading: false });
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+        }).catch(err => {
+            this.setState({ isLoading: false });
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+
+    private AddPermissionsToDocumentList(ListName, ProName) {
+
+        this.DocumentObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.DocumentObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.DocumentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.DocumentObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.DocumentObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.DocumentObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                this.setState({ isLoading: false });
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            this.setState({ isLoading: false });
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+
+    private AddPermissionsToTeamMemberList(ListName, ProName) {
+
+        this.TeamMemberObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.TeamMemberObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TeamMemberObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TeamMemberObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.TeamMemberObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.TeamMemberObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                this.setState({ isLoading: false });
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            this.setState({ isLoading: false });
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToRequirementList(ListName, ProName) {
+
+        this.RequirementObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.RequirementObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.RequirementObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.RequirementObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.RequirementObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.RequirementObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                this.setState({ isLoading: false });
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+
+        }).catch(err => {
+            this.setState({ isLoading: false });
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToProjectInfoList(ListName, ProName) {
+
+        this.ProjectInfoObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectInfoObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectInfoObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectInfoObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.ProjectInfoObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.ProjectInfoObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                this.setState({ isLoading: false });
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+
+        }).catch(err => {
+            this.setState({ isLoading: false });
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToProjectCalendarList(ListName, ProName) {
+
+        this.ProjectCalendarObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectCalendarObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectCalendarObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectCalendarObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.ProjectCalendarObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.ProjectCalendarObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                this.setState({ isLoading: false });
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+    private AddPermissionsToProjectCommentHisList(ListName, ProName) {
+        let reactHandler = this;
+
+        this.ProjectCommentHisObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectCommentHisObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectCommentHisObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.ProjectCommentHisObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.ProjectCommentHisObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                                reactHandler.cloneListItems(ProName);
+
+                            }).catch(err => {
+                                this.setState({ isLoading: false });
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            this.setState({ isLoading: false });
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        this.setState({ isLoading: false });
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    this.setState({ isLoading: false });
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                this.setState({ isLoading: false });
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            this.setState({ isLoading: false });
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    // Add permission to list end 
+
+
+    // Clone list items
+    private cloneListItems(ProName) {
         let flag = false;
+        let oldProject = (this.state.fields['project']).split(' ').join('_');
         if (this.state.fields['clonecalender'] === true) {
             flag = true;
-            this.getCalenderItems(this.state.fields['project'] + " Project Calender", ProName + " Project Calender");
+            this.getCalenderItems(oldProject + this.ProjectCal, ProName + this.ProjectCal);
         }
         if (this.state.fields['clonerequirements'] === true) {
             flag = true;
-            this.getRequirementItems(this.state.fields['project'] + " Requirements", ProName + " Requirements");
+            this.getRequirementItems(oldProject + this.Requirements, ProName + this.Requirements);
         }
         if (this.state.fields['cloneschedule'] === true) {
             flag = true;
-            this.getScheduleItems(this.state.fields['project'] + " Schedule List", ProName + " Schedule List");
+            this.getScheduleItems(oldProject + this.ScheduleList, ProName + this.ScheduleList);
         }
         if (this.state.fields['clonedocuments'] === true) {
             flag = true;
-            this.copyDocumentListItems(this.state.fields['project'] + " Project Document", ProName + " Project Document");
+            this.copyDocumentListItems(oldProject + this.ProjectDocument, ProName + this.ProjectDocument);
         }
         if (!flag) {
+            this.setState({ isLoading: false });
             if (this.props.id) {
                 this._closePanel();
                 this.props.parentMethod();
-                //this.props.parentReopen();
             } else {
                 this._closePanel();
                 this._showModal();
             }
         }
     }
+
     // get Calender list items
     private getCalenderItems(oldCalendarList, newCalendarList) {
         let reactHandler = this;
@@ -1947,6 +2593,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 reactHandler.addCalendarListItems(newCalendarList, Title, Description, EventDate, EndDate, Category, ParticipantsPickerId, Location);
 
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("error while fetching items in ", oldCalendarList, " - ", err);
             });
     }
@@ -1966,15 +2613,16 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         }).then((iar: ItemAddResult) => {
             console.log("Items added successfully in list ", newCalendarList);
+            this.setState({ isLoading: false });
             if (this.props.id) {
                 this._closePanel();
                 this.props.parentMethod();
-                //this.props.parentReopen();
             } else {
                 this._closePanel();
                 this._showModal();
             }
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("error while adding items in ", newCalendarList, " - ", err);
         });
     }
@@ -2009,6 +2657,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this.addRequirementsListItems(newRequirementsList, Requirement, Efforts, ImpactOnTimelines, Resources, Attachments, ApproverId, ApporvalStatus);
 
             }).catch((err) => {
+                this.setState({ isLoading: false });
                 console.log("error while fetching items in ", oldRequirementsList, " - ", err);
             });
     }
@@ -2025,6 +2674,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             ApproverId: ApproverId,
             Apporval_x0020_Status: ApporvalStatus,
         }).then((iar: ItemAddResult) => {
+            this.setState({ isLoading: false });
             if (this.props.id) {
                 this._closePanel();
                 this.props.parentMethod();
@@ -2035,6 +2685,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             }
             console.log("Items added successfully in list ", newRequirementsList);
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("error while adding items in ", newRequirementsList, " - ", err);
         });
     }
@@ -2084,6 +2735,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 reactHandler.addScheduleListItems(newScheduleList, StartDate, DueDate, Duration, AssignedToId, Status0Id, Priority, Body, Comment, TaskStatus);
 
             }).catch((err) => {
+                this.setState({ isLoading: false });
                 console.log("error while fetching items in ", oldScheduleList, " - ", err);
             });
     }
@@ -2103,6 +2755,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Status: TaskStatus
 
         }).then((iar: ItemAddResult) => {
+            this.setState({ isLoading: false });
             console.log("Items added successfully in list ", newScheduleList);
             if (this.props.id) {
                 this._closePanel();
@@ -2113,6 +2766,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this._showModal();
             }
         }).catch(err => {
+            this.setState({ isLoading: false });
             console.log("error while adding items in ", newScheduleList, " - ", err);
         });;
     }
@@ -2120,7 +2774,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     // Add Document list items
     private copyDocumentListItems(oldDocumentList, newDocumentList) {
 
-        var siteurl = this.context.pageContext.web.absoluteUrl.split('.com')[1] + '/';
+
+
+        // var siteurl = this.context.pageContext.web.absoluteUrl.split('.com')[1] + '/';
+        var siteurl = '/' + window.location.pathname.split('/')[1] + '/' + window.location.pathname.split('/')[2] + '/';
+
         var sourceList = encodeURI(oldDocumentList) + '/';
         var destinationList = encodeURI(newDocumentList) + '/';
 
@@ -2134,6 +2792,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         .copyTo(siteurl + destinationList + response[i].LinkFilename, true)
                 }
                 console.log(response);
+                this.setState({ isLoading: false });
                 if (this.props.id) {
                     this._closePanel();
                     this.props.parentMethod();
@@ -2143,9 +2802,285 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this._showModal();
                 }
             }).catch(err => {
+                this.setState({ isLoading: false });
                 console.log("Error while copying document in list ", newDocumentList, " - ", err);
             });
     }
+
+    // private cloneListItems(ProName) {
+
+    //     //if (this.state.isCalender === true) {
+    //     //    this.getCalenderItems(this.state.CloneProject + " Project Calender", ProName + " Project Calender");
+    //     //}
+    //     //if (this.state.isRequirement === true) {
+    //     //    this.getRequirementItems(this.state.CloneProject + " Requirements",ProName + " Requirements");
+    //     //}
+    //     //if (this.state.isSchedule === true) {
+    //     //    this.getScheduleItems(this.state.CloneProject + " Schedule List",ProName + " Schedule List");
+    //     //}
+    //     //if (this.state.isDocument === true) {
+    //     //    this.copyDocumentListItems(this.state.CloneProject + " Project Document",ProName + " Project Document");
+    //     //}
+    //     let flag = false;
+    //     if (this.state.fields['clonecalender'] === true) {
+    //         flag = true;
+    //         this.getCalenderItems(this.state.fields['project'] + " Project Calender", ProName + " Project Calender");
+    //     }
+    //     if (this.state.fields['clonerequirements'] === true) {
+    //         flag = true;
+    //         this.getRequirementItems(this.state.fields['project'] + " Requirements", ProName + " Requirements");
+    //     }
+    //     if (this.state.fields['cloneschedule'] === true) {
+    //         flag = true;
+    //         this.getScheduleItems(this.state.fields['project'] + " Schedule List", ProName + " Schedule List");
+    //     }
+    //     if (this.state.fields['clonedocuments'] === true) {
+    //         flag = true;
+    //         this.copyDocumentListItems(this.state.fields['project'] + " Project Document", ProName + " Project Document");
+    //     }
+    //     if (!flag) {
+    //         if (this.props.id) {
+    //             this._closePanel();
+    //             this.props.parentMethod();
+    //             //this.props.parentReopen();
+    //         } else {
+    //             this._closePanel();
+    //             this._showModal();
+    //         }
+    //     }
+    // }
+    // // get Calender list items
+    // private getCalenderItems(oldCalendarList, newCalendarList) {
+    //     let reactHandler = this;
+    //     let Title;
+    //     let Description;
+    //     let EventDate;
+    //     let EndDate;
+    //     let Category;
+    //     let ParticipantsPickerId = new Array();
+    //     let ParticipantsPicker;
+    //     let Location;
+    //     sp.web.lists.getByTitle(oldCalendarList).items
+    //         .select("Title", "Description", "EventDate", "EndDate", "Category", "ParticipantsPicker/ID", "ParticipantsPicker/Title", "Location")
+    //         .expand("ParticipantsPicker")
+    //         .get()
+    //         .then(res => {
+    //             console.log("CalendarList -", res);
+    //             for (var i = 0; i < res.length; i++) {
+    //                 Title = res[i].Title;
+    //                 Description = res[i].Description;
+    //                 EventDate = res[i].EventDate;
+    //                 EndDate = res[i].EndDate;
+    //                 Category = res[i].Category;
+    //                 Location = res[i].Location;
+    //                 ParticipantsPicker = res[i].ParticipantsPicker;
+    //                 for (var i = 0; i < ParticipantsPicker.length; i++) {
+    //                     var ID = ParticipantsPicker[i].ID;
+    //                     ParticipantsPickerId.push(ID);
+    //                 }
+    //             }
+    //             reactHandler.addCalendarListItems(newCalendarList, Title, Description, EventDate, EndDate, Category, ParticipantsPickerId, Location);
+
+    //         }).catch(err => {
+    //             console.log("error while fetching items in ", oldCalendarList, " - ", err);
+    //         });
+    // }
+
+    // // Add Calender list items
+    // private addCalendarListItems(newCalendarList, Title, Description, EventDate, EndDate, Category, ParticipantsPickerId, Location) {
+    //     sp.web.lists.getByTitle(newCalendarList).items.add({
+    //         Title: Title,
+    //         Description: Description,
+    //         EventDate: EventDate,
+    //         EndDate: EndDate,
+    //         Category: Category,
+    //         ParticipantsPickerId: {
+    //             results: ParticipantsPickerId  // allows multiple lookup value
+    //         },
+    //         Location: Location
+
+    //     }).then((iar: ItemAddResult) => {
+    //         console.log("Items added successfully in list ", newCalendarList);
+    //         if (this.props.id) {
+    //             this._closePanel();
+    //             this.props.parentMethod();
+    //             //this.props.parentReopen();
+    //         } else {
+    //             this._closePanel();
+    //             this._showModal();
+    //         }
+    //     }).catch(err => {
+    //         console.log("error while adding items in ", newCalendarList, " - ", err);
+    //     });
+    // }
+
+    // // get requirement list items
+    // private getRequirementItems(oldRequirementsList, newRequirementsList) {
+    //     let reactHandler = this;
+    //     let Requirement;
+    //     let Efforts;
+    //     let ImpactOnTimelines;
+    //     let Resources;
+    //     let Attachments;
+    //     let ApproverId;
+    //     let ApporvalStatus;
+    //     sp.web.lists.getByTitle(oldRequirementsList).items
+    //         .select("Requirement", "Efforts", "Impact_x0020_On_x0020_Timelines", "Resources", "Attachments",
+    //         "Approver/ID", "Approver/Title", "Apporval_x0020_Status")
+    //         .expand("Approver")
+    //         .get()
+    //         .then(res => {
+    //             console.log("RequirementsList -", res);
+    //             for (var i = 0; i < res.length; i++) {
+    //                 Requirement = res[i].Requirement;
+    //                 Efforts = res[i].Efforts;
+    //                 ImpactOnTimelines = res[i].Impact_x0020_On_x0020_Timelines;
+    //                 Resources = res[i].Resources;
+    //                 Attachments = res[i].Attachments;
+    //                 ApproverId = res[i].Approver.ID;
+    //                 ApporvalStatus = res[i].ApporvalStatus;
+
+    //             }
+    //             this.addRequirementsListItems(newRequirementsList, Requirement, Efforts, ImpactOnTimelines, Resources, Attachments, ApproverId, ApporvalStatus);
+
+    //         }).catch((err) => {
+    //             console.log("error while fetching items in ", oldRequirementsList, " - ", err);
+    //         });
+    // }
+
+    // // Add requirement list items
+    // private addRequirementsListItems(newRequirementsList, Requirement, Efforts, ImpactOnTimelines, Resources, Attachments, ApproverId, ApporvalStatus) {
+    //     sp.web.lists.getByTitle(newRequirementsList).items.add({
+    //         Title: 'No Title',
+    //         Requirement: Requirement,
+    //         Efforts: Efforts,
+    //         Impact_x0020_On_x0020_Timelines: ImpactOnTimelines,
+    //         Resources: Resources,
+    //         Attachments: Attachments,
+    //         ApproverId: ApproverId,
+    //         Apporval_x0020_Status: ApporvalStatus,
+    //     }).then((iar: ItemAddResult) => {
+    //         if (this.props.id) {
+    //             this._closePanel();
+    //             this.props.parentMethod();
+    //             //this.props.parentReopen();
+    //         } else {
+    //             this._closePanel();
+    //             this._showModal();
+    //         }
+    //         console.log("Items added successfully in list ", newRequirementsList);
+    //     }).catch(err => {
+    //         console.log("error while adding items in ", newRequirementsList, " - ", err);
+    //     });
+    // }
+
+
+
+    // // get schedule list items
+    // private getScheduleItems(oldScheduleList, newScheduleList) {
+    //     let reactHandler = this;
+    //     let StartDate;
+    //     let DueDate;
+    //     let Duration;
+    //     let Status0Id;
+    //     let Priority;
+    //     let Body;
+    //     let Comment;
+    //     let TaskStatus;
+    //     let AssignedTo;
+    //     let AssignedToId = new Array();
+
+    //     sp.web.lists.getByTitle(oldScheduleList).items
+    //         .select("StartDate", "DueDate", "Duration", "AssignedTo/Title", "AssignedTo/ID", "Status0/ID", "Status0/Status",
+    //         "Status0/Status_x0020_Color", "Priority", "Body", "Predecessors/ID", "Predecessors/Title", "Comment", "Status")
+    //         .expand("AssignedTo", "Status0", "Predecessors")
+    //         .get()
+    //         .then(res => {
+    //             console.log("ScheduleList -", res);
+    //             for (var i = 0; i < res.length; i++) {
+    //                 StartDate = res[i].StartDate;
+    //                 DueDate = res[i].DueDate;
+    //                 Duration = res[i].Duration;
+    //                 Status0Id = res[i].Status0.ID;
+    //                 Priority = res[i].Priority;
+    //                 Body = res[i].Body;
+    //                 Comment = res[i].Comment;
+    //                 TaskStatus = res[i].Status;
+
+    //                 AssignedTo = res[i].AssignedTo;
+    //                 for (var i = 0; i < AssignedTo.length; i++) {
+    //                     var ID = AssignedTo[i].ID;
+    //                     AssignedToId.push(ID);
+    //                 }
+
+
+    //             }
+
+    //             reactHandler.addScheduleListItems(newScheduleList, StartDate, DueDate, Duration, AssignedToId, Status0Id, Priority, Body, Comment, TaskStatus);
+
+    //         }).catch((err) => {
+    //             console.log("error while fetching items in ", oldScheduleList, " - ", err);
+    //         });
+    // }
+
+    // // add schedule list items
+    // private addScheduleListItems(newScheduleList, StartDate, DueDate, Duration, AssignedToId, Status0Id, Priority, Body, Comment, TaskStatus) {
+    //     sp.web.lists.getByTitle(newScheduleList).items.add({
+    //         Title: 'No Title',
+    //         StartDate: StartDate,
+    //         DueDate: DueDate,
+    //         Duration: Duration,
+    //         AssignedToId: { results: AssignedToId },
+    //         Status0Id: Status0Id,
+    //         Priority: Priority,
+    //         Body: Body,
+    //         Comment: Comment,
+    //         Status: TaskStatus
+
+    //     }).then((iar: ItemAddResult) => {
+    //         console.log("Items added successfully in list ", newScheduleList);
+    //         if (this.props.id) {
+    //             this._closePanel();
+    //             this.props.parentMethod();
+    //             //this.props.parentReopen();
+    //         } else {
+    //             this._closePanel();
+    //             this._showModal();
+    //         }
+    //     }).catch(err => {
+    //         console.log("error while adding items in ", newScheduleList, " - ", err);
+    //     });;
+    // }
+
+    // // Add Document list items
+    // private copyDocumentListItems(oldDocumentList, newDocumentList) {
+
+    //     var siteurl = this.context.pageContext.web.absoluteUrl.split('.com')[1] + '/';
+    //     var sourceList = encodeURI(oldDocumentList) + '/';
+    //     var destinationList = encodeURI(newDocumentList) + '/';
+
+    //     sp.web.lists.getByTitle(oldDocumentList).items
+    //         .select('Title', 'LinkFilename', '*')
+    //         .getAll()
+    //         .then((response) => {
+    //             for (var i = 0; i < response.length; i++) {
+    //                 var item = response[i];
+    //                 sp.web.getFileByServerRelativeUrl(siteurl + sourceList + response[i].LinkFilename)
+    //                     .copyTo(siteurl + destinationList + response[i].LinkFilename, true)
+    //             }
+    //             console.log(response);
+    //             if (this.props.id) {
+    //                 this._closePanel();
+    //                 this.props.parentMethod();
+    //                 //this.props.parentReopen();
+    //             } else {
+    //                 this._closePanel();
+    //                 this._showModal();
+    //             }
+    //         }).catch(err => {
+    //             console.log("Error while copying document in list ", newDocumentList, " - ", err);
+    //         });
+    // }
 
 
 
@@ -2265,7 +3200,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         const statusDate = (this.state.showStatusDate) ?
             <div className="col-lg-6">
                 <div className="form-group">
-                    <label>On Hold Date<span className="error">*</span></label>
+                    <span className="error">* </span><label>On Hold Date</label>
                     <DatePicker
                         placeholder="Select On Hold date"
                         onSelectDate={this.handleChange.bind(this, "statusdate")}
@@ -2277,12 +3212,14 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         const selectProjectContent = this.state.cloneProjectChecked ?
             <div className="col-lg-12">
                 <div className="form-group">
-                    <label>Select Project</label>
+                    <span className="error">* </span><label>Select Project</label>
                     <select className="form-control" ref="project" onChange={this.handleChange.bind(this, "project")} value={this.state.fields["project"]}>
+                        <option value="" selected disabled>Select</option>
                         {this.state.projectList.map((obj) =>
                             <option key={obj.Project} value={obj.Project}>{obj.Project}</option>
                         )}
                     </select>
+                    <span className="error">{this.state.errors["project"]}</span>
                 </div>
             </div> : null;
 
@@ -2318,11 +3255,13 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     </div>
                 </div>
             </div> : null;
-        const attachmentDiv = this.state.fields['projectoutline'] && this.state.fields['projectoutline'].length > 0 ?
+        const attachmentDiv = (this.state.fields['projectoutline'] && this.state.fields['projectoutline'].length > 0) ?
             <div className="col-lg-6">
                 {this.state.fields['projectoutline'].map((obj, i) =>
                     <div className="form-group">
-                        <label style={{ float: 'left', width: '90%' }}>{obj.FileName}</label>
+                        <label style={{ float: 'left', width: '90%' }}><a href={obj.ServerRelativeUrl}><i
+                            style={{ marginRight: "5px" }}
+                            className='fa fa-file' ></i>{obj.FileName}</a></label>
                         <i className="far fa-times-circle" style={{ float: 'right', cursor: 'pointer' }} onClick={this.removeAttachment.bind(this, i)}></i>
                     </div>
                 )}
@@ -2344,241 +3283,242 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             </div> : null;
         return (
             // className="PanelContainer"
-            <div>
+            !this.state.isLoading ?
+                <div>
 
-                <Panel
-                    isOpen={this.state.showPanel}
-                    onDismiss={this._closePanel}
-                    type={PanelType.medium}
+                    <Panel
+                        isOpen={this.state.showPanel}
+                        onDismiss={this._closePanel}
+                        type={PanelType.medium}
 
-                >
-                    <div className="PanelContainer">
-                        <section className="main-content-section">
-                            <div className="row">
-                                <div className="col-sm-12 col-12">
-                                    <h3>Project Details</h3>
-                                    <form name="projectform" onSubmit={this.projectSubmit.bind(this)}>
-                                        <div className="row addSection">
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Project Name<span className="error">*</span></label>
-                                                    <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
-                                                        onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName}>
-                                                    </input>
-                                                    <span className="error">{this.state.errors["projectname"]}</span>
+                    >
+                        <div className="PanelContainer">
+                            <section className="main-content-section">
+                                <div className="row">
+                                    <div className="col-sm-12 col-12">
+                                        <h3 className="hbc-form-header">Project Details</h3>
+                                        <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
+                                            <div className="row addSection">
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <span className="error">* </span><label>Project Name</label>
+                                                        <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
+                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName}>
+                                                        </input>
+                                                        <span className="error">{this.state.errors["projectname"]}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Owner</label>
-                                                    <span className="calendar-style">
-                                                        {this._renderControlledPicker()}
-                                                    </span>
-                                                    <span className="error">{this.state.errors["ownername"]}</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div className="row addSection">
-                                            <div className="col-sm-12 col-12">
-                                                <div className="form-group">
-                                                    <label>Clone Project</label>
-                                                    <div>
-                                                        <Checkbox checked={this.state.fields["cloneproject"]} onChange={this.handleChange.bind(this, "cloneproject")} value={this.state.fields["cloneproject"]} />
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <label>Owner</label>
+                                                        <span className="calendar-style">
+                                                            {this._renderControlledPicker()}
+                                                        </span>
+                                                        <span className="error">{this.state.errors["ownername"]}</span>
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            {selectProjectContent}
-                                            {chechbox1Content}
-                                            {chechbox2Content}
-                                            {chechbox3Content}
-                                            {chechbox4Content}
-                                        </div>
-                                        <div className="row addSection">
-                                            <div className="col-sm-12 col-12">
-                                                <div className="form-group">
-                                                    <label>Project Description</label>
-                                                    <textarea ref="projectdescription" style={{ height: '50px !important' }} className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Brief the owner about the project"
-                                                        onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}></textarea>
-                                                    <span className="error">{this.state.errors["projectdescription"]}</span>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Start Date</label>
-                                                    <DatePicker
-                                                        placeholder="Select start date"
-                                                        onSelectDate={this.handleChange.bind(this, "startdate")}
-                                                        value={this.state.fields["startdate"]}
-                                                    />
-                                                    <span className="error">{this.state.errors["startdate"]}</span>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Due Date</label>
-                                                    <DatePicker
-                                                        placeholder="Select due date"
-                                                        onSelectDate={this.handleChange.bind(this, "duedate")}
-                                                        value={this.state.fields["duedate"]}
-                                                    />
-                                                    <span className="error">{this.state.errors["duedate"]}</span>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Project Status</label>
-                                                    <select ref="projectstatus" className={formControl + " " + (this.state.errorClass["projectstatus"] ? this.state.errorClass["projectstatus"] : '')}
-                                                        onChange={this.handleChange.bind(this, "projectstatus")} value={this.state.fields["projectstatus"]}>
-                                                        {this.state.statusList.map((obj) =>
-                                                            <option key={obj.Status} value={obj.Id}>{obj.Status}</option>
-                                                        )}
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Priority</label>
-                                                    <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
-                                                        <option>Low</option>
-                                                        <option>Medium</option>
-                                                        <option>High</option>
-                                                    </select>
-                                                    <span className="error">{this.state.errors["priority"]}</span>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Tags</label>
-                                                    <CreatableSelect
-                                                        isMulti
-                                                        onChange={this.handleChange2}
-                                                        options={this.state.tagOptions}
-                                                        value={this.state.fields["tags"]}
-                                                    />
-                                                    <span className="error">{this.state.errors["tags"]}</span>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Risk</label>
-                                                    <select className={formControl + " " + (this.state.errorClass["risk"] ? this.state.errorClass["risk"] : '')} ref="risk" onChange={this.handleChange.bind(this, "risk")} value={this.state.fields["risk"]}>
-                                                        <option>Low</option>
-                                                        <option>Medium</option>
-                                                        <option>High</option>
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Project Type</label>
-                                                    <div>
-                                                        <Checkbox checked={this.state.fields["departmentspecific"]} label="Department Specific" onChange={this.handleChange.bind(this, "departmentspecific")} value={this.state.fields["departmentspecific"]} />
+                                            <div className="row addSection">
+                                                <div className="col-sm-12 col-12">
+                                                    <div className="form-group">
+                                                        {/* <label>Clone Project</label> */}
+                                                        <div>
+                                                            <Checkbox label="Clone Project" checked={this.state.fields["cloneproject"]} onChange={this.handleChange.bind(this, "cloneproject")} value={this.state.fields["cloneproject"]} />
+                                                        </div>
                                                     </div>
                                                 </div>
+
+                                                {selectProjectContent}
+                                                {chechbox1Content}
+                                                {chechbox2Content}
+                                                {chechbox3Content}
+                                                {chechbox4Content}
                                             </div>
-                                            {/* department ID */}
-                                            {departmentContent}
-                                        </div>
-                                        <div className="row addSection">
-                                            {/* {statusContent} */}
-                                            <div className="col-lg-6">
-                                                <div className="form-group">
-                                                    <label>On Hold Status</label>
-                                                    {/* <select ref="status" className={formControl + " " + (this.state.errorClass["status"] ? this.state.errorClass["status"] : '')}
+                                            <div className="row addSection">
+                                                <div className="col-sm-12 col-12">
+                                                    <div className="form-group">
+                                                        <label>Project Description</label>
+                                                        <textarea ref="projectdescription" style={{ height: '50px !important' }} className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Brief the owner about the project"
+                                                            onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}></textarea>
+                                                        <span className="error">{this.state.errors["projectdescription"]}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <label>Start Date</label>
+                                                        <DatePicker
+                                                            placeholder="Select start date"
+                                                            onSelectDate={this.handleChange.bind(this, "startdate")}
+                                                            value={this.state.fields["startdate"]}
+                                                        />
+                                                        <span className="error">{this.state.errors["startdate"]}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <label>Due Date</label>
+                                                        <DatePicker
+                                                            placeholder="Select due date"
+                                                            onSelectDate={this.handleChange.bind(this, "duedate")}
+                                                            value={this.state.fields["duedate"]}
+                                                        />
+                                                        <span className="error">{this.state.errors["duedate"]}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <label>Project Status</label>
+                                                        <select ref="projectstatus" className={formControl + " " + (this.state.errorClass["projectstatus"] ? this.state.errorClass["projectstatus"] : '')}
+                                                            onChange={this.handleChange.bind(this, "projectstatus")} value={this.state.fields["projectstatus"]}>
+                                                            {this.state.statusList.map((obj) =>
+                                                                <option key={obj.Status} value={obj.Id}>{obj.Status}</option>
+                                                            )}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <label>Priority</label>
+                                                        <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
+                                                            <option>Low</option>
+                                                            <option>Medium</option>
+                                                            <option>High</option>
+                                                        </select>
+                                                        <span className="error">{this.state.errors["priority"]}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <label>Tags</label>
+                                                        <CreatableSelect
+                                                            isMulti
+                                                            onChange={this.handleChange2}
+                                                            options={this.state.tagOptions}
+                                                            value={this.state.fields["tags"]}
+                                                        />
+                                                        <span className="error">{this.state.errors["tags"]}</span>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <label>Risk</label>
+                                                        <select className={formControl + " " + (this.state.errorClass["risk"] ? this.state.errorClass["risk"] : '')} ref="risk" onChange={this.handleChange.bind(this, "risk")} value={this.state.fields["risk"]}>
+                                                            <option>Low</option>
+                                                            <option>Medium</option>
+                                                            <option>High</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <label>Project Type</label>
+                                                        <div>
+                                                            <Checkbox checked={this.state.fields["departmentspecific"]} label="Department Specific" onChange={this.handleChange.bind(this, "departmentspecific")} value={this.state.fields["departmentspecific"]} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                {/* department ID */}
+                                                {departmentContent}
+                                            </div>
+                                            <div className="row addSection">
+                                                {/* {statusContent} */}
+                                                <div className="col-lg-6">
+                                                    <div className="form-group">
+                                                        <label>On Hold Status</label>
+                                                        {/* <select ref="status" className={formControl + " " + (this.state.errorClass["status"] ? this.state.errorClass["status"] : '')}
                                                         onChange={this.handleChange.bind(this, "status")} value={this.state.fields["status"]}>
                                                         <option>On Hold</option>
                                                         <option>Resume </option>
                                                     </select> */}
-                                                    <Toggle
-                                                        checked={this.state.fields["status"]}
-                                                        defaultChecked={true}
-                                                        onText="On"
-                                                        offText="Off"
-                                                        onChanged={this.handleChange.bind(this, "status")}
-                                                        onFocus={() => console.log('onFocus called')}
-                                                        onBlur={() => console.log('onBlur called')}
-                                                    />
+                                                        <Toggle
+                                                            checked={this.state.fields["status"]}
+                                                            defaultChecked={false}
+                                                            onText="On"
+                                                            offText="Off"
+                                                            onChanged={this.handleChange.bind(this, "status")}
+                                                            onFocus={() => console.log('onFocus called')}
+                                                            onBlur={() => console.log('onBlur called')}
+                                                        />
+                                                    </div>
                                                 </div>
+                                                {statusDate}
                                             </div>
-                                            {statusDate}
-                                        </div>
-                                        <div className="row addSection">
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Reccuring Project?</label>
-                                                    <div>
-                                                        <Checkbox label="Yes" checked={this.state.fields["requringproject"]} onChange={this.handleChange.bind(this, "requringproject")} value={this.state.fields["requringproject"]} />
+                                            <div className="row addSection">
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <label>Reccuring Project?</label>
+                                                        <div>
+                                                            <Checkbox label="Yes" checked={this.state.fields["requringproject"]} onChange={this.handleChange.bind(this, "requringproject")} value={this.state.fields["requringproject"]} />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div className="col-sm-6 col-12">
+                                                    <div className="form-group">
+                                                        <label>Occurance</label>
+                                                        <select ref="occurance" className={formControl + " " + (this.state.errorClass["occurance"] ? this.state.errorClass["occurance"] : '')}
+                                                            onChange={this.handleChange.bind(this, "occurance")} value={this.state.fields["occurance"]}>
+                                                            <option>Daily</option>
+                                                            <option>Weekly </option>
+                                                            <option>Months</option>
+                                                        </select>
+                                                        <span className="error">{this.state.errors["occurance"]}</span>
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Occurance</label>
-                                                    <select ref="occurance" className={formControl + " " + (this.state.errorClass["occurance"] ? this.state.errorClass["occurance"] : '')}
-                                                        onChange={this.handleChange.bind(this, "occurance")} value={this.state.fields["occurance"]}>
-                                                        <option>Daily</option>
-                                                        <option>Weekly </option>
-                                                        <option>Months</option>
-                                                    </select>
-                                                    <span className="error">{this.state.errors["occurance"]}</span>
+                                            <div className="row addSection">
+                                                <div className="col-lg-6">
+                                                    <div className="form-group">
+                                                        <label>Project Outline</label>
+                                                        <div className="fileupload" data-provides="fileupload">
+                                                            <input ref="projectoutline" type="file" id="uploadFile"
+                                                                onChange={this.handleChange.bind(this, "projectoutline")} >
+                                                            </input>
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                                {attachmentDiv}
                                             </div>
-                                        </div>
-                                        <div className="row addSection">
-                                            <div className="col-lg-6">
-                                                <div className="form-group">
-                                                    <label>Project Outline</label>
-                                                    <div className="fileupload" data-provides="fileupload">
-                                                        <input ref="projectoutline" type="file" id="uploadFile"
-                                                            onChange={this.handleChange.bind(this, "projectoutline")} >
-                                                        </input>
+                                            <div className="row addSection">
+                                                <div className="col-sm-12 col-12">
+                                                    <div className="btn-sec">
+                                                        <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
+                                                        <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
                                                     </div>
                                                 </div>
                                             </div>
-                                            {attachmentDiv}
-                                        </div>
-                                        <div className="row addSection">
-                                            <div className="col-sm-12 col-12">
-                                                <div className="btn-sec">
-                                                    <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
-                                                    <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </form>
+                                        </form>
+                                    </div>
                                 </div>
-                            </div>
-                        </section>
-                    </div>
-                </Panel>
+                            </section>
+                        </div>
+                    </Panel>
 
-                <Modal
-                    show={this.state.showModal}
-                    onHide={this._closeModal}
-                    container={this}
-                    aria-labelledby="contained-modal-title"
-                    animation={false}
-                >
-                    <Modal.Header>
-                        <Modal.Title id="contained-modal-title">
-                            Project Created
+                    <Modal
+                        show={this.state.showModal}
+                        onHide={this._closeModal}
+                        container={this}
+                        aria-labelledby="contained-modal-title"
+                        animation={false}
+                    >
+                        <Modal.Header>
+                            <Modal.Title id="contained-modal-title">
+                                Project Created
                         </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        Project Created Successfully! Do you want to configure Project
+                        </Modal.Header>
+                        <Modal.Body>
+                            Project Created Successfully! Do you want to configure Project
     Schedule and Project Team now?
                     </Modal.Body>
-                    <Modal.Footer>
-                        <Button onClick={this._closeModal}>I'll Do it Later</Button>
-                        <Link to={`/viewProjectDetails/${this.state.savedProjectID}`}>
-                            <Button>Continue</Button>
-                        </Link>
+                        <Modal.Footer>
+                            <Button onClick={this._closeModal}>I'll Do it Later</Button>
+                            <Link to={`/viewProjectDetails/${this.state.savedProjectID}`}>
+                                <Button>Continue</Button>
+                            </Link>
 
-                    </Modal.Footer>
-                </Modal>
-            </div >
-
+                        </Modal.Footer>
+                    </Modal>
+                </div >
+                : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div>
         );
     }
 
@@ -2817,6 +3757,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     }}
                     //componentRef={this._resolveRef('_picker')}
                     resolveDelay={300}
+                    itemLimit={1}
                 />
                 {/* <label> Click to Add a person </label>
                 {controlledItems.map((item, index) => (

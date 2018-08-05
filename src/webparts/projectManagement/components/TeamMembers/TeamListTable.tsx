@@ -164,10 +164,15 @@ export default class ProjectListTable extends React.Component<
             );
     }
     actionTemplate(rowData, column) {
+        if(rowData.Status==="Active"){
         return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="fas fa-user-times"></i></a>;
+             }
+     else{
+            return<div style={{display : "none"}}></div>
+        }
     }
     editTemplate(rowData, column) {
-        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i>Edit  </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i></a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -176,6 +181,8 @@ export default class ProjectListTable extends React.Component<
         });
     }
     private deleteListItem(rowData,e):any {
+        var result = confirm("Are you sure you want to remove this member?");
+        if (result) {
         e.preventDefault();
            console.log('Edit :' + rowData);
            
@@ -189,11 +196,11 @@ export default class ProjectListTable extends React.Component<
             this.getAllProjectMemeber(this.props.list);
           });
        
-      
+        }
        }
     public render(): React.ReactElement<ITeamState> {
         return (
-            <div className="PanelContainer">
+            <div className="">
                 {/* <DataTableSubmenu /> */}
                 <div className="content-section implementation">
                     <h5>Team Members</h5>
@@ -207,14 +214,14 @@ export default class ProjectListTable extends React.Component<
                             Add Members
                         </button>
                         {this.state.showComponent ?
-                        <AddTeam id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
+                        <AddTeam id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} memberlist={this.state.projectList} /> :
                         null
                     }
                     </div>
                     
                     <div className="member-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
-                        <Column body={this.editTemplate}style={{ width: "8%" }} />
+                        <Column body={this.editTemplate}style={{ width: "8%", textAlign:"center" }} />
                             <Column field="AssignedTo" header="Name" sortable={true} body={this.ownerTemplate}style={{ width: "35%" }} />
 
                             <Column field="Start_x0020_Date" sortable={true} header="Assigned Date" body={this.duedateTemplate}style={{ width: "31%" }} />

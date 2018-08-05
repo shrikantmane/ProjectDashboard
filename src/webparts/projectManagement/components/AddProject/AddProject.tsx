@@ -34,12 +34,8 @@ import {
 } from 'office-ui-fabric-react/lib/Pickers';
 import { PrimaryButton } from 'office-ui-fabric-react/lib/Button';
 import { IPersonaWithMenu } from 'office-ui-fabric-react/lib/components/pickers/PeoplePicker/PeoplePickerItems/PeoplePickerItem.types';
-//import { people, mru } from './PeoplePickerExampleData';
 import { DefaultButton } from 'office-ui-fabric-react/lib/Button';
 import { Promise } from 'es6-promise';
-//code from ashwini
-
-
 
 //for react select
 import Select from 'react-select';
@@ -59,14 +55,9 @@ export const colourOptions = [
 ];
 
 const suggestionProps: IBasePickerSuggestionsProps = {
-    //suggestionsHeaderText: 'Suggested People',
-    // mostRecentlyUsedHeaderText: 'Suggested Contacts',
-    // noResultsFoundText: 'No results found',
     loadingText: 'Loading',
     showRemoveButtons: true,
     suggestionsAvailableAlertText: 'People Picker Suggestions available',
-    //suggestionsContainerAriaLabel: 'Suggested contacts',
-
 };
 const limitedSearchAdditionalProps: IBasePickerSuggestionsProps = {
     searchForMoreText: 'Load all Results',
@@ -107,19 +98,10 @@ export interface ICloneProjectData {
     OnHoldStatus: boolean;
     OnHoldDate: boolean;
     ScheduleList: string;
-    // Requirements: string;
-    // ProjectDocument: string;
-    // ProjectCalender: string;
     CalendarList: string;
     DocumentList: string;
     RequirementsList: string;
 }
-// export interface IListIDs {
-//     ProjectList: string;
-//     ProjectStatusColor: string;
-//     TaskStatusColor: string;
-//     Departments: string;
-// }
 export interface IRoleAssignments {
     RoleId: string;
     RoleName: string;
@@ -144,10 +126,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     inputValue: any,
     value: any,
     tagOptions: any,
-    // added code from ashwini
-    // ViewersGroupId: string,
-    // ContributersGroupId: string,
-    // OwnersGroupId: string,
     HBCOwner: IHBCOwner[],
     CloneProjectData: ICloneProjectData[],
     ProjectList: string;
@@ -161,7 +139,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     public ViewersGroupId: string | number;
     public ContributersGroupId: string | number;
     public OwnersGroupId: string | number;
-    //for permission
     public TaskObj: any;
     public ScheduleObj: any;
     public TaskCommentObj: any;
@@ -184,6 +161,10 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     public ProjectCommentsHistory = "_Project_Comments_History";
     public TaskComments = "_Task_Comments";
     public TaskCommentsHistory = "_Task_Comments_History";
+    public HBCAdminGrpID: string | number;
+    public DepartmentHeadGrpID: string | number;
+    public CEO_COOGrpID: string | number;
+    public ProjectOwnerGrpID: string | number;
 
 
     constructor(props) {
@@ -209,10 +190,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             inputValue: '',
             value: [],
             tagOptions: [],
-            // added code from ashwini
-            // ViewersGroupId: '',
-            // ContributersGroupId: '',
-            // OwnersGroupId: '',
             HBCOwner: [],
             CloneProjectData: [],
             ProjectList: '',
@@ -226,7 +203,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         this.handleBlurOnProjectName = this.handleBlurOnProjectName.bind(this);
     }
     componentDidMount() {
-
+    
         this._getAllSiteUsers();
         this.getAllProject();
         this.getStatusList();
@@ -243,74 +220,17 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             })
         }
 
+      
         // Added by Ashwini
         this.GetRoleDefinations();
         this.GetUsersFromHBCOwnerGroup();
         this.getListIDs();
+        this.getGroupID();
     }
     componentWillReceiveProps(nextProps) {
 
     }
 
-    private getListIDs() {
-
-        sp.web.lists.getByTitle('Project').get()
-            .then(result => {
-                this.setState({
-                    ProjectList: "'{" + result.Id + "}'"
-                });
-
-                sp.web.lists.getByTitle('Task Status Color').get()
-                    .then(result => {
-                        this.setState({
-                            TaskStatusColor: "'{" + result.Id + "}'"
-                        });
-
-                    }).catch(err => {
-                        console.log("Error while getting ID of Task Status Color List.", err);
-                    });
-
-            }).catch(err => {
-                console.log("Error while getting ID of Project List.", err);
-            });
-
-    }
-
-    // Get All Role Definations  
-    private GetRoleDefinations() {
-        let reactHandler = this;
-
-        sp.web.roleDefinitions.get().then(result => {
-            for (let i = 0; i < result.length; i++) {
-                let id = result[i].Id;
-                let name = result[i].Name;
-
-                reactHandler.setState(prevState => ({
-                    roleAssignments: [...prevState.roleAssignments, { RoleId: id, RoleName: name }]
-                }));
-            }
-        }).catch(function (err) {
-            console.log("Error: " + err);
-        });
-    }
-
-    // Get Users Form HBC Owners Group
-    private GetUsersFromHBCOwnerGroup() {
-        let reactHandler = this;
-        sp.web.siteGroups.getByName('HBC Dev Site Owners').users.get().then(function (result) {
-            for (var i = 0; i < result.length; i++) {
-                let ownerName = result[i].Title;
-                let ownerId = result[i].Id;
-                let loginName = result[i].LoginName;
-
-                reactHandler.setState(prevState => ({
-                    HBCOwner: [...prevState.HBCOwner, { OwnerName: ownerName, OwnerId: ownerId, LoginName: loginName }]
-                }));
-            }
-        }).catch(function (err) {
-            console.log("Group not found: " + err);
-        });
-    }
     getAllProjectTags() {
         sp.web.lists.getByTitle("Project Tags").items
             .select("Projects/ID", "Tag").expand("Projects")
@@ -601,37 +521,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     });
                 });
             } else {
-                // sp.web.lists.getByTitle("Project").items.add({
-                //     Project: obj.projectname ? obj.projectname : '',
-                //     StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
-                //     DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
-                //     AssignedToId: { results: obj.ownername },
-                //     Priority: obj.priority ? obj.priority : 'Low',
-                //     Body: obj.projectdescription ? obj.projectdescription : '',
-                //     ProTypeDeptSpecific: obj.departmentspecific ? obj.departmentspecific : false,
-                //     Recurring_x0020_Project: obj.requringproject ? obj.requringproject : false,
-                //     Occurance: obj.occurance ? obj.occurance : 'Daily',
-                //     Clone_x0020_Project: obj.cloneproject ? obj.cloneproject : false,
-                //     Clone_x0020_Documents: obj.clonedocuments ? obj.clonedocuments : false,
-                //     Clone_x0020_Requirements: obj.clonerequirements ? obj.clonerequirements : false,
-                //     Clone_x0020_Schedule: obj.cloneschedule ? obj.cloneschedule : false,
-                //     Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
-                //     //DepartmentId: 2,
-                //     //Status0Id: 2
-
-                // }).then((response) => {
-                //     console.log('Item adding-', response);
-                //     this.setState({ isDataSaved: true });
-                //     this.state.fields['tags'].forEach(element => {
-                //         this.addProjectTagByTagName(element.value, response.data.Id);
-                //     });
-                //     // this._closePanel();
-                //     // this._showModal();
-                // });
-
                 this.CreateProjectGroup();
-                // this._closePanel();
-                // this._showModal();
             }
         } else {
             console.log("Form has errors.")
@@ -639,428 +529,99 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
     // Added new Code from Ashwini
 
-    private CreateProjectGroup() {
-        // let ProName = this.state.value;
-        let ProName = this.state.fields['projectname'];
-        let OwnersGroup = ProName + " Owners";
-        let ContributersGroup = ProName + " Contributers";
-        let ViewersGroup = ProName + " Viewers";
-        let reactHandler = this;
-        // Viewers
-        sp.web.siteGroups.add({
-            Title: ViewersGroup
-        }).then(function (result) {
-            console.log(ViewersGroup, " created !");
-            // reactHandler.setState({
-            //     ViewersGroupId: result.data.Id
-            // });
-            reactHandler.ViewersGroupId = result.data.Id;
-            // Contributers
-            sp.web.siteGroups.add({
-                Title: ContributersGroup
-            }).then(function (result) {
-                console.log(ContributersGroup, " created !");
-                // reactHandler.setState({
-                //     ContributersGroupId: result.data.Id
-                // });
-                reactHandler.ContributersGroupId = result.data.Id;
-                // Owners
-                sp.web.siteGroups.add({
-                    Title: OwnersGroup
-                }).then(function (result) {
-                    console.log(OwnersGroup, " created !");
-                    // reactHandler.setState({
-                    //     OwnersGroupId: result.data.Id
-                    // });
-                    reactHandler.OwnersGroupId = result.data.Id;
-                    //Add User to group
-                    reactHandler.AddHBCUsersToGroup(OwnersGroup, ProName);
-                    // Add Item to project list & other list creation
-                    let projectName = ProName.split(' ').join('_');
-                    //if (reactHandler.state.fields['cloneproject'] !== true) {
-                    reactHandler.CreateNewProject(projectName);
-                    // }
-                    // else {
-                    //     reactHandler.getProjectDetails(projectName);
-                    // }
-                }).catch(e => {
-                    console.log("Error while creating " + OwnersGroup + " group: " + e);
+    // get list id for lookup column
+    private getListIDs() {
+
+        sp.web.lists.getByTitle('Task Status Color').get()
+            .then(result => {
+                this.setState({
+                    TaskStatusColor: "'{" + result.Id + "}'"
                 });
-            }).catch(e => {
-                console.log("Error while creating " + ContributersGroup + " group: " + e);
+
+            }).catch(err => {
+                console.log("Error while getting ID of Task Status Color List.", err);
             });
-        }).catch(e => {
-            console.log("Error while creating " + ViewersGroup + " group: " + e);
+
+    }
+
+    // Get All Role Definations  
+    private GetRoleDefinations() {
+        let reactHandler = this;
+
+        sp.web.roleDefinitions.get().then(result => {
+            for (let i = 0; i < result.length; i++) {
+                let id = result[i].Id;
+                let name = result[i].Name;
+
+                reactHandler.setState(prevState => ({
+                    roleAssignments: [...prevState.roleAssignments, { RoleId: id, RoleName: name }]
+                }));
+            }
+        }).catch(function (err) {
+            console.log("Error: " + err);
         });
     }
 
-    private AddHBCUsersToGroup(groupName, ProName) {
+    // Get Users Form HBC Owners Group
+    private GetUsersFromHBCOwnerGroup() {
         let reactHandler = this;
-        // add HBCOwner
-        for (var i = 0; i < this.state.HBCOwner.length; i++) {
-            let loginName = this.state.HBCOwner[i].LoginName
+        sp.web.siteGroups.getByName('HBC Admin').users.get().then(function (result) {
+            for (var i = 0; i < result.length; i++) {
+                let ownerName = result[i].Title;
+                let ownerId = result[i].Id;
+                let loginName = result[i].LoginName;
 
-            sp.web.siteGroups.getByName(groupName).users.add(loginName)
-                .then(function (d) {
-                    console.log("HBCOwner added");
+                reactHandler.setState(prevState => ({
+                    HBCOwner: [...prevState.HBCOwner, { OwnerName: ownerName, OwnerId: ownerId, LoginName: loginName }]
+                }));
+            }
+        }).catch(function (err) {
+            console.log("Group not found: " + err);
+        });
+    }
 
-                }).catch(e => {
-                    console.log("error while adding HBCOwner " + loginName + " to owner group");
+    // get group IDs by group name
+    private getGroupID() {
+        let reactHandler = this;
+        sp.web.siteGroups.getByName("HBC Admin").get().then(function (result) {
+            reactHandler.HBCAdminGrpID = result.Id;
+            sp.web.siteGroups.getByName("Department Head").get().then(function (result) {
+                reactHandler.DepartmentHeadGrpID = result.Id;
+                sp.web.siteGroups.getByName("CEO_COO").get().then(function (result) {
+                    reactHandler.CEO_COOGrpID = result.Id;
+                    sp.web.siteGroups.getByName("Project Owner").get().then(function (result) {
+                        reactHandler.ProjectOwnerGrpID = result.Id;
+                    });
                 });
-        }
-    }
-    private AddPermissionsToTaskList(ListName, ProName) {
-
-        this.TaskObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.TaskObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.TaskObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.TaskObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
+            });
         });
     }
 
-    private AddPermissionsToScheduleList(ListName, ProName) {
-
-        this.ScheduleObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.ScheduleObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.ScheduleObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.ScheduleObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
-
-
-    private AddPermissionsToTaskCommentList(ListName, ProName) {
-
-        this.TaskCommentObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.TaskCommentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.TaskCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.TaskCommentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
-
-
-    private AddPermissionsToTaskCommentHisList(ListName, ProName) {
-
-        this.TaskCommentHisObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.TaskCommentHisObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.TaskCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.TaskCommentHisObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
-
-    private AddPermissionsToProjectCommentList(ListName, ProName) {
-
-        this.ProjectCommentObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.ProjectCommentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.ProjectCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.ProjectCommentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
-
-
-    private AddPermissionsToProjectCommentHisList(ListName, ProName) {
+    private CreateProjectGroup() {
+        let ProName = this.state.fields['projectname'];
+        let ContributersGroup = ProName + " Contributers";
         let reactHandler = this;
 
-        this.ProjectCommentHisObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.ProjectCommentHisObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.ProjectCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.ProjectCommentHisObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                        reactHandler.cloneListItems(ProName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
-
-
-    private AddPermissionsToDocumentList(ListName, ProName) {
-
-        this.DocumentObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.DocumentObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.DocumentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.DocumentObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
-
-
-
-    private AddPermissionsToTeamMemberList(ListName, ProName) {
-
-        this.TeamMemberObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.TeamMemberObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.TeamMemberObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.TeamMemberObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
-
-    private AddPermissionsToRequirementList(ListName, ProName) {
-
-        this.RequirementObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.RequirementObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.RequirementObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.RequirementObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
-
-    private AddPermissionsToProjectInfoList(ListName, ProName) {
-
-        this.ProjectInfoObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.ProjectInfoObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.ProjectInfoObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.ProjectInfoObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
-        });
-    }
-
-    private AddPermissionsToProjectCalendarList(ListName, ProName) {
-
-        this.ProjectCalendarObj.breakRoleInheritance().then(res => {
-            console.log("breakRoleInheritance for - ", ListName);
-
-            this.ProjectCalendarObj.roleAssignments.add(this.OwnersGroupId, 1073741829).then(res => {
-                console.log(ProName, " Owners - permissions added for -", ListName);
-
-                this.ProjectCalendarObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => {
-                    console.log(ProName, " Contributers - permissions added", ListName);
-
-                    this.ProjectCalendarObj.roleAssignments.add(this.ViewersGroupId, 1073741924).then(res => {
-                        console.log(ProName, " View Only - permissions added", ListName);
-
-                    }).catch(err => {
-                        console.log("Error while creating ", ProName, " View Only ");
-                    });// View Only
-
-                }).catch(err => {
-                    console.log("Error while creating ", ProName, " Contributers ");
-                });// Contribute
-
-            }).catch(err => {
-                console.log("Error while creating ", ProName, " Owners ");
-            });; // Owners
-
-        }).catch(err => {
-            console.log("Error while breakRoleInheritance for list - ", ListName)
+        // Contributers
+        sp.web.siteGroups.add({
+            Title: ContributersGroup
+        }).then(function (result) {
+            console.log(ContributersGroup, " created !");
+            reactHandler.ContributersGroupId = result.data.Id;
+            // Add Item to project list & other list creation
+            let projectName = ProName.split(' ').join('_');
+            if (reactHandler.state.fields['cloneproject'] !== true) {
+                reactHandler.CreateNewProject(projectName);
+            }
+            else {
+                reactHandler.getProjectDetails(projectName);
+            }
+        }).catch(e => {
+            console.log("Error while creating " + ContributersGroup + " group: " + e);
         });
     }
 
     private getProjectDetails(ProName) {
-        // let filter = "ID eq 175";
         let filter = "Project eq " + "'" + this.state.fields['project'] + "'";
 
         let ScheduleList;
@@ -1071,8 +632,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         sp.web.lists.getByTitle("Project").items
             .filter(filter)
-            //.select("ID", "Project", "Schedule_x0020_List", "Requirements", "Project_x0020_Document", "Project_x0020_Calender")
-            //  "Department",
             .select("ID", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "PercentComplete", "AssignedTo/ID", "AssignedTo/Title",
                 "StartDate", "DueDate", "Body", "Priority", "ProTypeDeptSpecific", "Recurring_x0020_Project", "Occurance", "Parent",
                 "IsActive", "On_x0020_Hold_x0020_Status", "On_x0020_Hold_x0020_Date", "Schedule_x0020_List", "Requirements", "Project_x0020_Document",
@@ -1081,8 +640,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             .filter(filter)
             .getAll()
             .then((response) => {
-                //console.log('getProjectDetails', response[0].Schedule_x0020_List);
-
                 let ID = response[0].ID;
                 let Department = response[0].Department;
                 let Status0 = response[0].Status0;
@@ -1114,15 +671,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         ScheduleList: ScheduleList, DocumentList: DocumentList, RequirementsList: RequirementsList, CalendarList: CalendarList
                     }]
                 }));
-
-                // reactHandler.setState(prevState => ({
-                //     CloneProjectData: [...prevState.CloneProjectData, {
-                //         ScheduleList: ScheduleList, DocumentList: DocumentList, RequirementsList: RequirementsList, CalendarList: CalendarList
-                //     }]
-                // }));
-
-
-
                 reactHandler.CreateCloneProject(ProName);
 
             }).catch(err => {
@@ -1163,12 +711,10 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Clone_x0020_Requirements: obj.clonerequirements ? obj.clonerequirements : false,
             Clone_x0020_Schedule: obj.cloneschedule ? obj.cloneschedule : false,
             Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
-
             Task_x0020_List: TaskListClmn,
             Schedule_x0020_List: ScheduleListClmn,
             Project_x0020_Document: ProjectDocumentClmn,
             Requirements: RequirementsClmn,
-            //Project_x0020_Tags: ProjectTags,
             Project_x0020_Team_x0020_Members: ProjectTeamMembersClmn,
             Project_x0020_Infromation: ProjectInfoClmn,
             Project_x0020_Calender: ProjectCalClmn,
@@ -1200,6 +746,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         // add an item to the list  
         sp.web.lists.getByTitle("Project").items.add({
+            
+            Title: "No Title",
             Project: ProName.split('_').join(' '),
             StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
             DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
@@ -1216,14 +764,10 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
             Status0Id: obj.projectstatus ? obj.projectstatus : 1,
             Risks: obj.risk ? obj.risk : 'Low',
-
-            Title: "No Title",
-
             Task_x0020_List: TaskListClmn,
             Schedule_x0020_List: ScheduleListClmn,
             Project_x0020_Document: ProjectDocumentClmn,
             Requirements: RequirementsClmn,
-            //Project_x0020_Tags: ProjectTags,
             Project_x0020_Team_x0020_Members: ProjectTeamMembersClmn,
             Project_x0020_Infromation: ProjectInfoClmn,
             Project_x0020_Calender: ProjectCalClmn,
@@ -1244,20 +788,15 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
 
     private CreateTaskList(ProName) {
-        //let spWeb = new Web(this.context.pageContext.site.absoluteUrl);
         let spEnableCT = false;
         let reactHandler = this;
         let TaskList = ProName + this.TaskList;
         let TaskListDesc = TaskList + " Description";
         let TaskTemplateId = 171;
 
-
         sp.web.lists.add(TaskList, TaskListDesc, TaskTemplateId, spEnableCT).then(function (splist) {
             console.log(TaskList, " created successfuly !");
-
             reactHandler.AddTaskListColumns(TaskList, ProName, sp.web, spEnableCT, splist.list);
-
-
         }).catch(err => {
             console.log("Error while creating task List, Error -", err);
         });
@@ -1265,16 +804,10 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
 
     private AddTaskListColumns(ListName, ProName, spWeb, spEnableCT, list) {
-
-
         let ScheduleList = ProName + this.ScheduleList;
         this.TaskObj = list;
 
-        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + `/>`;
-        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
-        //     console.log("Project created in list ", ListName);
-
-        let Status = `<Field Name="Status" DisplayName="Status" Type="Lookup" Required="FALSE" ShowField="Status" List=` + this.state.TaskStatusColor + ` />`;
+let Status = `<Field Name="Status" DisplayName="Status" Type="Lookup" Required="FALSE" ShowField="Status" List=` + this.state.TaskStatusColor + ` />`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Status).then(res => {
             console.log("Status created in list ", ListName);
 
@@ -1285,6 +818,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
                     console.log("Comment created in list ", ListName);
+
                     this.AddPermissionsToTaskList(ListName, ProName);
                     this.CreateScheduleList(ScheduleList, ProName, spWeb, spEnableCT);
 
@@ -1299,9 +833,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         }).catch(err => {
             console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
         }); //Status
-        // }).catch(err => {
-        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
-        // }); //Project
     }
 
 
@@ -1309,8 +840,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         let reactHandler = this;
         let ScheduleListDesc = ScheduleList + " Description";
         let TaskTemplateId = 171;
-
-
         spWeb.lists.add(ScheduleList, ScheduleListDesc, TaskTemplateId, spEnableCT).then(function (splist) {
             console.log(ScheduleList, " created successfuly !");
             let ScheduleListID = "'{" + splist.data.Id + "}'";
@@ -1322,16 +851,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
 
     private AddScheduleListIDColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID, list) {
-
-
         let TaskComments = ProName + this.TaskComments;
         this.ScheduleObj = list;
-
-
-        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + `/>`;
-        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
-        //     console.log("Project created in list ", ListName);
-
         let Status = `<Field Name="Status" DisplayName="Status" Type="Lookup" Required="FALSE" ShowField="Status" List=` + this.state.TaskStatusColor + ` />`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Status).then(res => {
             console.log("Status created in list ", ListName);
@@ -1357,9 +878,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         }).catch(err => {
             console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
         }); //Status
-        // }).catch(err => {
-        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
-        // }); //Project
     }
 
     private CreateTaskComments(TaskComments, ProName, spWeb, spEnableCT, ScheduleListID) {
@@ -1377,10 +895,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         });
     }
 
-
     private AddTaskCommentsColumns(ListName, ProName, spWeb, spEnableCT, ScheduleListID, TaskCommentsID, list) {
-
-
         let TaskCommentsHistory = ProName + this.TaskCommentsHistory;
         this.TaskCommentObj = list;
 
@@ -1434,7 +949,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
                     console.log("IsDeleted created in list ", ListName);
-
                     this.AddPermissionsToTaskCommentHisList(ListName, ProName);
                     this.CreateProjectDocument(ProName, ProjectDocument, spWeb, spEnableCT);
                 }).catch(err => {
@@ -1469,25 +983,14 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         let Requirements = ProName + this.Requirements;
 
         this.DocumentObj = list;
-
-        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
-        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
-        //     console.log("Project created in list ", ListName);
-
         let Owner = `<Field Name='Owner' StaticName='Owner' DisplayName='Owner' Type='User'/>`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Owner).then(res => {
             console.log("Owner created in list ", ListName);
-
             this.AddPermissionsToDocumentList(ListName, ProName);
             this.CreateRequirements(ProName, Requirements, spWeb, spEnableCT);
-
         }).catch(err => {
             console.log("Error while creating column Owner - ", " in list -", ListName, " Error -", err);
         }); //Owner
-
-        // }).catch(err => {
-        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
-        // }); //Project
     }
 
     private CreateRequirements(ProName, Requirements, spWeb, spEnableCT) {
@@ -1497,7 +1000,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         spWeb.lists.add(Requirements, RequirementsDesc, RequirementsTemplateId, spEnableCT).then(function (splist) {
             console.log(Requirements, " created successfuly !");
-            // reactHandler.AddRequirementColumns(Requirements);
             reactHandler.AddRequirementColumns(Requirements, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
             console.log("Error while creating Requirement List, Error -", err);
@@ -1506,16 +1008,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
     // private AddRequirementColumns(ListName){
     private AddRequirementColumns(ListName, ProName, spWeb, spEnableCT, list) {
-
-
         let ProjectTeamMembers = ProName + this.ProjectTeamMembers;
-
         this.RequirementObj = list;
-
-        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
-        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
-        //     console.log("Project created in list ", ListName);
-
         let Requirement = `<Field Name='Requirement' StaticName='Requirement' DisplayName='Requirement' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Requirement).then(res => {
             console.log("Requirement created in list ", ListName);
@@ -1543,11 +1037,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Resources).then(res => {
                             console.log("Resources created in list ", ListName);
 
-                            let ImpactOnTimelines = `<Field Name='ImpactonTimelines' StaticName='ImpactonTimelines' DisplayName='Impact on Timelines' Type='Boolean'><Default>0</Default></Field>`;
+                            let ImpactOnTimelines = `<Field Name='ImpactonTimelines' StaticName='ImpactonTimelines' DisplayName='Impact On Timelines' Type='Boolean'><Default>0</Default></Field>`;
                             sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(ImpactOnTimelines).then(res => {
                                 console.log("ImpactOnTimelines created in list ", ListName);
-
-
                                 this.AddPermissionsToRequirementList(ListName, ProName);
                                 this.CreateProjectTeamMembers(ProName, ProjectTeamMembers, spWeb, spEnableCT);
                             }).catch(err => {
@@ -1573,10 +1065,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         }).catch(err => {
             console.log("Error while creating column Requirement - ", " in list -", ListName, " Error -", err);
         }); //Requirement
-        // }).catch(err => {
-        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
-        // }); //Project
-
     }
 
     private CreateProjectTeamMembers(ProName, ProjectTeamMembers, spWeb, spEnableCT) {
@@ -1594,15 +1082,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
     // private AddTeamMemberColumns(ListName){
     private AddTeamMemberColumns(ListName, ProName, spWeb, spEnableCT, list) {
-
         let ProjectInfo = ProName + this.ProjectInfo;
-
         this.TeamMemberObj = list;
-
-        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
-        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
-        //     console.log("Project created in list ", ListName);
-
         let TeamMember = `<Field Name='TeamMember' StaticName='TeamMember' DisplayName='Team Member' Type='User'/>`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(TeamMember).then(res => {
             console.log("TeamMember created in list ", ListName);
@@ -1643,11 +1124,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         }).catch(err => {
             console.log("Error while creating column TeamMember - ", " in list -", ListName, " Error -", err);
         }); //TeamMember
-
-        // }).catch(err => {
-        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
-        // }); //Project
-
     }
 
     private CreateProjectInfo(ProName, ProjectInfo, spWeb, spEnableCT) {
@@ -1665,15 +1141,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
     // private AddProjectInfoColumns(ListName){
     private AddProjectInfoColumns(ListName, ProName, spWeb, spEnableCT, list) {
-
         let ProjectCal = ProName + this.ProjectCal;
-
         this.ProjectInfoObj = list;
-
-        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
-        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
-        //     console.log("Project created in list ", ListName);
-
         let Owner = `<Field Name='Owner' StaticName='Owner' DisplayName='Owner' Type='User'/>`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Owner).then(res => {
             console.log("Owner created in list ", ListName);
@@ -1692,10 +1161,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         }).catch(err => {
             console.log("Error while creating column Owner - ", " in list -", ListName, " Error -", err);
         }); //Owner
-
-        // }).catch(err => {
-        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
-        // }); //Project
     }
 
     private CreateProjectCalender(ProName, ProjectCalender, spWeb, spEnableCT) {
@@ -1707,32 +1172,13 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         spWeb.lists.add(ProjectCalender, ProjectCalenderDesc, ProjectCalenderTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectCalender, " created successfuly !");
-            //reactHandler.AddProjectCalColumns(ProjectCalender, ProName, spWeb, spEnableCT);
             reactHandler.ProjectCalendarObj = splist.list;
             reactHandler.AddPermissionsToProjectCalendarList(ProjectCalender, ProName);
             reactHandler.CreateProjectComments(ProjectComments, ProName, spWeb, spEnableCT);
-            //reactHandler.AddPermissionsToList(ProjectCalender, ProName, splist.list);
         }).catch(err => {
             console.log("Error while creating Project Calender List, Error -", err);
         });
     }
-
-    // // private AddProjectCalColumns(ListName){
-    // private AddProjectCalColumns(ListName, ProName, spWeb, spEnableCT) {
-    //     let ProjectComments = ProName + " Project Comments";
-
-    //     let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
-    //     sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
-    //         console.log("Project created in list ", ListName);
-    //         this.CreateProjectComments(ProjectComments, ProName, spWeb, spEnableCT);
-    //     }).catch(err => {
-    //         console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
-    //     }); //Project
-
-    //     console.log("Operation Done!!!!");
-    // }
-
-    //Methods Added by ankit starts
 
     private CreateProjectComments(ProjectComments, ProName, spWeb, spEnableCT) {
         var reactHandler = this;
@@ -1749,15 +1195,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
 
     private AddProjectCommentsColumns(ListName, ProName, spWeb, spEnableCT, ProjectListID, list) {
-
         let ProjectCommentsHistory = ProName + this.ProjectCommentsHistory;
-
         this.ProjectCommentObj = list;
-
-        // let Project = `<Field Name="Project" DisplayName="Project" Type="Lookup" Required="FALSE" ShowField="Project" List=` + this.state.ProjectList + ` />`;
-        // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
-        //     console.log("Project created in list ", ListName);
-
         let Comment = `<Field Name='Comment' StaticName='Comment' DisplayName='Comment' Type='Note' NumLines='6' RichText='FALSE' Sortable='FALSE' />`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Comment).then(res => {
             console.log("Comment created in list ", ListName);
@@ -1781,9 +1220,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         }).catch(err => {
             console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
         }); //Comment
-        // }).catch(err => {
-        //     console.log("Error while creating column Project - ", " in list -", ListName, " Error -", err);
-        // }); //Project
     }
 
     private CreateProjectCommentHistory(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID) {
@@ -1794,8 +1230,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         spWeb.lists.add(ProjectCommentsHistory, ProjectCommentsHistoryDesc, ProjectCommentsHistoryTemplateId, spEnableCT).then(function (splist) {
             console.log(ProjectCommentsHistory, " created successfuly !");
             reactHandler.AddProjectCommentsHistoryColumns(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID, splist.list);
-
-            //reactHandler.cloneListItems(ProName);
         }).catch(err => {
             console.log("Error while creating Project Comments History List, Error -", err);
         });
@@ -1817,9 +1251,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 let IsDeleted = `<Field Name='IsDeleted' StaticName='IsDeleted' DisplayName='IsDeleted' Type='Boolean'><Default>0</Default></Field>`;
                 sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(IsDeleted).then(res => {
                     console.log("IsDeleted created in list ", ListName);
-
                     this.AddPermissionsToProjectCommentHisList(ListName, ProName);
-
                 }).catch(err => {
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
                 }); //IsDeleted
@@ -1833,48 +1265,546 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         }); //CommentID
     }
 
-    private cloneListItems(ProName) {
+    // Add permissions to list
+    private AddPermissionsToTaskList(ListName, ProName) {
+        this.TaskObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
 
-        //if (this.state.isCalender === true) {
-        //    this.getCalenderItems(this.state.CloneProject + " Project Calender", ProName + " Project Calender");
-        //}
-        //if (this.state.isRequirement === true) {
-        //    this.getRequirementItems(this.state.CloneProject + " Requirements",ProName + " Requirements");
-        //}
-        //if (this.state.isSchedule === true) {
-        //    this.getScheduleItems(this.state.CloneProject + " Schedule List",ProName + " Schedule List");
-        //}
-        //if (this.state.isDocument === true) {
-        //    this.copyDocumentListItems(this.state.CloneProject + " Project Document",ProName + " Project Document");
-        //}
+            this.TaskObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TaskObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TaskObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.TaskObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.TaskObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToScheduleList(ListName, ProName) {
+
+        this.ScheduleObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ScheduleObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ScheduleObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ScheduleObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.ScheduleObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.ScheduleObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+    private AddPermissionsToTaskCommentList(ListName, ProName) {
+
+        this.TaskCommentObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.TaskCommentObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TaskCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TaskCommentObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.TaskCommentObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.TaskCommentObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+    private AddPermissionsToTaskCommentHisList(ListName, ProName) {
+
+        this.TaskCommentHisObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.TaskCommentHisObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TaskCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TaskCommentHisObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.TaskCommentHisObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.TaskCommentHisObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToProjectCommentList(ListName, ProName) {
+
+        this.ProjectCommentObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectCommentObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectCommentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectCommentObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.ProjectCommentObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.ProjectCommentObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+
+    private AddPermissionsToDocumentList(ListName, ProName) {
+
+        this.DocumentObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.DocumentObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.DocumentObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.DocumentObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.DocumentObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.DocumentObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+
+    private AddPermissionsToTeamMemberList(ListName, ProName) {
+
+        this.TeamMemberObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.TeamMemberObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.TeamMemberObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.TeamMemberObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.TeamMemberObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.TeamMemberObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToRequirementList(ListName, ProName) {
+
+        this.RequirementObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.RequirementObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.RequirementObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.RequirementObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.RequirementObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.RequirementObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToProjectInfoList(ListName, ProName) {
+
+        this.ProjectInfoObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectInfoObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectInfoObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectInfoObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.ProjectInfoObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.ProjectInfoObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    private AddPermissionsToProjectCalendarList(ListName, ProName) {
+
+        this.ProjectCalendarObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectCalendarObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectCalendarObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectCalendarObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.ProjectCalendarObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.ProjectCalendarObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+
+    private AddPermissionsToProjectCommentHisList(ListName, ProName) {
+        let reactHandler = this;
+
+        this.ProjectCommentHisObj.breakRoleInheritance().then(res => {
+            console.log("breakRoleInheritance for - ", ListName);
+
+            this.ProjectCommentHisObj.roleAssignments.add(this.HBCAdminGrpID, 1073741829).then(res => { // 1073741829 - full controll 
+                console.log(ProName, " Owners - permissions added for -", ListName);
+
+                this.ProjectCommentHisObj.roleAssignments.add(this.ContributersGroupId, 1073741827).then(res => { // 1073741827 - Contribute
+                    console.log(ProName, " Contributers - permissions added", ListName);
+
+                    this.ProjectCommentHisObj.roleAssignments.add(this.DepartmentHeadGrpID, 1073741924).then(res => { // 1073741924 - view only
+                        console.log(ProName, " View Only - permissions added", ListName);
+
+                        this.ProjectCommentHisObj.roleAssignments.add(this.CEO_COOGrpID, 1073741924).then(res => { // 1073741924 - view only
+                            console.log(ProName, " View Only - permissions added", ListName);
+
+                            this.ProjectCommentHisObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
+                                console.log(ProName, " View Only - permissions added", ListName);
+
+                                reactHandler.cloneListItems(ProName);
+
+                            }).catch(err => {
+                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                            });// ProjectOwnerGrp
+
+                        }).catch(err => {
+                            console.log("Error while adding permissions - CEO_COOGrp ");
+                        });// CEO_COOGrp
+
+                    }).catch(err => {
+                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                    });// DepartmentHeadGrp
+
+                }).catch(err => {
+                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                });// ContributersGroup
+
+            }).catch(err => {
+                console.log("Error while adding permissions -  HBCAdminGrp");
+            });; // HBCAdminGrp
+
+        }).catch(err => {
+            console.log("Error while breakRoleInheritance for list - ", ListName)
+        });
+    }
+
+    // Add permission to list end 
+
+    // Clone list items
+    private cloneListItems(ProName) {
         let flag = false;
+        let oldProject = (this.state.fields['project']).split(' ').join('_');
         if (this.state.fields['clonecalender'] === true) {
             flag = true;
-            this.getCalenderItems(this.state.fields['project'] + " Project Calender", ProName + " Project Calender");
+            this.getCalenderItems(oldProject + this.ProjectCal, ProName + this.ProjectCal);
         }
         if (this.state.fields['clonerequirements'] === true) {
             flag = true;
-            this.getRequirementItems(this.state.fields['project'] + " Requirements", ProName + " Requirements");
+            this.getRequirementItems(oldProject + this.Requirements, ProName + this.Requirements);
         }
         if (this.state.fields['cloneschedule'] === true) {
             flag = true;
-            this.getScheduleItems(this.state.fields['project'] + " Schedule List", ProName + " Schedule List");
+            this.getScheduleItems(oldProject + this.ScheduleList, ProName + this.ScheduleList);
         }
         if (this.state.fields['clonedocuments'] === true) {
             flag = true;
-            this.copyDocumentListItems(this.state.fields['project'] + " Project Document", ProName + " Project Document");
+            this.copyDocumentListItems(oldProject + this.ProjectDocument, ProName + this.ProjectDocument);
         }
         if (!flag) {
             if (this.props.id) {
                 this._closePanel();
                 this.props.parentMethod();
-                //this.props.parentReopen();
             } else {
                 this._closePanel();
                 this._showModal();
             }
         }
     }
+
     // get Calender list items
     private getCalenderItems(oldCalendarList, newCalendarList) {
         let reactHandler = this;
@@ -1930,7 +1860,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             if (this.props.id) {
                 this._closePanel();
                 this.props.parentMethod();
-                //this.props.parentReopen();
             } else {
                 this._closePanel();
                 this._showModal();
@@ -2081,7 +2010,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     // Add Document list items
     private copyDocumentListItems(oldDocumentList, newDocumentList) {
 
-        var siteurl = this.context.pageContext.web.absoluteUrl.split('.com')[1] + '/';
+       
+ 
+        // var siteurl = this.context.pageContext.web.absoluteUrl.split('.com')[1] + '/';
+        var siteurl = '/' + window.location.pathname.split( '/' )[1] + '/' + window.location.pathname.split( '/' )[2] + '/';
+       
         var sourceList = encodeURI(oldDocumentList) + '/';
         var destinationList = encodeURI(newDocumentList) + '/';
 
@@ -2109,11 +2042,242 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
 
 
+    // // get Calender list items
+    // private getCalenderItems(oldCalendarList, newCalendarList) {
+    //     let reactHandler = this;
+    //     let Title;
+    //     let Description;
+    //     let EventDate;
+    //     let EndDate;
+    //     let Category;
+    //     let ParticipantsPickerId = new Array();
+    //     let ParticipantsPicker;
+    //     let Location;
+    //     sp.web.lists.getByTitle(oldCalendarList).items
+    //         .select("Title", "Description", "EventDate", "EndDate", "Category", "ParticipantsPicker/ID", "ParticipantsPicker/Title", "Location")
+    //         .expand("ParticipantsPicker")
+    //         .get()
+    //         .then(res => {
+    //             console.log("CalendarList -", res);
+    //             for (var i = 0; i < res.length; i++) {
+    //                 Title = res[i].Title;
+    //                 Description = res[i].Description;
+    //                 EventDate = res[i].EventDate;
+    //                 EndDate = res[i].EndDate;
+    //                 Category = res[i].Category;
+    //                 Location = res[i].Location;
+    //                 ParticipantsPicker = res[i].ParticipantsPicker;
+    //                 for (var i = 0; i < ParticipantsPicker.length; i++) {
+    //                     var ID = ParticipantsPicker[i].ID;
+    //                     ParticipantsPickerId.push(ID);
+    //                 }
+    //             }
+    //             reactHandler.addCalendarListItems(newCalendarList, Title, Description, EventDate, EndDate, Category, ParticipantsPickerId, Location);
+
+    //         }).catch(err => {
+    //             console.log("error while fetching items in ", oldCalendarList, " - ", err);
+    //         });
+    // }
+
+    // // Add Calender list items
+    // private addCalendarListItems(newCalendarList, Title, Description, EventDate, EndDate, Category, ParticipantsPickerId, Location) {
+    //     sp.web.lists.getByTitle(newCalendarList).items.add({
+    //         Title: Title,
+    //         Description: Description,
+    //         EventDate: EventDate,
+    //         EndDate: EndDate,
+    //         Category: Category,
+    //         ParticipantsPickerId: {
+    //             results: ParticipantsPickerId  // allows multiple lookup value
+    //         },
+    //         Location: Location
+
+    //     }).then((iar: ItemAddResult) => {
+    //         console.log("Items added successfully in list ", newCalendarList);
+    //         if (this.props.id) {
+    //             this._closePanel();
+    //             this.props.parentMethod();
+    //             //this.props.parentReopen();
+    //         } else {
+    //             this._closePanel();
+    //             this._showModal();
+    //         }
+    //     }).catch(err => {
+    //         console.log("error while adding items in ", newCalendarList, " - ", err);
+    //     });
+    // }
+
+    // // get requirement list items
+    // private getRequirementItems(oldRequirementsList, newRequirementsList) {
+    //     let reactHandler = this;
+    //     let Requirement;
+    //     let Efforts;
+    //     let ImpactOnTimelines;
+    //     let Resources;
+    //     let Attachments;
+    //     let ApproverId;
+    //     let ApporvalStatus;
+    //     sp.web.lists.getByTitle(oldRequirementsList).items
+    //         .select("Requirement", "Efforts", "Impact_x0020_On_x0020_Timelines", "Resources", "Attachments",
+    //             "Approver/ID", "Approver/Title", "Apporval_x0020_Status")
+    //         .expand("Approver")
+    //         .get()
+    //         .then(res => {
+    //             console.log("RequirementsList -", res);
+    //             for (var i = 0; i < res.length; i++) {
+    //                 Requirement = res[i].Requirement;
+    //                 Efforts = res[i].Efforts;
+    //                 ImpactOnTimelines = res[i].Impact_x0020_On_x0020_Timelines;
+    //                 Resources = res[i].Resources;
+    //                 Attachments = res[i].Attachments;
+    //                 ApproverId = res[i].Approver.ID;
+    //                 ApporvalStatus = res[i].ApporvalStatus;
+
+    //             }
+    //             this.addRequirementsListItems(newRequirementsList, Requirement, Efforts, ImpactOnTimelines, Resources, Attachments, ApproverId, ApporvalStatus);
+
+    //         }).catch((err) => {
+    //             console.log("error while fetching items in ", oldRequirementsList, " - ", err);
+    //         });
+    // }
+
+    // // Add requirement list items
+    // private addRequirementsListItems(newRequirementsList, Requirement, Efforts, ImpactOnTimelines, Resources, Attachments, ApproverId, ApporvalStatus) {
+    //     sp.web.lists.getByTitle(newRequirementsList).items.add({
+    //         Title: 'No Title',
+    //         Requirement: Requirement,
+    //         Efforts: Efforts,
+    //         Impact_x0020_On_x0020_Timelines: ImpactOnTimelines,
+    //         Resources: Resources,
+    //         Attachments: Attachments,
+    //         ApproverId: ApproverId,
+    //         Apporval_x0020_Status: ApporvalStatus,
+    //     }).then((iar: ItemAddResult) => {
+    //         if (this.props.id) {
+    //             this._closePanel();
+    //             this.props.parentMethod();
+    //             //this.props.parentReopen();
+    //         } else {
+    //             this._closePanel();
+    //             this._showModal();
+    //         }
+    //         console.log("Items added successfully in list ", newRequirementsList);
+    //     }).catch(err => {
+    //         console.log("error while adding items in ", newRequirementsList, " - ", err);
+    //     });
+    // }
 
 
 
+    // // get schedule list items
+    // private getScheduleItems(oldScheduleList, newScheduleList) {
+    //     let reactHandler = this;
+    //     let StartDate;
+    //     let DueDate;
+    //     let Duration;
+    //     let Status0Id;
+    //     let Priority;
+    //     let Body;
+    //     let Comment;
+    //     let TaskStatus;
+    //     let AssignedTo;
+    //     let AssignedToId = new Array();
 
-    // end
+    //     sp.web.lists.getByTitle(oldScheduleList).items
+    //         .select("StartDate", "DueDate", "Duration", "AssignedTo/Title", "AssignedTo/ID", "Status0/ID", "Status0/Status",
+    //             "Status0/Status_x0020_Color", "Priority", "Body", "Predecessors/ID", "Predecessors/Title", "Comment", "Status")
+    //         .expand("AssignedTo", "Status0", "Predecessors")
+    //         .get()
+    //         .then(res => {
+    //             console.log("ScheduleList -", res);
+    //             for (var i = 0; i < res.length; i++) {
+    //                 StartDate = res[i].StartDate;
+    //                 DueDate = res[i].DueDate;
+    //                 Duration = res[i].Duration;
+    //                 Status0Id = res[i].Status0.ID;
+    //                 Priority = res[i].Priority;
+    //                 Body = res[i].Body;
+    //                 Comment = res[i].Comment;
+    //                 TaskStatus = res[i].Status;
+
+    //                 AssignedTo = res[i].AssignedTo;
+    //                 for (var i = 0; i < AssignedTo.length; i++) {
+    //                     var ID = AssignedTo[i].ID;
+    //                     AssignedToId.push(ID);
+    //                 }
+
+
+    //             }
+
+    //             reactHandler.addScheduleListItems(newScheduleList, StartDate, DueDate, Duration, AssignedToId, Status0Id, Priority, Body, Comment, TaskStatus);
+
+    //         }).catch((err) => {
+    //             console.log("error while fetching items in ", oldScheduleList, " - ", err);
+    //         });
+    // }
+
+    // // add schedule list items
+    // private addScheduleListItems(newScheduleList, StartDate, DueDate, Duration, AssignedToId, Status0Id, Priority, Body, Comment, TaskStatus) {
+    //     sp.web.lists.getByTitle(newScheduleList).items.add({
+    //         Title: 'No Title',
+    //         StartDate: StartDate,
+    //         DueDate: DueDate,
+    //         Duration: Duration,
+    //         AssignedToId: { results: AssignedToId },
+    //         Status0Id: Status0Id,
+    //         Priority: Priority,
+    //         Body: Body,
+    //         Comment: Comment,
+    //         Status: TaskStatus
+
+    //     }).then((iar: ItemAddResult) => {
+    //         console.log("Items added successfully in list ", newScheduleList);
+    //         if (this.props.id) {
+    //             this._closePanel();
+    //             this.props.parentMethod();
+    //             //this.props.parentReopen();
+    //         } else {
+    //             this._closePanel();
+    //             this._showModal();
+    //         }
+    //     }).catch(err => {
+    //         console.log("error while adding items in ", newScheduleList, " - ", err);
+    //     });;
+    // }
+
+    // // Add Document list items
+    // private copyDocumentListItems(oldDocumentList, newDocumentList) {
+
+    //     var siteurl = this.context.pageContext.web.absoluteUrl.split('.com')[1] + '/';
+    //     var sourceList = encodeURI(oldDocumentList) + '/';
+    //     var destinationList = encodeURI(newDocumentList) + '/';
+
+    //     sp.web.lists.getByTitle(oldDocumentList).items
+    //         .select('Title', 'LinkFilename', '*')
+    //         .getAll()
+    //         .then((response) => {
+    //             for (var i = 0; i < response.length; i++) {
+    //                 var item = response[i];
+    //                 sp.web.getFileByServerRelativeUrl(siteurl + sourceList + response[i].LinkFilename)
+    //                     .copyTo(siteurl + destinationList + response[i].LinkFilename, true)
+    //             }
+    //             console.log(response);
+    //             if (this.props.id) {
+    //                 this._closePanel();
+    //                 this.props.parentMethod();
+    //                 //this.props.parentReopen();
+    //             } else {
+    //                 this._closePanel();
+    //                 this._showModal();
+    //             }
+    //         }).catch(err => {
+    //             console.log("Error while copying document in list ", newDocumentList, " - ", err);
+    //         });
+    // }
+
+
+
+    // ---------------- Changes by Ashwini end ----------------// 
     addProjectTagByTagName(tagName, projectId) {
         var available = false;
         var project = [];

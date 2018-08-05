@@ -5,5 +5,7 @@ export interface IAddTeamProps {
     projectId:any;
   parentReopen: any,
   id?: number,
+  memberlist:any
   }
+  
   

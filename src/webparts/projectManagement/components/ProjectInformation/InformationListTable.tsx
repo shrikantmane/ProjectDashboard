@@ -154,7 +154,7 @@ export default class ProjectListTable extends React.Component<
     public render(): React.ReactElement<IInformationState> {
         console.log('this.state.projectList', this.state.projectList)
         return (
-            <div className="PanelContainer">
+            <div className="">
                 {/* <DataTableSubmenu /> */}
 
                 <div className="content-section implementation">

@@ -223,37 +223,38 @@ export default class ProjectViewDetails extends React.Component<
                                         </div>
                                     </div>
                                 </div>
-                                <div className="col-12 col-sm-6" id="member">
-                                    <div className="well">
+                                <div className="col-12 col-sm-6 half-list-left" id="member">
+                                    <div className="well hbc-list hbc-list-member">
                                     <div><TeamListTable list={this.state.teammemberlist} projectId={this.state.Id}></TeamListTable></div>
                                     </div>
                                 </div>
-                                <div className="col-12 col-sm-6" id="document">
-                                    <div className="well">
+                                <div className="col-12 col-sm-6 half-list-right" id="document">
+                                    <div className="well hbc-list hbc-list-document">
                                     <div><DocumentListTable list={this.state.documentlist} projectId={this.state.Id}></DocumentListTable></div>
                                     </div>
                                 </div>
                                 
-                                <div className="col-12 col-sm-6">
-                                    <div className="well">
+                                <div className="col-12 col-sm-12">
+                                    <div className="well hbc-list hbc-list-roles">
                                     <div><InformationListTable list={this.state.informationlist} projectId={this.state.Id}></InformationListTable></div>
                                     </div>
                                 </div>
-                                <div className="col-12 col-sm-6" ref={(section) => { this.violet = section; }}>
-                                    <div className="well">
-                                    <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id} onRefreshCalender ={this.onRefreshCalender}></CalendarListTable></div>
-                                    </div>
-                                </div>
+                              
                                 <div className="col-12 col-sm-12" id="requirement">
-                                    <div className="well">
+                                    <div className="well hbc-list hbc-list-requirement">
                                     <div><RequirementListTable list={this.state.requirementlist} projectId={this.state.Id}></RequirementListTable></div>
                                         
                                     </div>
                                 </div>
-                                <div className="col-12 col-sm-12" id="content2">
-                                    <div className="well">
+                                <div className="col-12 col-sm-6 half-list-left" ref={(section) => { this.violet = section; }}>
+                                    <div className="well  hbc-list-holidaylist">
+                                    <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id} onRefreshCalender ={this.onRefreshCalender}></CalendarListTable></div>
+                                    </div>
+                                </div>
+                                <div className="col-12 col-sm-6 half-list-right" id="content2">
+                                    <div className="well hbc-list-holidaycalender">
                                     <div className="content-section implementation">
-                    <h5>Holidays Calender</h5>
+                    <h5>Holiday Calender</h5>
                 </div>
                                         <div className="col-sm-12 col-12 cardHeading">
                                             <div className="content-section implementation">

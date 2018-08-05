@@ -15,6 +15,7 @@ require('./ProjectManagement.overide.scss');
 import 'core-js/es6/symbol';
 import 'core-js/es6/number'; 
 import 'core-js/es6/array';
+import { Environment, EnvironmentType} from '@microsoft/sp-core-library';
 
 export interface IProjectManagementWebPartProps {
   description: string;
@@ -25,19 +26,19 @@ let spCurrentPageUrl: string;
 export default class ProjectManagementWebPart extends BaseClientSideWebPart<IProjectManagementWebPartProps> {
   public onInit(): Promise<void> {
 
-    // if(Environment.type == EnvironmentType.ClassicSharePoint){   //Classic SharePoint page
 
-    // }else if(Environment.type === EnvironmentType.Local){        //Workbenck page
-    //   spCurrentPageUrl = window.location.pathname       
-    //   return Promise.resolve();
-    // }else if(Environment.type === EnvironmentType.SharePoint){   //Modern SharePoint page 
-    //   spCurrentPageUrl= "/sites/rms/SitePages/ModernDashboard.aspx";
-    //   return Promise.resolve();
-    // }else if(Environment.type === EnvironmentType.Test){         //Running on Unit test enveironment 
-    //   return Promise.resolve();
-    // }
+    if(Environment.type == EnvironmentType.ClassicSharePoint){   //Classic SharePoint page
 
-    spCurrentPageUrl = window.location.pathname;
+    }else if(Environment.type === EnvironmentType.Local){        //Workbenck page
+      spCurrentPageUrl =  window.location.pathname;
+      return Promise.resolve();
+    }else if(Environment.type === EnvironmentType.SharePoint){   //Modern SharePoint page 
+      spCurrentPageUrl= "/sites/hbctest/SitePages/Dashboard.aspx";
+      return Promise.resolve();
+    }else if(Environment.type === EnvironmentType.Test){         //Running on Unit test enveironment 
+      return Promise.resolve();
+    }
+
     return super.onInit().then(_ => {
       // establish SPFx context
       sp.setup({

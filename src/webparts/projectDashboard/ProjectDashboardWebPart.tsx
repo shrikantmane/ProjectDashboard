@@ -16,6 +16,7 @@ import * as strings from 'ProjectDashboardWebPartStrings';
 import ProjectDashboard from './components/ProjectDashboard';
 import { IProjectDashboardProps } from './components/IProjectDashboardProps';
 import { sp } from '@pnp/sp';
+import { Environment, EnvironmentType} from '@microsoft/sp-core-library';
 
 export interface IProjectDashboardWebPartProps {
   list: string;
@@ -27,19 +28,19 @@ export default class ProjectDashboardWebPart extends BaseClientSideWebPart<IProj
 
   public onInit(): Promise<void> {
 
-    // if(Environment.type == EnvironmentType.ClassicSharePoint){   //Classic SharePoint page
+    if(Environment.type == EnvironmentType.ClassicSharePoint){   //Classic SharePoint page
 
-    // }else if(Environment.type === EnvironmentType.Local){        //Workbenck page
-    //   spCurrentPageUrl = window.location.pathname       
-    //   return Promise.resolve();
-    // }else if(Environment.type === EnvironmentType.SharePoint){   //Modern SharePoint page 
-    //   spCurrentPageUrl= "/sites/rms/SitePages/ModernDashboard.aspx";
-    //   return Promise.resolve();
-    // }else if(Environment.type === EnvironmentType.Test){         //Running on Unit test enveironment 
-    //   return Promise.resolve();
-    // }
+    }else if(Environment.type === EnvironmentType.Local){        //Workbenck page
+      spCurrentPageUrl =  window.location.pathname;
+      return Promise.resolve();
+    }else if(Environment.type === EnvironmentType.SharePoint){   //Modern SharePoint page 
+        spCurrentPageUrl= "/sites/hbctest/SitePages/Dashboard.aspx";
+        //spCurrentPageUrl= "/sites/hbctest/_layouts/15/workbench.aspx";
+      return Promise.resolve();
+    }else if(Environment.type === EnvironmentType.Test){         //Running on Unit test enveironment 
+      return Promise.resolve();
+    }
 
-    spCurrentPageUrl = window.location.pathname;
     return super.onInit().then(_ => {
       // establish SPFx context
       sp.setup({
@@ -59,7 +60,7 @@ export default class ProjectDashboardWebPart extends BaseClientSideWebPart<IProj
     ReactDom.render( 
       <BrowserRouter basename={spCurrentPageUrl}>
         {element}
-      </BrowserRouter>, this.domElement);
+      </BrowserRouter>, this.domElement);    
   }
 
   protected onDispose(): void {

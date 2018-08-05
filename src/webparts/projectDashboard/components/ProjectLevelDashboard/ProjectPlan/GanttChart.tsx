@@ -123,9 +123,15 @@ export default class Gantt extends React.Component<any, any>{
       { name: "text", label: "Task name", tree: true, width: 100 },
       { name: "start_date", label: "Start time", align: "center", width: 80 },
       {
+        name: "ryg", label: "RYG", width: 22,
+        template: function (obj) {
+          return ("<div class='title-bullet' style='background-color:" + obj.statusBackgroudColor + "'></div>")
+        }
+      },
+      {
         name: "status", label: "Status", width: 80,
         template: function (obj) {
-          return ("<div class='ganttStatus' style='background-color:" + obj.statusBackgroudColor + "'>" + obj.status + "</div>")
+          return (obj.status)
         }
       },
       {
@@ -141,7 +147,7 @@ export default class Gantt extends React.Component<any, any>{
     gantt.config.readonly = true;
     gantt.templates.tooltip_text = function (start, end, task) {
       let label = task.actualDuration == 0 ? "Milestone" : "Task"
-      return "<b> " + label + "</b> " + task.text + "<br/><b>Start Date :</b> " + new Date(start).toDateString();
+      return "<div><b> " + label + "</b> " + task.text + "<br/><b>Start Date :</b> " + new Date(start).toDateString();
     };
     gantt.config.layout = {
       css: "gantt_container",

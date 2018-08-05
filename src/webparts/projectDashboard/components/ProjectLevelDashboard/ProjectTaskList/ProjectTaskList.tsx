@@ -143,7 +143,16 @@ export default class ProjectTaskList extends React.Component<
                     },
                     {
                       Header: "Title",
-                      accessor: "Title",                     
+                      accessor: "Title",
+                      Cell: ({ row, original }) => {
+                        if (original && original.Title) {
+                          return (
+                            <div className="taskListTitle">
+                              <span title={original.Title}> {original.Title}</span>
+                            </div>
+                          )
+                        }
+                      },
                       Aggregated: row => {
                         return (
                           <span></span>

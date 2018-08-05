@@ -138,6 +138,8 @@ ICalendarProps,
     }
 
     private deleteListItem(rowData, e): any {
+        var result = confirm("Are you sure you want to delete item?");
+        if (result) {
         e.preventDefault();
         console.log('Edit :' + rowData);
         sp.web.lists.getByTitle(this.props.list).
@@ -145,7 +147,7 @@ ICalendarProps,
           console.log(this.props.list + ` item deleted`);
           this.getProjectCalendar(this.props.list);
         });
- 
+    }
     }
     public render(): React.ReactElement<ICalendarState> {
         return (

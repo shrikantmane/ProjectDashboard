@@ -119,6 +119,8 @@ export default class ProjectListTable extends React.Component<
     }
 
     private deleteListItem(rowData, e): any {
+        var result = confirm("Are you sure you want to delete item?");
+        if (result) {
         e.preventDefault();
         console.log('Edit :' + rowData);
         sp.web.lists.getByTitle(this.props.list).
@@ -126,7 +128,7 @@ export default class ProjectListTable extends React.Component<
           console.log(this.props.list + ` item deleted`);
           this.getProjectInformation(this.props.list);
         });
- 
+    }
     }
 
   ownerTemplate(rowData: Information, column) {

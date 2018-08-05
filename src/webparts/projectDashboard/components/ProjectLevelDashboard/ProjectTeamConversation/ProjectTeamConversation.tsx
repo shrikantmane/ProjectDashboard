@@ -6,9 +6,18 @@ export default class ProjectTeamConversation extends React.Component<IProjectTea
   
     public render(): React.ReactElement<IProjectTeamConversationProps> {
     return (
-      <div>
-        {/* <CEOProjectTable webPartTitle={this.props.webPartTitle}></CEOProjectTable> */}
+      <div className="col-xs-12 col-sm-4 conversationListPadding">
+        <div className="well recommendedProjects userFeedback">
+          <div className="row">
+            <div className="col-sm-12 cardHeading">
+              <h5>Team Conversation</h5>
+            </div>
+            <div className="col-sm-12">
+              
+            </div>
+          </div>
+        </div>
       </div>
-    );
+    );   
   }
 }

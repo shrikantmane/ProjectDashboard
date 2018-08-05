@@ -34,7 +34,7 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
               item.Team_x0020_Member.PictureURL = "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
               item.Team_x0020_Member.EMail +
               "&UA=0&size=HR64x64&sc=1531997060853";
-              item.Team_x0020_Member.JobTitle = result.UserProfileProperties[21].Value;
+              item.Team_x0020_Member.JobTitle = result.UserProfileProperties[22].Value;
               if (count == response.length) {
                 currentScope.setState({ teamMemberList: response });
               }
@@ -53,7 +53,7 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
 
   public render(): React.ReactElement<IProjectTeamMembersProps> {
     return (
-      <div className="col-xs-12 col-sm-3">
+      <div className="col-xs-12 col-sm-3 teamMemeberListPadding">
         <div className="well recommendedProjects userFeedback">
           <div className="row">
             <div className="col-sm-12 cardHeading">
@@ -64,16 +64,17 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
                 {this.state.teamMemberList != null ?
                   this.state.teamMemberList.map((item, key) => {
                     if (item.Team_x0020_Member) {
+                      let email = "https://uatalpha-my.sharepoint.com/_layouts/15/me.aspx/?p=" + item.Team_x0020_Member.EMail + "&v=work";
                       return (<div className="row">
                         <div className="col-sm-12">
                           <div className="row">
-                            <div className="col-sm-4">
+                            <div className="col-sm-3">
                               <img className="img-responsive image-style" src={item.Team_x0020_Member.PictureURL} alt="" />
                             </div>
-                            <div className="col-sm-8">
+                            <div className="col-sm-9">
                               <div className="profileDetail">
                                 <div className="profileName">
-                                  <h4>{item.Team_x0020_Member.Title}</h4>
+                                  <a href={email} target="_blank">{item.Team_x0020_Member.Title}</a>
                                 </div>
                                 <div className="profileDesignation">
                                   <span className="designationTag">{item.Team_x0020_Member.JobTitle}</span>

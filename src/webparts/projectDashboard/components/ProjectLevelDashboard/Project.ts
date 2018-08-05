@@ -36,7 +36,7 @@ export class File {
 }
 export class Document {
     public File : File;
-    public Owner : Owner;
+    public Author : Owner;
     public Created : string;
     public FileName : string;
     public OwnerTitle : string;
@@ -83,7 +83,7 @@ export class Task {
 
 
 export enum Week {
-    CurrentWeek = "Current Week",
+    CurrentWeek = "This Week",
     NextWeek = "Next Week",
     Future = "Future",
     Past = "Past",

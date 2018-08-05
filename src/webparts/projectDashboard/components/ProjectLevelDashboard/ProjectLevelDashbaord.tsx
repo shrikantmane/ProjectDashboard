@@ -131,6 +131,7 @@ export default class ProjectLevelDashboard extends React.Component<
                   <div className="clearfix"></div>
                   <ProjectTeamMembers projectTeamMembers={this.state.project.Project_x0020_Team_x0020_Members}></ProjectTeamMembers>
                   <ProjectProjectRoleResponsibility projectRoleResponsibility ={this.state.project.Project_x0020_Infromation} ></ProjectProjectRoleResponsibility>
+                  <ProjectTeamConversation></ProjectTeamConversation>
               </div>
             </div>
           </section>

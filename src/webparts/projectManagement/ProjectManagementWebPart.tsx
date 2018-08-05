@@ -33,7 +33,8 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
       spCurrentPageUrl =  window.location.pathname;
       return Promise.resolve();
     }else if(Environment.type === EnvironmentType.SharePoint){   //Modern SharePoint page 
-      spCurrentPageUrl= "/sites/hbctest/SitePages/Dashboard.aspx";
+      //spCurrentPageUrl= "/sites/hbctest/SitePages/Dashboard.aspx";
+      spCurrentPageUrl= "/sites/projects/_layouts/15/workbench.aspx";
       return Promise.resolve();
     }else if(Environment.type === EnvironmentType.Test){         //Running on Unit test enveironment 
       return Promise.resolve();

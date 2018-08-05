@@ -230,6 +230,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         this.handleBlurOnProjectName = this.handleBlurOnProjectName.bind(this);
 
         this.state.fields['status'] = false;
+        this.state.fields['project'] = '';
     }
     componentDidMount() {
 
@@ -384,7 +385,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             fields[field] = isChecked;
             this.setState({ fields, cloneProjectChecked: !this.state.cloneProjectChecked });
             if (isChecked) {
-                this.getProjectByName(this.state.projectList ? this.state.projectList[0].Project : '');
+                //this.getProjectByName(this.state.projectList ? this.state.projectList[0].Project : '');
             } else if (this.props.id === undefined) {
                 this.clearProjectInfo();
             }
@@ -509,6 +510,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         //     errors["tags"] = "Cannot be empty";
         //     errorClass["tags"] = "classError";
         // }
+        if ((!fields["project"] || fields["project"] === '') && this.state.cloneProjectChecked) {
+            formIsValid = false;
+            errors["project"] = "Please select Project Name";
+            errorClass["project"] = "classError";
+        }
         if (fields["startdate"] && fields["duedate"]) {
             if (fields["duedate"] < fields["startdate"]) {
                 formIsValid = false;
@@ -2277,12 +2283,14 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         const selectProjectContent = this.state.cloneProjectChecked ?
             <div className="col-lg-12">
                 <div className="form-group">
-                    <label>Select Project</label>
+                    <span className="error">* </span><label>Select Project</label>
                     <select className="form-control" ref="project" onChange={this.handleChange.bind(this, "project")} value={this.state.fields["project"]}>
+                        <option value="" selected disabled>Select</option>
                         {this.state.projectList.map((obj) =>
                             <option key={obj.Project} value={obj.Project}>{obj.Project}</option>
                         )}
                     </select>
+                    <span className="error">{this.state.errors["project"]}</span>
                 </div>
             </div> : null;
 
@@ -2383,9 +2391,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                         <div className="row addSection">
                                             <div className="col-sm-12 col-12">
                                                 <div className="form-group">
-                                                    <label>Clone Project</label>
+                                                    {/* <label>Clone Project</label> */}
                                                     <div>
-                                                        <Checkbox checked={this.state.fields["cloneproject"]} onChange={this.handleChange.bind(this, "cloneproject")} value={this.state.fields["cloneproject"]} />
+                                                        <Checkbox label="Clone Project" checked={this.state.fields["cloneproject"]} onChange={this.handleChange.bind(this, "cloneproject")} value={this.state.fields["cloneproject"]} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -2819,6 +2827,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     }}
                     //componentRef={this._resolveRef('_picker')}
                     resolveDelay={300}
+                    itemLimit={1}
                 />
                 {/* <label> Click to Add a person </label>
                 {controlledItems.map((item, index) => (

@@ -27,6 +27,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
     showModal: boolean,
     isDataSaved: boolean,
     attachmentFiles: any,
+    isLoading: boolean
 }> {
 
     constructor(props) {
@@ -39,7 +40,8 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             cloneProjectChecked: false,
             showModal: false,
             isDataSaved: false,
-            attachmentFiles: []
+            attachmentFiles: [],
+            isLoading: false
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -169,6 +171,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
 
             let obj: any = this.state.fields;
             if (this.props.id) {
+                this.setState({ isLoading: true });
                 sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
                     Requirement: obj.projectname ? obj.projectname : '',
                     //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
@@ -185,8 +188,10 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     //Status0Id: 2
 
                 }).then((response) => {
+                    
                     //response.item.attachmentFiles.add(this.state.fields["filedescription"], this.state.selectedFile);
                     response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
+                        this.setState({ isLoading: false });
                         this._closePanel();
                         this.props.parentMethod();
                         this.props.parentReopen();
@@ -194,6 +199,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
 
                 });
             } else {
+                this.setState({ isLoading: true });
                 sp.web.lists.getByTitle(this.props.list).items.add({
                     Requirement: obj.projectname ? obj.projectname : '',
                     //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
@@ -203,6 +209,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     //const formData = new FormData();
                     //formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
                     response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
+                        this.setState({ isLoading: false });
                         this.props.parentMethod();
                         this._closePanel();
                     })
@@ -281,6 +288,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         //     </div> : null;
         return (
             // className="PanelContainer"
+            !this.state.isLoading ?
             <div>
                 <Panel
                     isOpen={this.state.showPanel}
@@ -324,7 +332,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                 {attachmentDiv}
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
-                                                                        <label>Number Of Resources</label><span style={textcolor}>*</span>
+                                                                        <label>Number Of Resourcess</label><span style={textcolor}>*</span>
                                                                         <input ref="projectdescription" type="number" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Total Number Of People"
                                                                             onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}>
                                                                         </input>
@@ -366,7 +374,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     </div>
                 </Panel>
             </div>
-
+: <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div>
         );
     }
     private _closePanel = (): void => {

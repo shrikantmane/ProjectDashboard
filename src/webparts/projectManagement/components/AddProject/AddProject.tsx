@@ -240,7 +240,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
     componentDidMount() {
 
-        this.getGroupID();
+
 
         this._getAllSiteUsers();
         this.getAllProject();
@@ -260,55 +260,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         }
 
         // Added by Ashwini
-        this.GetRoleDefinations();
-        this.GetUsersFromHBCOwnerGroup();
-        this.getListIDs();
+        // this.GetRoleDefinations();
+        // this.GetUsersFromHBCOwnerGroup();
+        // this.getListIDs();
+        //this.getGroupID();
     }
     componentWillReceiveProps(nextProps) {
 
     }
 
-    // get group IDs by group name
-    private getGroupID() {
-        let reactHandler = this;
-        sp.web.siteGroups.getByName("HBC Admin").get().then(function (result) {
-            reactHandler.HBCAdminGrpID = result.Id;
-            sp.web.siteGroups.getByName("Department Head").get().then(function (result) {
-                reactHandler.DepartmentHeadGrpID = result.Id;
-                sp.web.siteGroups.getByName("CEO_COO").get().then(function (result) {
-                    reactHandler.CEO_COOGrpID = result.Id;
-                    sp.web.siteGroups.getByName("Project Owner").get().then(function (result) {
-                        reactHandler.ProjectOwnerGrpID = result.Id;
-                    });
-                });
-            });
-        });
-    }
+   
 
-    private getListIDs() {
-
-        sp.web.lists.getByTitle('Project').get()
-            .then(result => {
-                this.setState({
-                    ProjectList: "'{" + result.Id + "}'"
-                });
-
-                sp.web.lists.getByTitle('Task Status Color').get()
-                    .then(result => {
-                        this.setState({
-                            TaskStatusColor: "'{" + result.Id + "}'"
-                        });
-
-                    }).catch(err => {
-                        console.log("Error while getting ID of Task Status Color List.", err);
-                    });
-
-            }).catch(err => {
-                console.log("Error while getting ID of Project List.", err);
-            });
-
-    }
-
+   
     // Get All Role Definations  
     private GetRoleDefinations() {
         let reactHandler = this;
@@ -694,7 +657,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 //     // this._showModal();
                 // });
                 this.setState({ isLoading: true });
-                this.CreateProjectGroup();
+                this. getGroupID();
+                // this.CreateProjectGroup();
                 // this._closePanel();
                 // this._showModal();
             }
@@ -704,6 +668,33 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
     // Added new Code from Ashwini
 
+     // get group IDs by group name
+    private getGroupID() {
+        let reactHandler = this;
+        sp.web.siteGroups.getByName("HBC Admin").get().then(function (result) {
+            reactHandler.HBCAdminGrpID = result.Id;
+            sp.web.siteGroups.getByName("Department Head").get().then(function (result) {
+                reactHandler.DepartmentHeadGrpID = result.Id;
+                sp.web.siteGroups.getByName("CEO_COO").get().then(function (result) {
+                    reactHandler.CEO_COOGrpID = result.Id;
+                    sp.web.siteGroups.getByName("Project Owner").get().then(function (result) {
+                        reactHandler.ProjectOwnerGrpID = result.Id;
+                             reactHandler.CreateProjectGroup()
+                    }).catch(err => {
+                        console.log("error while getting id of project owner group");
+                    });
+                }).catch(err => {
+                    console.log("error while getting id of CEO_COO group");
+                });
+            }).catch(err => {
+                console.log("error while getting id of Department Head group");
+            });
+        }).catch(err => {
+            console.log("error while getting id of HBC Admin group");
+        });
+    }
+
+    // Create Groups 
     private CreateProjectGroup() {
         // let ProName = this.state.value;
         let ProName = this.state.fields['projectname'];
@@ -742,12 +733,12 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     reactHandler.AddHBCUsersToGroup(OwnersGroup, ProName);
                     // Add Item to project list & other list creation
                     let projectName = ProName.split(' ').join('_');
-                    //if (reactHandler.state.fields['cloneproject'] !== true) {
-                    reactHandler.CreateNewProject(projectName);
-                    // }
-                    // else {
-                    //     reactHandler.getProjectDetails(projectName);
-                    // }
+                    if (reactHandler.state.fields['cloneproject'] !== true) {
+                        reactHandler.CreateNewProject(projectName);
+                    }
+                    else {
+                        reactHandler.getProjectDetails(projectName);
+                    }
                 }).catch(e => {
                     this.setState({ isLoading: false });
                     console.log("Error while creating " + OwnersGroup + " group: " + e);
@@ -1246,7 +1237,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Task_x0020_Comments: TaskCommentsClmn,
             Task_x0020_Comments_x0020_Histor: TaskCommentsHistoryClmn
         }).then((iar: ItemAddResult) => {
-            this.CreateTaskList(ProName);
+            this.getListIDs(ProName);
+            // this.CreateTaskList(ProName);
         }).catch(err => {
             console.log("Error while cloning project", ProName, " - ", err);
         });
@@ -1310,7 +1302,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 console.log('Saving project outline....................');
                 iar.item.attachmentFiles.add(this.state.fields["projectoutline"].name, this.state.fields["projectoutline"]);
             }
-            this.CreateTaskList(ProName);
+            this.getListIDs(ProName);
+            // this.CreateTaskList(ProName);
             this.setState({ isDataSaved: true, savedProjectID: iar.data.Id });
             if (this.state.fields['tags']) {
                 this.state.fields['tags'].forEach(element => {
@@ -1321,6 +1314,23 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             this.setState({ isLoading: false });
             console.log("Error while adding items for ", ProName, " to Project List -", err);
         });
+    }
+
+     private getListIDs(ProName) {
+         let ReactHandler = this;
+
+                sp.web.lists.getByTitle('Task Status Color').get()
+                    .then(result => {
+                        this.setState({
+                            TaskStatusColor: "'{" + result.Id + "}'"
+                        });
+                         
+                        ReactHandler.CreateTaskList(ProName);
+
+                    }).catch(err => {
+                        console.log("Error while getting ID of Task Status Color List.", err);
+                    });
+
     }
 
     private CreateTaskList(ProName) {

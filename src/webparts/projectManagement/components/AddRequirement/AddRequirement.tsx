@@ -16,7 +16,7 @@ import ProjectListTable from '../ProjectList/ProjectListTable';
 
 const textcolor = {
     color: 'red' as 'red',
-  }
+}
 
 export default class AddProject extends React.Component<IAddRequirementProps, {
     showPanel: boolean;
@@ -186,9 +186,12 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
 
                 }).then((response) => {
                     //response.item.attachmentFiles.add(this.state.fields["filedescription"], this.state.selectedFile);
-                    this._closePanel();
-                    this.props.parentMethod();
-                    this.props.parentReopen();
+                    response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
+                        this._closePanel();
+                        this.props.parentMethod();
+                        this.props.parentReopen();
+                    })
+
                 });
             } else {
                 sp.web.lists.getByTitle(this.props.list).items.add({
@@ -208,7 +211,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     //this._closePanel();
                     this._showModal();
                     //this.props.parentMethod();
-            });
+                });
             }
         }
     }
@@ -231,7 +234,9 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             <div className="col-lg-6">
                 {this.state.attachmentFiles.map((obj, i) =>
                     <div className="form-group">
-                        <label style={{ float: 'left' }}>{obj.FileName}</label>
+                        <label style={{ float: 'left', width: '90%' }}><a href={obj.ServerRelativeUrl}><i
+                            style={{ marginRight: "5px" }}
+                            className='fa fa-file' ></i>{obj.FileName}</a></label>
                         <i className="far fa-times-circle" style={{ float: 'right', cursor: 'pointer' }} onClick={this.removeAttachment.bind(this, i)}></i>
                     </div>
                 )}
@@ -295,7 +300,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                 <div className="col-lg-6">
                                                                     <div className="form-group">
                                                                         <label>Requirement</label><span style={textcolor}>*</span>
-                                                                        <textarea ref="projectname"  className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
+                                                                        <textarea ref="projectname" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
                                                                             onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
                                                                         </textarea>
                                                                         <span className="error">{this.state.errors["projectname"]}</span>

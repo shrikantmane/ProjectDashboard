@@ -453,7 +453,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         } else if (field === 'projectoutline') {
             let fields = this.state.fields;
-            fields[field] = e.target.files[0]
+            fields[field] = e.target.files[0];
             this.setState({ fields });
         } else {
             let fields = this.state.fields;
@@ -2265,7 +2265,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         const statusDate = (this.state.showStatusDate) ?
             <div className="col-lg-6">
                 <div className="form-group">
-                    <label>On Hold Date<span className="error">*</span></label>
+                    <span className="error">* </span><label>On Hold Date</label>
                     <DatePicker
                         placeholder="Select On Hold date"
                         onSelectDate={this.handleChange.bind(this, "statusdate")}
@@ -2318,11 +2318,13 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     </div>
                 </div>
             </div> : null;
-        const attachmentDiv = this.state.fields['projectoutline'] && this.state.fields['projectoutline'].length > 0 ?
+        const attachmentDiv = (this.state.fields['projectoutline'] && this.state.fields['projectoutline'].length > 0) ?
             <div className="col-lg-6">
                 {this.state.fields['projectoutline'].map((obj, i) =>
                     <div className="form-group">
-                        <label style={{ float: 'left', width: '90%' }}>{obj.FileName}</label>
+                        <label style={{ float: 'left', width: '90%' }}><a href={obj.ServerRelativeUrl}><i
+                            style={{ marginRight: "5px" }}
+                            className='fa fa-file' ></i>{obj.FileName}</a></label>
                         <i className="far fa-times-circle" style={{ float: 'right', cursor: 'pointer' }} onClick={this.removeAttachment.bind(this, i)}></i>
                     </div>
                 )}
@@ -2356,12 +2358,12 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         <section className="main-content-section">
                             <div className="row">
                                 <div className="col-sm-12 col-12">
-                                    <h3>Project Details</h3>
+                                    <h3 className="hbc-form-header">Project Details</h3>
                                     <form name="projectform" onSubmit={this.projectSubmit.bind(this)}>
                                         <div className="row addSection">
                                             <div className="col-sm-6 col-12">
                                                 <div className="form-group">
-                                                    <label>Project Name<span className="error">*</span></label>
+                                                    <span className="error">* </span><label>Project Name</label>
                                                     <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
                                                         onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName}>
                                                     </input>

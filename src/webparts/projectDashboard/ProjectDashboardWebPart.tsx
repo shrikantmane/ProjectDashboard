@@ -28,13 +28,20 @@ export default class ProjectDashboardWebPart extends BaseClientSideWebPart<IProj
 
   public onInit(): Promise<void> {
 
+    let siteurl = this.context.pageContext.web.absoluteUrl;
     if(Environment.type == EnvironmentType.ClassicSharePoint){   //Classic SharePoint page
 
     }else if(Environment.type === EnvironmentType.Local){        //Workbenck page
       spCurrentPageUrl =  window.location.pathname;
       return Promise.resolve();
     }else if(Environment.type === EnvironmentType.SharePoint){   //Modern SharePoint page 
-        spCurrentPageUrl= "/sites/hbctest/SitePages/Dashboard.aspx";
+        //spCurrentPageUrl= "/sites/hbctest/SitePages/Dashboard.aspx";
+
+        if(siteurl!== "" || siteurl!== null){
+          spCurrentPageUrl= siteurl.split('.com')[1] + '/SitePages/Dashboard.aspx';
+          //spCurrentPageUrl= siteurl.split('.com')[1] + '/_layouts/15/workbench.aspx';
+         }
+
         //spCurrentPageUrl= "/sites/hbctest/_layouts/15/workbench.aspx";
       return Promise.resolve();
     }else if(Environment.type === EnvironmentType.Test){         //Running on Unit test enveironment 

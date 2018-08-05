@@ -139,7 +139,7 @@ export default class ProjectListTable extends React.Component<
 
 
     editTemplate(rowData, column) {
-        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i>Edit  </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i></a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -231,19 +231,19 @@ export default class ProjectListTable extends React.Component<
                     }
                     <div className="requirement-list">
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
-                            <Column body={this.editTemplate}style={{ width: "6%" }} />
-                            <Column field="Requirement" sortable={true} header="Requirement"style={{ width: "24%" }} />
-                            <Column field="AttachmentFiles" header="Attachment"  body={this.fileTemplate}style={{ width: "24%" }} />
-                            <Column field="Resources" sortable={true} header="Resources"style={{ width: "12%", align: "center" }} body={this.resourceTemplate}  />
+                            <Column body={this.editTemplate}style={{ width: "3%", textAlign:"center" }} />
+                            <Column field="Requirement" sortable={true} header="Requirement"style={{ width: "29%" }} />
+                            <Column field="AttachmentFiles" header="Attachment"  body={this.fileTemplate}style={{ width: "29%" }} />
+                            <Column field="Resources" sortable={true} header="Resources"style={{ width: "10%", align: "center" }} body={this.resourceTemplate}  />
                             
-                             <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timelines?"  body={this.impactTemplate} style={{ width: "21%" }} /> 
-                            <Column field="Efforts" header="Efforts" sortable={true}style={{ width: "16%" }}body={this.effortsTemplate}   />
+                             <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timelines?"  body={this.impactTemplate} style={{ width: "20%" }} /> 
+                            <Column field="Efforts" header="Efforts" sortable={true}style={{ width: "10%" }}body={this.effortsTemplate}   />
                            
                             {/* <Column field="Apporval_x0020_Status" sortable={true} header="Approval Status" />
                              <Column field="Approver" header="Approver" sortable={true} body={this.approverTemplate} />  */}
                             {/* <Column field="Author" header="Created By" sortable={true} body={this.ownerTemplate} />
                             <Column field="Created" header="Created On" sortable={true} body={this.duedateTemplate} /> */}
-                            <Column  body={this.actionTemplate}style={{ width: "3%" }} />
+                            <Column  body={this.actionTemplate}style={{ width: "3%", textAlign:"center" }} />
                         </DataTable>
                     </div>
                 </div>

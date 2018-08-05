@@ -172,7 +172,7 @@ export default class ProjectListTable extends React.Component<
         }
     }
     editTemplate(rowData, column) {
-        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i>Edit  </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i></a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -219,7 +219,7 @@ export default class ProjectListTable extends React.Component<
                     
                     <div className="member-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
-                        <Column body={this.editTemplate}style={{ width: "8%" }} />
+                        <Column body={this.editTemplate}style={{ width: "8%", textAlign:"center" }} />
                             <Column field="AssignedTo" header="Name" sortable={true} body={this.ownerTemplate}style={{ width: "35%" }} />
 
                             <Column field="Start_x0020_Date" sortable={true} header="Assigned Date" body={this.duedateTemplate}style={{ width: "31%" }} />

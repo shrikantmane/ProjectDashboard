@@ -104,7 +104,7 @@ ICalendarProps,
         return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="fas fa-trash-alt"></i></a>;
     }
     editTemplate(rowData, column) {
-        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i> Edit</a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i></a>;
     }
     onAddProject() {
         console.log('button clicked');
@@ -163,12 +163,12 @@ ICalendarProps,
                     }
                     <div className="holiday-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
-                            <Column header="Edit" body={this.editTemplate} style={{width: "15%"}}/>
+                            <Column header="" body={this.editTemplate} style={{width: "5%", textAlign:"center"}}/>
                             <Column header="Title" field="Title" />
                             <Column field="EventDate" sortable={true} header="Start Date"   body={this.startdateTemplate}  style={{width: "21%"}}/>
                             {/* <Column field="Owner" sortable={true} header="Owner" body={this.ownerTemplate} /> */}
                             <Column field="EndDate" sortable={true} header="End Date" body={this.duedateTemplate}  style={{width: "20%"}}/>
-                            <Column header="" body={this.actionTemplate} style={{width: "7%"}} />
+                            <Column header="" body={this.actionTemplate} style={{width: "5%", textAlign:"center"}} />
                         </DataTable>
                     </div>
                 </div>

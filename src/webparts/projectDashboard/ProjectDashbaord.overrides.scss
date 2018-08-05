@@ -657,7 +657,7 @@ div[class^="footerBar_"] {
   }
   .ReactTable .rt-thead.-filters .rt-th input {
     width: 100%;
-    background-color: #ccdae2;
+    background-color: #f7f8f9;
     border: 1px solid #2a404e;
     height: 1.6rem;
   }
@@ -667,7 +667,7 @@ div[class^="footerBar_"] {
   }
   .main-content-section {
     padding-right: 10px;
-    height: 100vh;
+    // height: 100vh;
   }
   section.main-content-section section:first-child {
     display: block;
@@ -698,7 +698,7 @@ div[class^="footerBar_"] {
   }
   .project-tabs .projectName {
     font-weight: 600;
-    font-size: 1.5rem;
+    font-size: 1.2rem;
     margin: 10px 0 10px 0;
   }
   .project-tabs .tagList {
@@ -726,7 +726,7 @@ div[class^="footerBar_"] {
     height: 10px;
     width: 10px;
     margin-top: 5px;
-    margin-right: 10px;
+    margin-right: 5px;
   }
   .mid-text {
     padding: 30px 0;
@@ -770,7 +770,7 @@ div[class^="footerBar_"] {
     margin-left: 15px;
   }
   .wrapper {
-    padding: 30px;
+    padding: 5px;
   }
   .well {
     background-color: #fff;
@@ -1502,26 +1502,28 @@ div[class^="footerBar_"] {
     overflow-y: hidden;
   }
   .container-inner {
-    width: 3000px;
+    width: 1000px;
     height: 100%;
   }
   .all-milestones .col-sm-4.col-6 {
     border-left: 1px solid #dddee2;
-    max-width: 230px;
+    max-width: 142px;
     height: 100%;
+    padding-left: 10px;
+    padding-right: 10px;
   }
   .all-milestones .milestoneList>.milestones-title {
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: 600;
     margin-bottom: 6px;
-    margin-top: 12px;
+    margin-top: 6px;
     color: #384168;
     text-overflow: ellipsis;
     white-space: nowrap;
     overflow: hidden;
   }
   .all-milestones .milestoneList>.table-responsive-sm {
-    margin-left: 1.2rem;
+    margin-left: 0.9rem;
   }
   .all-milestones tbody {
     line-height: 1.7;
@@ -1537,16 +1539,17 @@ div[class^="footerBar_"] {
   }
   .all-milestones td:first-child {
     color: #6b6b6b;
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
     border: none;
     vertical-align: middle;
     display: block;
+    margin-top:5px;
   }
   .all-milestones td:last-child {
     font-weight: 700;
     color: #1d486f;
-    font-size: 14px;
+    font-size: 12px;
     border: none;
     vertical-align: middle;
     display: block;
@@ -1585,7 +1588,7 @@ div[class^="footerBar_"] {
     font-weight: 600;
   }
   .due-date-style {
-    font-size: 1.2rem;
+    font-size: 0.9rem;
     color: #777;
     margin: 0 8px;
   }
@@ -1715,7 +1718,7 @@ div[class^="footerBar_"] {
       padding-top: 0px;
       padding-bottom: 0px;
       padding-right: 0px;
-      height: 100vh;
+      // height: 100vh;
     }
     .infoBoxes {
       height: 75px;

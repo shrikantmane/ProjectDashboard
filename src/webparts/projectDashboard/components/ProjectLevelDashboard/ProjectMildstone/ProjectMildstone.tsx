@@ -20,6 +20,15 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
       this.getAllMilestones(nextProps.scheduleList);
   }
 
+  componentDidUpdate()
+  {
+     let container_width = 142 * document.getElementsByClassName("milestonesClass").length;
+     let elements =  document.getElementsByClassName("row container-inner");
+     if(elements && elements[0] && container_width > 0){
+      elements[0].setAttribute("style", "width:" +  container_width.toString() + "px;");
+     }
+  }
+
   private getAllMilestones(scheduleList: string) {
     sp.web.lists.getByTitle(scheduleList).items
       .select('Title', 'DueDate', 'Status0/ID', 'Status0/Status', 'Status0/Status_x0020_Color', 'Priority').expand('Status0')
@@ -54,9 +63,9 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
               {this.state.milstoneList != null
                 ? this.state.milstoneList.map((item, key) => {
                   return (
-                    <div className="col-sm-4 col-6">
+                    <div className="col-sm-4 col-6 milestonesClass">
                       <div className="milestoneList">
-                        <h4 className="milestones-title"><span className="title-bullet inprogressStatus pull-left" style={{ backgroundColor: item.Status0 ? item.Status0.Status_x0020_Color : "" }}></span>{item.Title}</h4>
+                        <h4 className="milestones-title" title={item.Title}><span className="title-bullet inprogressStatus pull-left" style={{ backgroundColor: item.Status0 ? item.Status0.Status_x0020_Color : "" }}></span>{item.Title}</h4>
                         <div className="table-responsive-sm">
                           <table className="table">
                             <thead>

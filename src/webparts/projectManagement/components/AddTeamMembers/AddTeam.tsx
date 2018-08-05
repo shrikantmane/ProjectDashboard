@@ -96,6 +96,7 @@ export default class AddProject extends React.Component<IAddTeamProps, {
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
+        //this.handleUniqueValidation=this.handleUniqueValidation.bind(this);
     }
     componentWillReceiveProps(nextProps) {
         if(nextProps.id!="" || nextProps.list!=null){
@@ -149,8 +150,8 @@ export default class AddProject extends React.Component<IAddTeamProps, {
     }
     private getProjectByID(id): void {
         // get Project Documents list items for all projects
-         if(id!=undefined||id=="")
-        {
+        //  if(id!=undefined||id=="")
+        // {
         let filterString = "ID eq " + id;
         sp.web.lists.getByTitle(this.props.list).items
             .select("ID", "Team_x0020_Member/ID", "Team_x0020_Member/Title", "Start_x0020_Date", "End_x0020_Date", "Status").expand("Team_x0020_Member")
@@ -184,7 +185,7 @@ export default class AddProject extends React.Component<IAddTeamProps, {
             }).catch((e: Error) => {
                 alert(`There was an error : ${e.message}`);
             });
-       }      
+      //  }      
     }
     handleValidation() {
         let fields = this.state.fields;
@@ -203,8 +204,29 @@ export default class AddProject extends React.Component<IAddTeamProps, {
             errors["ownername"] = "Cannot be empty";
             errorClass["ownername"] = "classError";
         }
+        if (this.state.currentSelectedItems) {
+            let flag = false;
+            
+           
+            this.props.memberlist.forEach(element => {
+                if ((element.Team_x0020_Member.Title === this.state.currentSelectedItems[0].text)
+                && (element.Status==="Active"))
+                 {
+                    flag = true;
+                }
+            });
+            if (flag) {
+                formIsValid = false;
+                errors["ownername"] = "team name is already exist.";
+                errorClass["ownername"] = "classError";
+                this.setState({ errors: errors, errorClass: errorClass });
+            } else {
+                errors["ownername"] = "";
+                errorClass["ownername"] = "";
+                this.setState({ errors: errors, errorClass: errorClass });
+            }
+        }
        
-        
 
         // if (typeof fields["name"] !== "undefined") {
         //     if (!fields["name"].match(/^[a-zA-Z]+$/)) {
@@ -230,6 +252,34 @@ export default class AddProject extends React.Component<IAddTeamProps, {
 
         this.setState({ errors: errors, errorClass: errorClass });
         return formIsValid;
+    }
+    handleUniqueValidation(){
+         if (this.state.currentSelectedItems) {
+            let flag = false;
+            let errors = this.state.errors;
+        let errorClass = this.state.errorClass;
+            // this.props.memberlist.forEach(element => {
+            //     if (element.Team_x0020_Member.Title=== this.state.currentSelectedItems &&
+            //     element.Status==="Active"){
+            //         flag = true;
+            //     }
+            // });
+            this.props.memberlist.forEach(element => {
+                if (element.Team_x0020_Member.Title === this.state.currentSelectedItems[0].text) {
+                    flag = true;
+                }
+            });
+            if (flag) {
+                errors["ownername"] = "team name is already exist.";
+                errorClass["ownername"] = "classError";
+                this.setState({ errors: errors, errorClass: errorClass });
+            } else {
+                errors["ownername"] = "";
+                errorClass["ownername"] = "";
+                this.setState({ errors: errors, errorClass: errorClass });
+            }
+        }
+       
     }
 
     projectSubmit(e) {
@@ -275,6 +325,8 @@ if(tempState.length>0){
                 this.props.parentReopen();
             });
         } else {
+            // if(this.handleUniqueValidation)
+           // {
             sp.web.lists.getByTitle(this.props.list).items.add({
             Team_x0020_MemberId: tempState[0].key,
             Status:"Active",
@@ -286,7 +338,8 @@ if(tempState.length>0){
                 this._showModal();
                 this.props.parentMethod();
             });
-        }
+       // }
+    }
     }
     } else {
         console.log("Form has errors.")
@@ -382,7 +435,7 @@ if(tempState.length>0){
                                                                             </input> */}
                                                                               {/* {this._renderNormalPicker()}
                                                                         </span>  */} 
-                                                                        <span className="error">{this.state.errors["ownername"]}</span>
+                                                                         <span className="error">{this.state.errors["ownername"]}</span>
                                                                     </div>
                                                                 </div>
 
@@ -459,7 +512,8 @@ Schedule and Project Team now?
 
     
     private _closePanel = (): void => {
-        this.setState({ showPanel: false });
+        this.setState
+        ({ showPanel: false });
         if (!this.state.isDataSaved) {
              this.props.parentReopen();
         }

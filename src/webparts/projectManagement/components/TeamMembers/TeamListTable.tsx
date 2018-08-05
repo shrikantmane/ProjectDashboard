@@ -11,7 +11,7 @@ import {
 import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 import AddProject from '../AddProject/AddProject';
-
+import AddTeam from '../AddteamMembers/AddTeam';
 
 //Start: People Picker
 
@@ -93,8 +93,14 @@ export default class ProjectListTable extends React.Component<
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
         this.actionTemplate=this.actionTemplate.bind(this);
+        this.editTemplate = this.editTemplate.bind(this);
+        this.reopenPanel = this.reopenPanel.bind(this);
     }
     refreshGrid() {
+        this.setState({
+            showComponent: false,
+            projectID: null
+        })
         this.getAllProjectMemeber(this.props.list);
     }
     componentWillReceiveProps(nextProps) {
@@ -133,7 +139,20 @@ export default class ProjectListTable extends React.Component<
                 </div>
             );
     }
-
+    reopenPanel() {
+        this.setState({
+            showComponent: false,
+            projectID: null
+        });
+    }
+    private onEditProject(rowData, e): any {
+        e.preventDefault();
+        console.log('Edit :' + rowData);
+        this.setState({
+            showComponent: true,
+            projectID: rowData.ID
+        });
+    }
 
 
     ownerTemplate(rowData: TeamMembers, column) {
@@ -148,38 +167,12 @@ export default class ProjectListTable extends React.Component<
         return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="fas fa-user-times"></i></a>;
     }
     editTemplate(rowData, column) {
-        return <a href="#"> Edit </a>;
+        return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i>Edit  </a>;
     }
     onAddProject() {
         console.log('button clicked');
-
-        let obj: any = this.state.fields;
-        let fields = this.state.fields;
-        let tempState: any = this.state.currentSelectedItems;
-        if (!this.state.currentSelectedItems || this.state.currentSelectedItems.length === 0) {
-            
-            this.setState({
-                showComponent: true,
-            })
-        }
-        else{
-            this.setState({
-                showComponent: false,
-            })
-        }
-        sp.web.lists.getByTitle(this.props.list).items.add({
-
-            Team_x0020_MemberId: tempState[0].key,
-            Status:"Active",
-            Start_x0020_Date:new Date().toDateString()
-        }).then((response) => {
-            console.log('Item adding-', response);
-            this.setState(fields);
-            this.setState({
-                currentSelectedItems : []
-              });
-this.refreshGrid();
-
+        this.setState({
+            showComponent: true,
         });
     }
     private deleteListItem(rowData,e):any {
@@ -205,24 +198,26 @@ this.refreshGrid();
                 <div className="content-section implementation">
                     <h5>Team Members</h5>
                     <div className="display-line">
-                        {this._renderControlledPicker()}
+                        {/* {this._renderControlledPicker()} */}
                         {/* {this.state.showComponent ?
                             <AddProject parentMethod={this.refreshGrid}/>  :
                         null
                     } */}
                         <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
-                            Add
+                            Add Members
                         </button>
-                    </div>
-                     {this.state.showComponent ?
-                            <span style={{ color:"red" }} >Cannot be Empty</span>   :
+                        {this.state.showComponent ?
+                        <AddTeam id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
                         null
-                    } 
+                    }
+                    </div>
+                    
                     <div className="member-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
+                        <Column body={this.editTemplate}style={{ width: "8%" }} />
                             <Column field="AssignedTo" header="Name" sortable={true} body={this.ownerTemplate}style={{ width: "35%" }} />
 
-                            <Column field="Start_x0020_Date" sortable={true} header="Assigned Date" body={this.duedateTemplate}style={{ width: "32%" }} />
+                            <Column field="Start_x0020_Date" sortable={true} header="Assigned Date" body={this.duedateTemplate}style={{ width: "31%" }} />
                             {/* <Column field="End_x0020_Date" sortable={true} header="End Date" body={this.enddateTemplate}style={{ width: "21%" }} /> */}
                             <Column field="Status" sortable={true} header="Status"style={{ width: "26%" }} />
 

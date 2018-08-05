@@ -125,7 +125,7 @@ export default class ProjectListTable extends React.Component<
                         tempList.push(tempArray);
                         console.log('information by name', response);
                         this.setState({ events: tempList });
-
+                       
                     });
                 })
         }

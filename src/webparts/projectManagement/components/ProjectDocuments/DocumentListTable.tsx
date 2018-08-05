@@ -173,8 +173,12 @@ export default class ProjectListTable extends React.Component<
             //this will add the file in root folder of the document library, if you have a folder named test, replace it as "/Documents/test"
             sp.web.getFolderByServerRelativeUrl(this.props.list).files.add(file.name, file, true).then((result) => {
                 console.log(file.name + " upload successfully!");
-             
+                this.setState({
+                    selectedFile :""
+                  });
                 this.getProjectDocuments(this.props.list);
+    
+
             });
 
         }

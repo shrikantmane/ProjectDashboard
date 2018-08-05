@@ -150,11 +150,13 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     // OwnersGroupId: string,
     HBCOwner: IHBCOwner[],
     CloneProjectData: ICloneProjectData[],
-    ProjectList: string;
-    TaskStatusColor: string;
-    roleAssignments: IRoleAssignments[];
-    savedProjectID: any;
-    statusList: any;
+    ProjectList: string,
+    TaskStatusColor: string,
+    roleAssignments: IRoleAssignments[],
+    savedProjectID: any,
+    statusList: any,
+    departmentList: any,
+    showDepartment: boolean
 }> {
     private _picker: IBasePicker<IPersonaProps>;
     // Added by Ashwini
@@ -219,17 +221,22 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             TaskStatusColor: '',
             roleAssignments: [],
             savedProjectID: 0,
-            statusList: []
+            statusList: [],
+            departmentList: [],
+            showDepartment: false
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
         this.handleBlurOnProjectName = this.handleBlurOnProjectName.bind(this);
+
+        this.state.fields['status'] = true;
     }
     componentDidMount() {
 
         this._getAllSiteUsers();
         this.getAllProject();
         this.getStatusList();
+        this.getDepartmentList();
         this.getAllProjectTags();
         if (this.props.id) {
             this.setState({
@@ -405,7 +412,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         else if (field === 'departmentspecific') {
             let fields = this.state.fields;
             fields[field] = isChecked;
-            this.setState({ fields });
+            if (isChecked) {
+                this.setState({ fields, showDepartment: true });
+            } else {
+                this.setState({ fields, showDepartment: false });
+            }
         }
         else if (field === 'requringproject') {
             let fields = this.state.fields;
@@ -418,13 +429,14 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             this.setState({ fields });
             this.getProjectByName(e.target.value);
         } else if (field === 'status') {
-            if (e.target.value === 'On Hold') {
+            if (e) {
                 let fields = this.state.fields;
-                fields[field] = e.target.value;
+                fields[field] = e;
                 this.setState({ fields, showStatusDate: true });
             } else {
                 let fields = this.state.fields;
-                fields[field] = e.target.value;
+                fields[field] = e;
+                fields['statusdate'] = null;
                 this.setState({ fields, showStatusDate: false });
             }
         } else if (field === 'statusdate') {
@@ -439,13 +451,22 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             fields[field] = ownerArray;
             this.setState({ fields });
 
+        } else if (field === 'projectoutline') {
+            let fields = this.state.fields;
+            fields[field] = e.target.files[0]
+            this.setState({ fields });
         } else {
             let fields = this.state.fields;
             fields[field] = e.target.value;
             this.setState({ fields });
         }
     }
-
+    removeAttachment(i, event) {
+        console.log('index1', i);
+        let fields = this.state.fields;
+        fields['projectoutline'].splice(i, 1);
+        this.setState(fields);
+    }
     handleValidation() {
         let fields = this.state.fields;
         let errors = {};
@@ -463,31 +484,31 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
         }
-        if (!this.state.currentSelectedItems || this.state.currentSelectedItems.length === 0) {
-            formIsValid = false;
-            errors["ownername"] = "Cannot be empty";
-            errorClass["ownername"] = "classError";
-        }
-        if (!fields["projectdescription"]) {
-            formIsValid = false;
-            errors["projectdescription"] = "Cannot be empty";
-            errorClass["projectdescription"] = "classError";
-        }
-        if (!fields["startdate"]) {
-            formIsValid = false;
-            errors["startdate"] = "Cannot be empty";
-            errorClass["startdate"] = "classError";
-        }
-        if (!fields["duedate"]) {
-            formIsValid = false;
-            errors["duedate"] = "Cannot be empty";
-            errorClass["duedate"] = "classError";
-        }
-        if (!fields["tags"] || fields["tags"].length === 0) {
-            formIsValid = false;
-            errors["tags"] = "Cannot be empty";
-            errorClass["tags"] = "classError";
-        }
+        // if (!this.state.currentSelectedItems || this.state.currentSelectedItems.length === 0) {
+        //     formIsValid = false;
+        //     errors["ownername"] = "Cannot be empty";
+        //     errorClass["ownername"] = "classError";
+        // }
+        // if (!fields["projectdescription"]) {
+        //     formIsValid = false;
+        //     errors["projectdescription"] = "Cannot be empty";
+        //     errorClass["projectdescription"] = "classError";
+        // }
+        // if (!fields["startdate"]) {
+        //     formIsValid = false;
+        //     errors["startdate"] = "Cannot be empty";
+        //     errorClass["startdate"] = "classError";
+        // }
+        // if (!fields["duedate"]) {
+        //     formIsValid = false;
+        //     errors["duedate"] = "Cannot be empty";
+        //     errorClass["duedate"] = "classError";
+        // }
+        // if (!fields["tags"] || fields["tags"].length === 0) {
+        //     formIsValid = false;
+        //     errors["tags"] = "Cannot be empty";
+        //     errorClass["tags"] = "classError";
+        // }
         if (fields["startdate"] && fields["duedate"]) {
             if (fields["duedate"] < fields["startdate"]) {
                 formIsValid = false;
@@ -495,7 +516,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 errorClass["duedate"] = "classError";
             }
         }
-        if (!fields["statusdate"] && this.state.showStatusDate && this.props.id) {
+        // if (!fields["statusdate"] && this.state.showStatusDate && this.props.id) {
+        if (!fields["statusdate"] && this.state.showStatusDate) {
             formIsValid = false;
             errors["statusdate"] = "Cannot be empty";
             errorClass["statusdate"] = "classError";
@@ -574,8 +596,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             this.setState({ fields });
             if (this.props.id) {
                 sp.web.lists.getByTitle("Project").items.getById(this.props.id).update({
-                    StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
-                    DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
+                    StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : null,
+                    DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : null,
                     //Status0Id: 2,
                     AssignedToId: { results: obj.ownername },
                     Priority: obj.priority ? obj.priority : 'Low',
@@ -588,17 +610,24 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     Occurance: obj.occurance ? obj.occurance : 'Daily',
                     Recurring_x0020_Project: obj.requringproject ? obj.requringproject : false,
                     ProTypeDeptSpecific: obj.departmentspecific ? obj.departmentspecific : false,
-                    On_x0020_Hold_x0020_Status: obj.status ? obj.status : 'On Hold',
-                    On_x0020_Hold_x0020_Date: obj.statusdate ? new Date(obj.statusdate).toDateString() : null,
+                    On_x0020_Hold_x0020_Status: obj.status ? obj.status : false,
+                    On_x0020_Hold_x0020_Date: obj.statusdate && this.state.showStatusDate ? new Date(obj.statusdate).toDateString() : null,
                     Status0Id: obj.projectstatus ? obj.projectstatus : 1,
                     Risks: obj.risk ? obj.risk : 'Low',
+                    DepartmentId: obj.departmentname && this.state.showDepartment ? obj.departmentname : 1
 
                 }).then(i => {
                     this._closePanel();
                     this.props.parentMethod();
-                    this.state.fields['tags'].forEach(element => {
-                        this.addProjectTagByTagName(element.value, this.props.id);
-                    });
+                    if (this.state.fields["projectoutline"].length > 0) {
+                        console.log('Saving project outline....................');
+                        i.item.attachmentFiles.add(this.state.fields["projectoutline"].name, this.state.fields["projectoutline"]);
+                    }
+                    if (this.state.fields['tags']) {
+                        this.state.fields['tags'].forEach(element => {
+                            this.addProjectTagByTagName(element.value, this.props.id);
+                        });
+                    }
                 });
             } else {
                 // sp.web.lists.getByTitle("Project").items.add({
@@ -1074,9 +1103,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             //.select("ID", "Project", "Schedule_x0020_List", "Requirements", "Project_x0020_Document", "Project_x0020_Calender")
             //  "Department",
             .select("ID", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "PercentComplete", "AssignedTo/ID", "AssignedTo/Title",
-                "StartDate", "DueDate", "Body", "Priority", "ProTypeDeptSpecific", "Recurring_x0020_Project", "Occurance", "Parent",
-                "IsActive", "On_x0020_Hold_x0020_Status", "On_x0020_Hold_x0020_Date", "Schedule_x0020_List", "Requirements", "Project_x0020_Document",
-                "Project_x0020_Calender")
+            "StartDate", "DueDate", "Body", "Priority", "ProTypeDeptSpecific", "Recurring_x0020_Project", "Occurance", "Parent",
+            "IsActive", "On_x0020_Hold_x0020_Status", "On_x0020_Hold_x0020_Date", "Schedule_x0020_List", "Requirements", "Project_x0020_Document",
+            "Project_x0020_Calender")
             .expand("Status0", "AssignedTo")
             .filter(filter)
             .getAll()
@@ -1150,8 +1179,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         sp.web.lists.getByTitle("Project").items.add({
             Title: "No Title",
             Project: ProName.split('_').join(' '),
-            StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
-            DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
+            StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : null,
+            DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : null,
             AssignedToId: { results: obj.ownername },
             Priority: obj.priority ? obj.priority : 'Low',
             Body: obj.projectdescription ? obj.projectdescription : '',
@@ -1201,8 +1230,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         // add an item to the list  
         sp.web.lists.getByTitle("Project").items.add({
             Project: ProName.split('_').join(' '),
-            StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
-            DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : '',
+            StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : null,
+            DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : null,
             AssignedToId: { results: obj.ownername },
             Priority: obj.priority ? obj.priority : 'Low',
             Body: obj.projectdescription ? obj.projectdescription : '',
@@ -1216,6 +1245,10 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Clone_x0020_Calender: obj.clonecalender ? obj.clonecalender : false,
             Status0Id: obj.projectstatus ? obj.projectstatus : 1,
             Risks: obj.risk ? obj.risk : 'Low',
+            On_x0020_Hold_x0020_Status: obj.status ? obj.status : false,
+            On_x0020_Hold_x0020_Date: obj.statusdate && this.state.showStatusDate ? new Date(obj.statusdate).toDateString() : null,
+            DepartmentId: obj.departmentname && this.state.showDepartment ? obj.departmentname : 1,
+
 
             Title: "No Title",
 
@@ -1233,11 +1266,17 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Task_x0020_Comments_x0020_Histor: TaskCommentsHistoryClmn
         }).then((iar: ItemAddResult) => {
 
+            if (this.state.fields["projectoutline"]) {
+                console.log('Saving project outline....................');
+                iar.item.attachmentFiles.add(this.state.fields["projectoutline"].name, this.state.fields["projectoutline"]);
+            }
             this.CreateTaskList(ProName);
             this.setState({ isDataSaved: true, savedProjectID: iar.data.Id });
-            this.state.fields['tags'].forEach(element => {
-                this.addProjectTagByTagName(element.value, iar.data.Id);
-            });
+            if (this.state.fields['tags']) {
+                this.state.fields['tags'].forEach(element => {
+                    this.addProjectTagByTagName(element.value, iar.data.Id);
+                });
+            }
         }).catch(err => {
             console.log("Error while adding items for ", ProName, " to Project List -", err);
         });
@@ -1952,7 +1991,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         let ApporvalStatus;
         sp.web.lists.getByTitle(oldRequirementsList).items
             .select("Requirement", "Efforts", "Impact_x0020_On_x0020_Timelines", "Resources", "Attachments",
-                "Approver/ID", "Approver/Title", "Apporval_x0020_Status")
+            "Approver/ID", "Approver/Title", "Apporval_x0020_Status")
             .expand("Approver")
             .get()
             .then(res => {
@@ -2018,7 +2057,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         sp.web.lists.getByTitle(oldScheduleList).items
             .select("StartDate", "DueDate", "Duration", "AssignedTo/Title", "AssignedTo/ID", "Status0/ID", "Status0/Status",
-                "Status0/Status_x0020_Color", "Priority", "Body", "Predecessors/ID", "Predecessors/Title", "Comment", "Status")
+            "Status0/Status_x0020_Color", "Priority", "Body", "Predecessors/ID", "Predecessors/Title", "Comment", "Status")
             .expand("AssignedTo", "Status0", "Predecessors")
             .get()
             .then(res => {
@@ -2223,10 +2262,10 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     </select>
                 </div>
             </div> : null;
-        const statusDate = (this.props.id && this.state.showStatusDate) ?
+        const statusDate = (this.state.showStatusDate) ?
             <div className="col-lg-6">
                 <div className="form-group">
-                    <label>On Hold Date</label>
+                    <label>On Hold Date<span className="error">*</span></label>
                     <DatePicker
                         placeholder="Select On Hold date"
                         onSelectDate={this.handleChange.bind(this, "statusdate")}
@@ -2279,6 +2318,30 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     </div>
                 </div>
             </div> : null;
+        const attachmentDiv = this.state.fields['projectoutline'] && this.state.fields['projectoutline'].length > 0 ?
+            <div className="col-lg-6">
+                {this.state.fields['projectoutline'].map((obj, i) =>
+                    <div className="form-group">
+                        <label style={{ float: 'left', width: '90%' }}>{obj.FileName}</label>
+                        <i className="far fa-times-circle" style={{ float: 'right', cursor: 'pointer' }} onClick={this.removeAttachment.bind(this, i)}></i>
+                    </div>
+                )}
+            </div> : null;
+        const emptyDiv = this.state.fields['projectoutline'] && this.state.fields['projectoutline'].length > 0 ?
+            <div className="col-lg-6">
+            </div> : null;
+        const departmentContent = this.state.showDepartment ?
+            <div className="col-sm-6 col-12">
+                <div className="form-group">
+                    <label>Department Name</label>
+                    <select ref="departmentname" className={formControl + " " + (this.state.errorClass["departmentname"] ? this.state.errorClass["departmentname"] : '')}
+                        onChange={this.handleChange.bind(this, "departmentname")} value={this.state.fields["departmentname"]}>
+                        {this.state.departmentList.map((obj) =>
+                            <option key={obj.Department} value={obj.ID}>{obj.Department}</option>
+                        )}
+                    </select>
+                </div>
+            </div> : null;
         return (
             // className="PanelContainer"
             <div>
@@ -2298,7 +2361,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                         <div className="row addSection">
                                             <div className="col-sm-6 col-12">
                                                 <div className="form-group">
-                                                    <label>Project Name</label>
+                                                    <label>Project Name<span className="error">*</span></label>
                                                     <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
                                                         onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName}>
                                                     </input>
@@ -2335,7 +2398,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                             <div className="col-sm-12 col-12">
                                                 <div className="form-group">
                                                     <label>Project Description</label>
-                                                    <textarea ref="projectdescription" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Brief the owner about the project"
+                                                    <textarea ref="projectdescription" style={{ height: '50px !important' }} className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Brief the owner about the project"
                                                         onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}></textarea>
                                                     <span className="error">{this.state.errors["projectdescription"]}</span>
                                                 </div>
@@ -2364,10 +2427,24 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                             </div>
                                             <div className="col-sm-6 col-12">
                                                 <div className="form-group">
-                                                    <label>Project Type</label>
-                                                    <div>
-                                                        <Checkbox checked={this.state.fields["departmentspecific"]} label="Department Specific" onChange={this.handleChange.bind(this, "departmentspecific")} value={this.state.fields["departmentspecific"]} />
-                                                    </div>
+                                                    <label>Project Status</label>
+                                                    <select ref="projectstatus" className={formControl + " " + (this.state.errorClass["projectstatus"] ? this.state.errorClass["projectstatus"] : '')}
+                                                        onChange={this.handleChange.bind(this, "projectstatus")} value={this.state.fields["projectstatus"]}>
+                                                        {this.state.statusList.map((obj) =>
+                                                            <option key={obj.Status} value={obj.Id}>{obj.Status}</option>
+                                                        )}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Priority</label>
+                                                    <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
+                                                        <option>Low</option>
+                                                        <option>Medium</option>
+                                                        <option>High</option>
+                                                    </select>
+                                                    <span className="error">{this.state.errors["priority"]}</span>
                                                 </div>
                                             </div>
                                             <div className="col-sm-6 col-12">
@@ -2384,28 +2461,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                             </div>
                                             <div className="col-sm-6 col-12">
                                                 <div className="form-group">
-                                                    <label>Priority</label>
-                                                    <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
-                                                        <option>Low</option>
-                                                        <option>Medium</option>
-                                                        <option>High</option>
-                                                    </select>
-                                                    <span className="error">{this.state.errors["priority"]}</span>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
-                                                    <label>Project Status</label>
-                                                    <select ref="projectstatus" className={formControl + " " + (this.state.errorClass["projectstatus"] ? this.state.errorClass["projectstatus"] : '')}
-                                                        onChange={this.handleChange.bind(this, "projectstatus")} value={this.state.fields["projectstatus"]}>
-                                                        {this.state.statusList.map((obj) =>
-                                                            <option key={obj.Status} value={obj.Id}>{obj.Status}</option>
-                                                        )}
-                                                    </select>
-                                                </div>
-                                            </div>
-                                            <div className="col-sm-6 col-12">
-                                                <div className="form-group">
                                                     <label>Risk</label>
                                                     <select className={formControl + " " + (this.state.errorClass["risk"] ? this.state.errorClass["risk"] : '')} ref="risk" onChange={this.handleChange.bind(this, "risk")} value={this.state.fields["risk"]}>
                                                         <option>Low</option>
@@ -2414,13 +2469,44 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                     </select>
                                                 </div>
                                             </div>
-                                            {statusContent}
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Project Type</label>
+                                                    <div>
+                                                        <Checkbox checked={this.state.fields["departmentspecific"]} label="Department Specific" onChange={this.handleChange.bind(this, "departmentspecific")} value={this.state.fields["departmentspecific"]} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* department ID */}
+                                            {departmentContent}
+                                        </div>
+                                        <div className="row addSection">
+                                            {/* {statusContent} */}
+                                            <div className="col-lg-6">
+                                                <div className="form-group">
+                                                    <label>On Hold Status</label>
+                                                    {/* <select ref="status" className={formControl + " " + (this.state.errorClass["status"] ? this.state.errorClass["status"] : '')}
+                                                        onChange={this.handleChange.bind(this, "status")} value={this.state.fields["status"]}>
+                                                        <option>On Hold</option>
+                                                        <option>Resume </option>
+                                                    </select> */}
+                                                    <Toggle
+                                                        checked={this.state.fields["status"]}
+                                                        defaultChecked={true}
+                                                        onText="On"
+                                                        offText="Off"
+                                                        onChanged={this.handleChange.bind(this, "status")}
+                                                        onFocus={() => console.log('onFocus called')}
+                                                        onBlur={() => console.log('onBlur called')}
+                                                    />
+                                                </div>
+                                            </div>
                                             {statusDate}
                                         </div>
                                         <div className="row addSection">
                                             <div className="col-sm-6 col-12">
                                                 <div className="form-group">
-                                                    <label>Requring Project?</label>
+                                                    <label>Reccuring Project?</label>
                                                     <div>
                                                         <Checkbox label="Yes" checked={this.state.fields["requringproject"]} onChange={this.handleChange.bind(this, "requringproject")} value={this.state.fields["requringproject"]} />
                                                     </div>
@@ -2438,6 +2524,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                     <span className="error">{this.state.errors["occurance"]}</span>
                                                 </div>
                                             </div>
+                                        </div>
+                                        <div className="row addSection">
+                                            <div className="col-lg-6">
+                                                <div className="form-group">
+                                                    <label>Project Outline</label>
+                                                    <div className="fileupload" data-provides="fileupload">
+                                                        <input ref="projectoutline" type="file" id="uploadFile"
+                                                            onChange={this.handleChange.bind(this, "projectoutline")} >
+                                                        </input>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {attachmentDiv}
                                         </div>
                                         <div className="row addSection">
                                             <div className="col-sm-12 col-12">
@@ -2488,8 +2587,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         // get Project Documents list items for all projects
         let filterString = "ID eq " + id;
         sp.web.lists.getByTitle("Project").items
-            .select("Project", "StartDate", "DueDate", "Risks", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/EMail", "AssignedTo/ID", "Priority", "Clone_x0020_Project", "Clone_x0020_Calender", "Clone_x0020_Documents", "Clone_x0020_Requirements", "Clone_x0020_Schedule", "Body", "Occurance", "Recurring_x0020_Project", "ProTypeDeptSpecific", "On_x0020_Hold_x0020_Date", "On_x0020_Hold_x0020_Status")
-            .expand("Status0", "AssignedTo")
+            .select("Project", "StartDate", "DueDate", "Risks", "Status0/ID", "Department/ID", "Department/Title", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/EMail", "AssignedTo/ID", "Priority", "Clone_x0020_Project", "Clone_x0020_Calender", "Clone_x0020_Documents", "Clone_x0020_Requirements", "Clone_x0020_Schedule", "Body", "Occurance", "Recurring_x0020_Project", "ProTypeDeptSpecific", "On_x0020_Hold_x0020_Date", "On_x0020_Hold_x0020_Status", "AttachmentFiles", "AttachmentFiles/ServerRelativeUrl", "AttachmentFiles/FileName")
+            .expand("Status0", "AssignedTo", "AttachmentFiles", "Department")
+
             .filter(filterString)
             .getAll()
             .then((response) => {
@@ -2497,9 +2597,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this.state.fields["project"] = response ? response[0].Project : '';
                 this.state.fields["projectname"] = response ? response[0].Project : '';
                 this.state.fields["priority"] = response ? response[0].Priority : '';
-                this.state.fields["duedate"] = response ? new Date(response[0].DueDate) : '';
+                this.state.fields["duedate"] = response[0].DueDate ? new Date(response[0].DueDate) : null;
                 this.state.fields["projectdescription"] = response ? response[0].Body : '';
-                this.state.fields["startdate"] = response ? new Date(response[0].StartDate) : '';
+                this.state.fields["startdate"] = response[0].StartDate ? new Date(response[0].StartDate) : null;
                 this.state.fields["departmentspecific"] = response ? response[0].ProTypeDeptSpecific : false;
                 this.state.fields["requringproject"] = response ? response[0].Recurring_x0020_Project : false;
                 this.state.fields["occurance"] = response ? response[0].Occurance : '';
@@ -2508,14 +2608,15 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this.state.fields["clonerequirements"] = response ? response[0].Clone_x0020_Requirements : false;
                 this.state.fields["clonecalender"] = response ? response[0].Clone_x0020_Calender : false;
                 this.state.fields["cloneproject"] = response ? response[0].Clone_x0020_Project : false;
-                this.state.fields["status"] = response ? response[0].On_x0020_Hold_x0020_Status : '';
-                this.state.fields["projectstatus"] = response ? response[0].Status0.ID : '1';
+                this.state.fields["status"] = response ? response[0].On_x0020_Hold_x0020_Status : false;
+                this.state.fields["projectstatus"] = response[0].Status0 ? response[0].Status0.ID : '1';
                 this.state.fields["risk"] = response ? response[0].Risks : 'Low';
+                this.state.fields["projectoutline"] = response ? response[0].AttachmentFiles : [];
 
                 const selectedPeopleList: IPersonaWithMenu[] = [];
                 const selectedTarget: IPersonaWithMenu = {};
                 let tempSelectedPersona = {};
-                if (response[0].AssignedTo.length > 0) {
+                if (response[0].AssignedTo && response[0].AssignedTo.length > 0) {
                     response[0].AssignedTo.forEach(element => {
                         tempSelectedPersona = {
                             key: element.ID,
@@ -2531,21 +2632,27 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this.setState({ currentSelectedItems: selectedPeopleList })
                 this.state.fields["ownername"] = selectedPeopleList;
 
+                if (response[0].ProTypeDeptSpecific && response[0].Department) {
+                    this.state.fields["departmentname"] = response[0].Department.ID;
+                    this.setState({ showDepartment: true });
+                }
+
                 if (response[0].Clone_x0020_Project) {
                     this.setState({ cloneProjectChecked: true });
                 } else {
                     this.setState({ cloneProjectChecked: false });
                 }
-                if (response[0].On_x0020_Hold_x0020_Status === 'On Hold') {
-                    this.state.fields["statusdate"] = response ? new Date(response[0].On_x0020_Hold_x0020_Date) : '';
+                if (response[0].On_x0020_Hold_x0020_Status) {
+                    this.state.fields["statusdate"] = response[0].On_x0020_Hold_x0020_Date ? new Date(response[0].On_x0020_Hold_x0020_Date) : null;
                     this.setState({ showStatusDate: true });
                 } else if (response[0].On_x0020_Hold_x0020_Status === null) {
-                    this.state.fields["status"] = 'On Hold';
-                    this.setState({ showStatusDate: true });
+                    this.state.fields["status"] = false;
+                    this.setState({ showStatusDate: false });
                 } else {
                     this.state.fields["statusdate"] = '';
                     this.setState({ showStatusDate: false });
                 }
+                console.log('State........', this.state.fields)
             }).catch((e: Error) => {
                 alert(`There was an error : ${e.message}`);
             });
@@ -2582,6 +2689,17 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this.setState({ projectList: response });
             }).catch((e: Error) => {
                 alert(`There was an error : ${e.message}`);
+            });
+    }
+    getDepartmentList() {
+        sp.web.lists.getByTitle('Departments').items.orderBy("Department", true)
+            .select("ID", "Department", "Department_x0020_Owner/ID", "Department_x0020_Owner/Title").expand("Department_x0020_Owner")
+            .get()
+            .then(result => {
+                console.log("Department - ", result);
+                this.setState({ departmentList: result });
+            }).catch(err => {
+                console.log("Error while fetching Department - ", err);
             });
     }
     getStatusList() {

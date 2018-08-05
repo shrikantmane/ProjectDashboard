@@ -24,4 +24,5 @@ export interface ITeamState {
     mostRecentlyUsed: IPersonaProps[];
     currentSelectedItems?: IPersonaProps[];
     fields: {},
+    projectID ?: number
 }

@@ -12,6 +12,7 @@ export interface IProjectViewState{
     requirementlist:any;
     teammemberlist:any;
     refreshCalender:boolean;
+    Risks:string;
     Id:any;
     events:[{
         id?:number,

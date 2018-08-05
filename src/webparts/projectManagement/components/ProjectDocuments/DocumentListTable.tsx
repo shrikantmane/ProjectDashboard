@@ -11,7 +11,7 @@ import {
 import { find, filter, sortBy } from "lodash";
 import { SPComponentLoader } from "@microsoft/sp-loader";
 import AddProject from '../AddProject/AddProject';
-
+import AddDocument from '../AddDocument/AddDocument';
 export default class ProjectListTable extends React.Component<
     IProjectDocumentProps,
     IDocumentState
@@ -42,6 +42,8 @@ export default class ProjectListTable extends React.Component<
         this.refreshGrid = this.refreshGrid.bind(this);
         this.UploadFiles=this.UploadFiles.bind(this);
         this.actionTemplate=this.actionTemplate.bind(this);
+        this.reopenPanel=this.reopenPanel.bind(this);
+        this.onAddProject=this.onAddProject.bind(this);
     }
     dt: any;
     componentDidMount() {
@@ -183,9 +185,21 @@ export default class ProjectListTable extends React.Component<
 
         }
     }
+       reopenPanel() {
+        this.setState({
+            showComponent: false,
+            
+        })
+    }
     fileChangedHandler = (event) => {
         const file = event.target.files[0]
         this.setState({ selectedFile: event.target.files[0] })
+    }
+    onAddProject() {
+        console.log('button clicked');
+        this.setState({
+            showComponent: true,
+        });
     }
     public render(): React.ReactElement<IDocumentState> {
         return (
@@ -194,17 +208,13 @@ export default class ProjectListTable extends React.Component<
 
                 <div className="content-section implementation">
                     <h5>Documents</h5>
-                    {/* <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
-                        Add Document
-                    </button> */}
-                    <input type="file" onChange={this.fileChangedHandler} />
-                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.UploadFiles}>
-                        Upload
+                    <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
+                        Add Documents
                     </button>
                     {this.state.showComponent ?
-                             <span style={{ color:"red" }} > Please Select File</span>   :
+                        <AddDocument parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
                         null
-                    } 
+                    }
                     {/* <input type="button" value="Upload" className="btn btn-outline btn-sm" onClick={this.UploadFiles} /> */}
                     <div className="document-list">
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>

@@ -124,8 +124,14 @@ export default class ProjectTaskList extends React.Component<
                   filterable
                   expanded={this.state.expanded}
                   defaultFilterMethod={(filter, row, column) => {
-                    const id = filter.pivotId || filter.id
+                    const id = filter.pivotId || filter.id; 
                     return row[id] !== undefined ? String(row[id]).toLocaleLowerCase().match(filter.value.toLocaleLowerCase()) : true
+                  }}
+                  onFilterChange ={()=>{
+                    if((this.state.expanded[0]) == false ){
+                      this.setState
+                      ({ expanded: { 0: true }})
+                    }
                   }}
                   onExpandedChange={(newExpanded, index, event) => this.handleRowExpanded(newExpanded, index)}
                   columns={[

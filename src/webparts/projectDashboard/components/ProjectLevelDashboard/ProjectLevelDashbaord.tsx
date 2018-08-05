@@ -30,6 +30,9 @@ export default class ProjectLevelDashboard extends React.Component<
     } = this.props;
     this.getProjectByProjectID(params.id);
     this.getProjectTagsByProjectID(params.id);
+    var elmnt = document.getElementById('projectDashboard_projectName');
+    if (elmnt)
+        elmnt.scrollIntoView();
   }
 
   private getProjectByProjectID(id: number) {
@@ -94,7 +97,7 @@ export default class ProjectLevelDashboard extends React.Component<
             <div className="wrapper">
               <div className="row conversationTasks">
                 <div className="project-tabs col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                  <div className="projectName">{this.state.project.Project}
+                  <div className="projectName" id="projectDashboard_projectName">{this.state.project.Project}
                 <span className="due-date-style">Due on : { new Date(this.state.project.DueDate).toDateString()}</span>
                     <div className="tagList">
                       <span className="delayedStatus priority-btn">Priority: {this.state.project.Priority}</span>

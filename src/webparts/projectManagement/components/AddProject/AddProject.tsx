@@ -206,7 +206,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             delayResults: false,
             currentPicker: 1,
             isDataSaved: false,
-            showStatusDate: true,
+            showStatusDate: false,
             selectedOption: null,
             inputValue: '',
             value: [],
@@ -229,7 +229,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         this._closeModal = this._closeModal.bind(this);
         this.handleBlurOnProjectName = this.handleBlurOnProjectName.bind(this);
 
-        this.state.fields['status'] = true;
+        this.state.fields['status'] = false;
     }
     componentDidMount() {
 
@@ -2492,7 +2492,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                     </select> */}
                                                     <Toggle
                                                         checked={this.state.fields["status"]}
-                                                        defaultChecked={true}
+                                                        defaultChecked={false}
                                                         onText="On"
                                                         offText="Off"
                                                         onChanged={this.handleChange.bind(this, "status")}

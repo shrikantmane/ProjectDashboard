@@ -77,7 +77,8 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
                                   <a href={email} target="_blank">{item.Team_x0020_Member.Title}</a>
                                 </div>
                                 <div className="profileDesignation">
-                                  <span className="designationTag">{item.Team_x0020_Member.JobTitle}</span>
+                                  {/* <span className="designationTag">{item.Team_x0020_Member.JobTitle}</span> */}
+                                  <h5 className="jobName">{item.Team_x0020_Member.JobTitle}</h5>
                                 </div>
                               </div>
                             </div>

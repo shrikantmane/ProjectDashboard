@@ -655,7 +655,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this.setState({ isLoading: false });
                     this._closePanel();
                     this.props.parentMethod();
-                    if (this.state.fields["projectoutline"].length > 0) {
+                    if (this.state.fields["projectoutline"]) {
                         console.log('Saving project outline....................');
                         i.item.attachmentFiles.add(this.state.fields["projectoutline"].name, this.state.fields["projectoutline"]);
                     }
@@ -3551,7 +3551,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this.state.fields["status"] = response ? response[0].On_x0020_Hold_x0020_Status : false;
                 this.state.fields["projectstatus"] = response[0].Status0 ? response[0].Status0.ID : '1';
                 this.state.fields["risk"] = response ? response[0].Risks : 'Low';
-                this.state.fields["projectoutline"] = response ? response[0].AttachmentFiles : [];
+                this.state.fields["projectoutline"] = response[0].AttachmentFiles.length > 0 ? response[0].AttachmentFiles : null;
 
                 const selectedPeopleList: IPersonaWithMenu[] = [];
                 const selectedTarget: IPersonaWithMenu = {};

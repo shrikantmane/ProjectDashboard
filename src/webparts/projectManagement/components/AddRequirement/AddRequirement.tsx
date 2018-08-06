@@ -27,7 +27,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
     showModal: boolean,
     isDataSaved: boolean,
     attachmentFiles: any,
-    isLoading: boolean
+   // isLoading: boolean
 }> {
 
     constructor(props) {
@@ -41,7 +41,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             showModal: false,
             isDataSaved: false,
             attachmentFiles: [],
-            isLoading: false
+           // isLoading: false
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -96,21 +96,21 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
         }
-        if (!fields["projectdescription"]) {
-            formIsValid = false;
-            errors["projectdescription"] = "Cannot be empty";
-            errorClass["projectdescription"] = "classError";
-        }
-        if (!fields["effortdescription"]) {
-            formIsValid = false;
-            errors["effortdescription"] = "Cannot be empty";
-            errorClass["effortdescription"] = "classError";
-        }
-        if (!fields["filedescription"]) {
-            formIsValid = false;
-            errors["filedescription"] = "Cannot be empty";
-            errorClass["filedescription"] = "classError";
-        }
+        // if (!fields["projectdescription"]) {
+        //     formIsValid = false;
+        //     errors["projectdescription"] = "Cannot be empty";
+        //     errorClass["projectdescription"] = "classError";
+        // }
+        // if (!fields["effortdescription"]) {
+        //     formIsValid = false;
+        //     errors["effortdescription"] = "Cannot be empty";
+        //     errorClass["effortdescription"] = "classError";
+        // }
+        // if (!fields["filedescription"]) {
+        //     formIsValid = false;
+        //     errors["filedescription"] = "Cannot be empty";
+        //     errorClass["filedescription"] = "classError";
+        // }
 
 
 
@@ -143,7 +143,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         // get Project Documents list items for all projects
         let filterString = "ID eq " + id;
         sp.web.lists.getByTitle(this.props.list).items
-            .select("ID", "Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created", "AttachmentFiles", "AttachmentFiles/ServerRelativeUrl", "AttachmentFiles/FileName")
+            .select("ID", "Requirement", "Resources", "Impact_x0020_On_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created", "AttachmentFiles", "AttachmentFiles/ServerRelativeUrl", "AttachmentFiles/FileName")
             .expand("Approver", "Author", "AttachmentFiles")
             .filter(filterString)
             .get()
@@ -171,12 +171,12 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
 
             let obj: any = this.state.fields;
             if (this.props.id) {
-                this.setState({ isLoading: true });
+               // this.setState({ isLoading: true });
                 sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
                     Requirement: obj.projectname ? obj.projectname : '',
                     //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
-                    Resources: obj.projectdescription ? obj.projectdescription : '',
-                    Efforts: obj.effortdescription ? obj.effortdescription : '',
+                    Resources: obj.projectdescription ? obj.projectdescription : null,
+                    Efforts: obj.effortdescription ? obj.effortdescription : null,
                     // Attachments: obj.filedescription ? obj.effortdescription : '',
                     //Owner: obj.ownername?obj.ownername:'',
                     // Impact: obj.priority ? obj.priority : '',
@@ -188,31 +188,44 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     //Status0Id: 2
 
                 }).then((response) => {
-                    
+                    if(this.state.fields["filedescription"]!=null)
+                    {
                     //response.item.attachmentFiles.add(this.state.fields["filedescription"], this.state.selectedFile);
                     response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
-                        this.setState({ isLoading: false });
+                       // this.setState({ isLoading: false });
                         this._closePanel();
                         this.props.parentMethod();
                         this.props.parentReopen();
                     })
-
+                }
+                else{
+                    this._closePanel();
+                        this.props.parentMethod();
+                        this.props.parentReopen();
+                }
                 });
             } else {
-                this.setState({ isLoading: true });
+             //   this.setState({ isLoading: true });
                 sp.web.lists.getByTitle(this.props.list).items.add({
                     Requirement: obj.projectname ? obj.projectname : '',
                     //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
-                    Resources: obj.projectdescription ? obj.projectdescription : '',
-                    Efforts: obj.effortdescription ? obj.effortdescription : '',
+                    Resources: obj.projectdescription ? obj.projectdescription : null,
+                    Efforts: obj.effortdescription ? obj.effortdescription : null,
                 }).then((response) => {
+                    if(this.state.fields["filedescription"]!=null)
+                    {
                     //const formData = new FormData();
                     //formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
                     response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
-                        this.setState({ isLoading: false });
+                        //this.setState({ isLoading: false });
                         this.props.parentMethod();
                         this._closePanel();
                     })
+                }
+                else{
+                    this.props.parentMethod();
+                    this._closePanel();
+                }
                     console.log('Item adding-', response);
                     this.setState({ isDataSaved: true });
                     //this._closePanel();
@@ -288,7 +301,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         //     </div> : null;
         return (
             // className="PanelContainer"
-            !this.state.isLoading ?
+           // !this.state.isLoading ?
             <div>
                 <Panel
                     isOpen={this.state.showPanel}
@@ -304,17 +317,36 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                         {/* <section id="step1">
                                             <div className="well">
                                                 <div className="row"> */}
-                                                    <h3 className="hbc-form-header">Project Requirements</h3>
+                                                    <h3 className="hbc-form-header">Project Requirement</h3>
                                                     {/* <div > */}
                                                         <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
                                                             <div className="row addSection">
-                                                                <div className="col-sm-6 col-12">
+                                                                <div className="col-sm-12 col-12">
                                                                     <div className="form-group">
-                                                                        <label>Requirement</label><span style={textcolor}>*</span>
+                                                                    <span className="error">* </span><label>Requirementss</label>
                                                                         <textarea ref="projectname" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
                                                                             onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
                                                                         </textarea>
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
+                                                                    </div>
+                                                                </div>
+                                                              
+                                                                <div className="col-sm-6 col-12">
+                                                                    <div className="form-group">
+                                                                        <label>Number Of Resources</label>
+                                                                        <input ref="projectdescription" type="number" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Total Number Of People"
+                                                                            onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}>
+                                                                        </input>
+                                                                        <span className="error">{this.state.errors["projectdescription"]}</span>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="col-sm-6 col-12">
+                                                                    <div className="form-group">
+                                                                        <label>Efforts</label>
+                                                                        <input ref="effortdescription" type="number" className={formControl + " " + (this.state.errorClass["effortdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Enter Number Of Day"
+                                                                            onChange={this.handleChange.bind(this, "effortdescription")} value={this.state.fields["effortdescription"]}>
+                                                                        </input>
+                                                                        <span className="error">{this.state.errors["effortdescription"]}</span>
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-sm-6 col-12">
@@ -330,24 +362,6 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                 </div>
                                                                 {emptyDiv}
                                                                 {attachmentDiv}
-                                                                <div className="col-sm-6 col-12">
-                                                                    <div className="form-group">
-                                                                        <label>Number Of Resourcess</label><span style={textcolor}>*</span>
-                                                                        <input ref="projectdescription" type="number" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Total Number Of People"
-                                                                            onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}>
-                                                                        </input>
-                                                                        <span className="error">{this.state.errors["projectdescription"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6 col-12">
-                                                                    <div className="form-group">
-                                                                        <label>Efforts</label><span style={textcolor}>*</span>
-                                                                        <input ref="effortdescription" type="number" className={formControl + " " + (this.state.errorClass["effortdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Enter Number Of Day"
-                                                                            onChange={this.handleChange.bind(this, "effortdescription")} value={this.state.fields["effortdescription"]}>
-                                                                        </input>
-                                                                        <span className="error">{this.state.errors["effortdescription"]}</span>
-                                                                    </div>
-                                                                </div>
                                                                 </div>
                                                                 <div className="row addSection">
                                                                 {/* <div className="col-sm-12 col-12">
@@ -374,7 +388,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     </div>
                 </Panel>
             </div>
-: <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div>
+//: <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div>
         );
     }
     private _closePanel = (): void => {

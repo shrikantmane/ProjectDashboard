@@ -92,9 +92,9 @@ public Attachments:string;
 public Author:Team_x0020_Member;
 public Created:string;
 public Efforts:number
-public Impact_x0020_on_x0020_Timelines:boolean;
-public Requirement:number;
+public Impact_x0020_On_x0020_Timelines:boolean;
+public Requirement:string;
 public Resources:number;
 public Approver:Team_x0020_Member;
-public AttachmentFiles: File;
+public AttachmentFiles:Array<File>;
 }

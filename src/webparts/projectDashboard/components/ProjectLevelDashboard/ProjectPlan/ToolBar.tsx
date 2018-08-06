@@ -27,12 +27,21 @@ export default class Toolbar extends React.Component<any, any> {
         </label>
       );
     });
- {/* {zoomRadios} */}
+    {/* {zoomRadios} */ }
+    let dayClass = "";
+    let monthsClass = "";
+    if (this.props.zoom == "Days") {
+      dayClass = "zoom-bar-button zoom-button-active";
+      monthsClass = "zoom-bar-button";
+    } else {
+      dayClass = "zoom-bar-button";
+      monthsClass = "zoom-bar-button zoom-button-active";
+    }
     return (
       <div className="zoom-bar">
         <ButtonToolbar>
-          <Button className="zoom-bar-button" value="Days" onClick={this.handleZoomChange}>Days</Button>
-          <Button className="zoom-bar-button" value="Months" onClick={this.handleZoomChange}>Months</Button>
+          <Button className={dayClass} value="Days" onClick={this.handleZoomChange}>Days</Button>
+          <Button className={monthsClass} value="Months" onClick={this.handleZoomChange}>Months</Button>
         </ButtonToolbar>
       </div>
     );

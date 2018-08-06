@@ -346,8 +346,7 @@
     vertical-align: middle;
     position: relative;
     top: 3px;
-  }
-  // .form-group .form-control.fileupload:after {
+  } // .form-group .form-control.fileupload:after {
   //   font-family: FontAwesome;
   //   content: "\f093";
   //   color: #7f8fa4;
@@ -757,6 +756,12 @@
   div.fc-center h2 {
     font-size: 20px !important;
   }
+  .projectEdit {
+    text-align: center;
+  }
+  .actionItemsIcons {
+    text-align: center;
+  }
   /* END: Styles added on 05-Aug-2018 */
   @media only screen and (min-width: 1367px) {
     .margin-left {
@@ -799,17 +804,7 @@
       margin-top: 2% !important;
     }
   }
-  @media only screen and (max-width: 768px) {
-    .main-content-section {
-      padding-left: 0px;
-      padding-top: 0px;
-      padding-bottom: 0px;
-      padding-right: 0px; //height: 100vh;
-    }
-    .infoBoxes {
-      height: 75px;
-    }
-  }
+  @media only screen and (max-width: 768px) {}
   @media only screen and (max-width: 425px) and (min-width: 320px) {
     .view-off {
       display: none;
@@ -844,6 +839,28 @@
   /*------------------------ END: Project List View -----------------------------*/
   /*------------------------ Mobile View -----------------------------*/
   @media only screen and (max-width: 768px) {
+    .infoBoxes {
+      height: 75px;
+    }
+    .projectEdit {
+      text-align: left;
+    }
+    .projectEdit .ui-column-title {
+      display: none !important;
+    }
+    .projectEdit .fa-edit:after {
+      content: 'Edit';
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      font-size: 13px;
+      margin-left: 4px;
+    }
+    .actionItemsIcons {
+      text-align: left;
+      margin-bottom: 0.7rem;
+    }
     .main-content-section {
       padding-left: 0px;
       padding-top: 0px;
@@ -863,6 +880,12 @@
     }
     .margin-left {
       margin-left: 22% !important;
+    }
+    .project-list table tr td:first-child {
+      text-align: left !important;
+    }
+    .project-list .ui-datatable-reflow .ui-datatable-data tr.ui-widget-content {
+      border: 1px solid #e6e3e3;
     }
   }
 }

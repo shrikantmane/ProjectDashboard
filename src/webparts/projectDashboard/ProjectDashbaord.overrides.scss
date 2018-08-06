@@ -652,9 +652,8 @@ div[class^="footerBar_"] {
     font-weight: 800;
   }
   .ReactTable .rt-thead.-filters .rt-th {
-    border-right: 1px solid rgba(0, 0, 0, .02);
-   // background-color: #002741;
-   //  padding-top: 0;
+    border-right: 1px solid rgba(0, 0, 0, .02); // background-color: #002741;
+    //  padding-top: 0;
   }
   .ReactTable .rt-thead.-filters .rt-th input {
     width: 100%;
@@ -667,8 +666,7 @@ div[class^="footerBar_"] {
     padding: 0px;
   }
   .main-content-section {
-    padding-right: 10px;
-    // height: 100vh;
+    padding-right: 10px; // height: 100vh;
   }
   section.main-content-section section:first-child {
     display: block;
@@ -781,7 +779,7 @@ div[class^="footerBar_"] {
     padding: 1rem;
     min-height: 25em;
   }
-  .well.card{
+  .well.card {
     min-height: auto !important;
   }
   .well h4 {
@@ -1174,7 +1172,6 @@ div[class^="footerBar_"] {
     display: flex;
     justify-content: space-between;
   }
-
   .taskListTitle {
     text-overflow: ellipsis;
     white-space: nowrap;
@@ -1334,7 +1331,7 @@ div[class^="footerBar_"] {
     display: inline-block;
     margin-bottom: 1rem;
   }
-  .rolesImage{
+  .rolesImage {
     width: 100%;
   }
   .profileDetail {
@@ -1349,7 +1346,7 @@ div[class^="footerBar_"] {
   .profileDesignation {
     display: block;
   }
-  .profileName{
+  .profileName {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1383,7 +1380,7 @@ div[class^="footerBar_"] {
     font-size: 0.7rem;
   }
   ul.profileRoles {
-    padding-left: 2rem;  
+    padding-left: 2rem;
   }
   ul.profileRoles li {
     font-style: italic;
@@ -1554,7 +1551,7 @@ div[class^="footerBar_"] {
     border: none;
     vertical-align: middle;
     display: block;
-    margin-top:5px;
+    margin-top: 5px;
   }
   .all-milestones td:last-child {
     font-weight: 600;
@@ -1702,6 +1699,10 @@ div[class^="footerBar_"] {
     background-color: #002641;
     color: #fff;
   }
+  .zoom-button-active {
+    background-color: #007bff;
+    color: #fff;
+  }
   /*------------------------ Mobile View -----------------------------*/
   @media only screen and (min-width: 1400px) {
     .detail-box :nth-child(even) {
@@ -1727,8 +1728,7 @@ div[class^="footerBar_"] {
       padding-left: 0px;
       padding-top: 0px;
       padding-bottom: 0px;
-      padding-right: 0px;
-      // height: 100vh;
+      padding-right: 0px; // height: 100vh;
     }
     .infoBoxes {
       height: 75px;
@@ -1742,6 +1742,9 @@ div[class^="footerBar_"] {
     .delayedStatus,
     .notstarted {
       font-size: 10px;
+    }
+    .ProjectLevelDashboard .well.card {
+      height: 400px;
     }
   }
   @media (max-width: 767px) {
@@ -1799,41 +1802,45 @@ div[class^="footerBar_"] {
   }
   .gantt_grid_scale,
   .gantt_task_scale {
-   background-color: #eaeaea;
-   font-size: 11px;
+    background-color: #eaeaea;
+    font-size: 11px;
   }
   .gantt_task .gantt_task_scale .gantt_scale_cell,
   .gantt_grid_scale .gantt_grid_head_cell {
     color: #0c0404;
     border-right: 1px solid #cac0c0;
   }
-
-.gantt_row,
-.gantt_tree_content,
-.gantt_task_row,
-.gantt_task_content {
-  font-size: 11px;
-  // height: 28px !important
-}
-// .gantt_task_row {
-//   font-size: 10px;
-//  // height: 28px !important
-// }
-// .gantt_task_line{
-//   height: 20px !important;
-//   line-height: 20px !important;
-// }
-
+  .gantt_row,
+  .gantt_tree_content,
+  .gantt_task_row,
+  .gantt_task_content {
+    font-size: 11px; // height: 28px !important
+  } // .gantt_task_row {
+  //   font-size: 10px;
+  //  // height: 28px !important
+  // }
+  // .gantt_task_line{
+  //   height: 20px !important;
+  //   line-height: 20px !important;
+  // }
   .zoom-bar {
     margin: 5px;
   }
   .zoom-bar-button {
     margin-right: 3px;
   }
-  .cardPadding{
+  .zoom-bar button.zoom-bar-button:focus {
+    background-color: #007bff;
+    color: #fff;
+  }
+  .zoom-bar button.zoom-bar-button:hover {
+    background-color: #0659b3;
+    color: #fff;
+  }
+  .cardPadding {
     padding-left: 5px !important;
     padding-right: 5px !important;
-  }  
+  }
   .jobName {
     font-weight: 600;
     color: #6f6f6f;

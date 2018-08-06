@@ -119,8 +119,12 @@ export default class ProjectListTable extends React.Component<
                     let tempArray = {};
                     let tempList = [];
                     response.forEach(element => {
+                        var date = new Date(element.EndDate);
+                  var date1:any
+
+                  date1=  date.setDate(date.getDate() + 1);
                         tempArray = {
-                            title: element.Title, start: element.EventDate, end: element.EndDate
+                            title: element.Title, start:element.EventDate.split('T')[0], end: date1
                         }
                         tempList.push(tempArray);
                         console.log('information by name', response);

@@ -145,7 +145,8 @@ export default class ProjectListTable extends React.Component<
             return (
                 // <div className={styles.Responsibility}>
                 <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
-                    {rowData.Roles_Responsibility}
+                    {/* {rowData.Roles_Responsibility} */}
+                    <span title={rowData.Roles_Responsibility}>{rowData.Roles_Responsibility}</span>
                 </div>
             );
     }

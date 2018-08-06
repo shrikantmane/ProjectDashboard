@@ -11,6 +11,7 @@ import { Checkbox } from 'office-ui-fabric-react/lib/Checkbox';
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
 import "bootstrap/dist/css/bootstrap.min.css";
 import { Button, Modal } from 'react-bootstrap';
+import { Growl } from 'primereact/components/growl/Growl';
 
 import ProjectListTable from '../ProjectList/ProjectListTable';
 import { Link, Redirect } from 'react-router-dom';
@@ -151,13 +152,14 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     HBCOwner: IHBCOwner[],
     CloneProjectData: ICloneProjectData[],
     ProjectList: string,
-    TaskStatusColor: string,
+    // TaskStatusColor: string,
     roleAssignments: IRoleAssignments[],
     savedProjectID: any,
     statusList: any,
     departmentList: any,
     showDepartment: boolean,
-    isLoading: boolean
+    isLoading: boolean,
+    growl: any
 }> {
     private _picker: IBasePicker<IPersonaProps>;
     // Added by Ashwini
@@ -191,6 +193,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     public DepartmentHeadGrpID: string | number;
     public CEO_COOGrpID: string | number;
     public ProjectOwnerGrpID: string | number;
+    public TaskStatusColor: string;
 
 
     constructor(props) {
@@ -223,13 +226,14 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             HBCOwner: [],
             CloneProjectData: [],
             ProjectList: '',
-            TaskStatusColor: '',
+            // TaskStatusColor: '',
             roleAssignments: [],
             savedProjectID: 0,
             statusList: [],
             departmentList: [],
             showDepartment: false,
             isLoading: false,
+            growl: null
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -269,9 +273,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
     }
 
-   
 
-   
+
+
     // Get All Role Definations  
     private GetRoleDefinations() {
         let reactHandler = this;
@@ -341,10 +345,10 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         console.log(this.state.fields['projectname']);
         let errors = this.state.errors;
         let errorClass = this.state.errorClass;
-        if (this.state.fields['projectname']) {
+        if (this.state.fields['projectname'] && this.state.fields['projectname'].trim()) {
             let flag = false;
             this.state.projectList.forEach(element => {
-                if (element.Project.toLowerCase() === this.state.fields['projectname'].toLowerCase()) {
+                if (element.Project.toLowerCase() === this.state.fields['projectname'].toLowerCase().trim()) {
                     flag = true;
                 }
             });
@@ -357,16 +361,22 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 errorClass["projectname"] = "";
                 this.setState({ errors: errors, errorClass: errorClass });
             }
+        } else {
+            errors["projectname"] = "Cannot be empty";
+            errorClass["projectname"] = "classError";
+            this.setState({ errors: errors, errorClass: errorClass });
         }
     }
     handleChange(field, e, isChecked: boolean) {
         if (field === 'startdate') {
             let fields = this.state.fields;
             fields[field] = e;
+            this.validateDateDiff(field);
         }
         else if (field === 'duedate') {
             let fields = this.state.fields;
             fields[field] = e;
+            this.validateDateDiff(field);
         }
         else if (field === 'cloneproject') {
             let fields = this.state.fields;
@@ -458,6 +468,32 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             fields['projectoutline'].splice(i, 1);
             this.setState(fields);
         }
+    }
+    validateDateDiff(field) {
+        let fields = this.state.fields;
+        let errors = {};
+        let errorClass = {};
+        let formIsValid = true;
+        if (fields["startdate"] && fields["duedate"]) {
+            if (fields["duedate"] < fields["startdate"]) {
+                formIsValid = false;
+                if (field === 'startdate') {
+                    errors["startdate"] = "Start Date should always be less than Due Date";
+                    errorClass["startdate"] = "classError";
+                } else {
+                    errors["duedate"] = "Due Date should always be greater than Start Date";
+                    errorClass["duedate"] = "classError";
+                }
+            } else {
+                formIsValid = true;
+                errors["duedate"] = "";
+                errorClass["duedate"] = "";
+                errors["startdate"] = "";
+                errorClass["startdate"] = "";
+            }
+        }
+        this.setState({ errors: errors, errorClass: errorClass });
+        return formIsValid;
     }
     handleValidation() {
         let fields = this.state.fields;
@@ -657,7 +693,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 //     // this._showModal();
                 // });
                 this.setState({ isLoading: true });
-                this. getGroupID();
+                this.getGroupID();
                 // this.CreateProjectGroup();
                 // this._closePanel();
                 // this._showModal();
@@ -668,7 +704,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     }
     // Added new Code from Ashwini
 
-     // get group IDs by group name
+    // get group IDs by group name
     private getGroupID() {
         let reactHandler = this;
         sp.web.siteGroups.getByName("HBC Admin").get().then(function (result) {
@@ -679,17 +715,25 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     reactHandler.CEO_COOGrpID = result.Id;
                     sp.web.siteGroups.getByName("Project Owner").get().then(function (result) {
                         reactHandler.ProjectOwnerGrpID = result.Id;
-                             reactHandler.CreateProjectGroup()
+
+                        //reactHandler._closePanel();
+                        //reactHandler._showModal();
+
+                        reactHandler.CreateProjectGroup()
                     }).catch(err => {
+                        reactHandler.setState({ isLoading: false });
                         console.log("error while getting id of project owner group");
                     });
                 }).catch(err => {
+                    reactHandler.setState({ isLoading: false });
                     console.log("error while getting id of CEO_COO group");
                 });
             }).catch(err => {
+                reactHandler.setState({ isLoading: false });
                 console.log("error while getting id of Department Head group");
             });
         }).catch(err => {
+            reactHandler.setState({ isLoading: false });
             console.log("error while getting id of HBC Admin group");
         });
     }
@@ -1316,20 +1360,22 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         });
     }
 
-     private getListIDs(ProName) {
-         let ReactHandler = this;
+    private getListIDs(ProName) {
+        let reactHandler = this;
 
-                sp.web.lists.getByTitle('Task Status Color').get()
-                    .then(result => {
-                        this.setState({
-                            TaskStatusColor: "'{" + result.Id + "}'"
-                        });
-                         
-                        ReactHandler.CreateTaskList(ProName);
+        sp.web.lists.getByTitle('Task Status Color').get()
+            .then(result => {
+                // this.setState({
+                //     TaskStatusColor: "'{" + result.Id + "}'"
+                // });
 
-                    }).catch(err => {
-                        console.log("Error while getting ID of Task Status Color List.", err);
-                    });
+                reactHandler.TaskStatusColor = "'{" + result.Id + "}'";
+
+                reactHandler.CreateTaskList(ProName);
+
+            }).catch(err => {
+                console.log("Error while getting ID of Task Status Color List.", err);
+            });
 
     }
 
@@ -1365,7 +1411,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
         //     console.log("Project created in list ", ListName);
 
-        let Status = `<Field Name="Status" DisplayName="Status" Type="Lookup" Required="FALSE" ShowField="Status" List=` + this.state.TaskStatusColor + ` />`;
+        let Status = `<Field Name="Status" DisplayName="Status" Type="Lookup" Required="FALSE" ShowField="Status" List=` + this.TaskStatusColor + ` />`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Status).then(res => {
             console.log("Status created in list ", ListName);
 
@@ -1427,7 +1473,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
         // sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Project).then(res => {
         //     console.log("Project created in list ", ListName);
 
-        let Status = `<Field Name="Status" DisplayName="Status" Type="Lookup" Required="FALSE" ShowField="Status" List=` + this.state.TaskStatusColor + ` />`;
+        let Status = `<Field Name="Status" DisplayName="Status" Type="Lookup" Required="FALSE" ShowField="Status" List=` + this.TaskStatusColor + ` />`;
         sp.web.lists.getByTitle(ListName).fields.createFieldAsXml(Status).then(res => {
             console.log("Status created in list ", ListName);
 
@@ -2502,36 +2548,49 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                             this.ProjectCommentHisObj.roleAssignments.add(this.ProjectOwnerGrpID, 1073741827).then(res => { // 1073741924 - Contribute
                                 console.log(ProName, " View Only - permissions added", ListName);
 
-                                reactHandler.cloneListItems(ProName);
+                                if (this.state.fields['project']) {
+                                    let oldProject = (this.state.fields['project']).split(' ').join('_');
+                                    reactHandler.cloneListItems(ProName, oldProject);
+                                } else {
+                                    this.setState({ isLoading: false });
+                                    if (this.props.id) {
+                                        this._closePanel();
+                                        this.props.parentMethod();
+                                    } else {
+                                        this._closePanel();
+                                        this._showModal();
+                                    }
+                                }
+
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
-                                console.log("Error while adding permissions - ProjectOwnerGrp");
+                                console.log("Error while adding permissions - ProjectOwnerGrp", err);
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
-                            console.log("Error while adding permissions - CEO_COOGrp ");
+                            console.log("Error while adding permissions - CEO_COOGrp ", err);
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
-                        console.log("Error while adding permissions - DepartmentHeadGrp");
+                        console.log("Error while adding permissions - DepartmentHeadGrp", err);
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
-                    console.log("Error while adding permissions ", ProName, " Contributers ");
+                    console.log("Error while adding permissions ", ProName, " Contributers ", err);
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
-                console.log("Error while adding permissions -  HBCAdminGrp");
+                console.log("Error while adding permissions -  HBCAdminGrp", err);
             });; // HBCAdminGrp
 
         }).catch(err => {
             this.setState({ isLoading: false });
-            console.log("Error while breakRoleInheritance for list - ", ListName)
+            console.log("Error while breakRoleInheritance for list - ", ListName, "-", err)
         });
     }
 
@@ -2539,9 +2598,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
 
     // Clone list items
-    private cloneListItems(ProName) {
+    private cloneListItems(ProName, oldProject) {
         let flag = false;
-        let oldProject = (this.state.fields['project']).split(' ').join('_');
         if (this.state.fields['clonecalender'] === true) {
             flag = true;
             this.getCalenderItems(oldProject + this.ProjectCal, ProName + this.ProjectCal);
@@ -3190,6 +3248,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             this.props.parentReopen();
         }
     };
+    showSuccess() {
+        this.state.growl.show({ severity: 'success', summary: 'Success Message', detail: 'Order submitted' });
+    }
     public render(): React.ReactElement<IAddProjectProps> {
         const { selectedOption } = this.state;
         const { inputValue, value } = this.state;
@@ -3293,242 +3354,242 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             </div> : null;
         return (
             // className="PanelContainer"
-            !this.state.isLoading ?
-                <div>
+            <div>
+                {/* <Growl value={this.state.growl} /> */}
+                {/* !this.state.isLoading ? : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div> */}
+                <Panel
+                    isOpen={this.state.showPanel}
+                    onDismiss={this._closePanel}
+                    type={PanelType.medium}
 
-                    <Panel
-                        isOpen={this.state.showPanel}
-                        onDismiss={this._closePanel}
-                        type={PanelType.medium}
-
-                    >
-                        <div className="PanelContainer">
-                            <section className="main-content-section">
-                                <div className="row">
-                                    <div className="col-sm-12 col-12">
-                                        <h3 className="hbc-form-header">Project Details</h3>
-                                        <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
-                                            <div className="row addSection">
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <span className="error">* </span><label>Project Name</label>
-                                                        <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
-                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName}>
-                                                        </input>
-                                                        <span className="error">{this.state.errors["projectname"]}</span>
-                                                    </div>
+                >
+                    {/* <Button onClick={this.showSuccess} label="Success" className="ui-button-success" /> */}
+                    <div className="PanelContainer">
+                        <section className="main-content-section">
+                            <div className="row">
+                                <div className="col-sm-12 col-12">
+                                    <h3 className="hbc-form-header">Project Details</h3>
+                                    <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
+                                        <div className="row addSection">
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <span className="error">* </span><label>Project Name</label>
+                                                    <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
+                                                        onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName}>
+                                                    </input>
+                                                    <span className="error">{this.state.errors["projectname"]}</span>
                                                 </div>
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <label>Owner</label>
-                                                        <span className="calendar-style">
-                                                            {this._renderControlledPicker()}
-                                                        </span>
-                                                        <span className="error">{this.state.errors["ownername"]}</span>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Owner</label>
+                                                    <span className="calendar-style">
+                                                        {this._renderControlledPicker()}
+                                                    </span>
+                                                    <span className="error">{this.state.errors["ownername"]}</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="row addSection">
+                                            <div className="col-sm-12 col-12">
+                                                <div className="form-group">
+                                                    {/* <label>Clone Project</label> */}
+                                                    <div>
+                                                        <Checkbox label="Clone Project" checked={this.state.fields["cloneproject"]} onChange={this.handleChange.bind(this, "cloneproject")} value={this.state.fields["cloneproject"]} />
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="row addSection">
-                                                <div className="col-sm-12 col-12">
-                                                    <div className="form-group">
-                                                        {/* <label>Clone Project</label> */}
-                                                        <div>
-                                                            <Checkbox label="Clone Project" checked={this.state.fields["cloneproject"]} onChange={this.handleChange.bind(this, "cloneproject")} value={this.state.fields["cloneproject"]} />
-                                                        </div>
-                                                    </div>
-                                                </div>
 
-                                                {selectProjectContent}
-                                                {chechbox1Content}
-                                                {chechbox2Content}
-                                                {chechbox3Content}
-                                                {chechbox4Content}
+                                            {selectProjectContent}
+                                            {chechbox1Content}
+                                            {chechbox2Content}
+                                            {chechbox3Content}
+                                            {chechbox4Content}
+                                        </div>
+                                        <div className="row addSection">
+                                            <div className="col-sm-12 col-12">
+                                                <div className="form-group">
+                                                    <label>Project Description</label>
+                                                    <textarea ref="projectdescription" style={{ height: '50px !important' }} className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Brief the owner about the project"
+                                                        onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}></textarea>
+                                                    <span className="error">{this.state.errors["projectdescription"]}</span>
+                                                </div>
                                             </div>
-                                            <div className="row addSection">
-                                                <div className="col-sm-12 col-12">
-                                                    <div className="form-group">
-                                                        <label>Project Description</label>
-                                                        <textarea ref="projectdescription" style={{ height: '50px !important' }} className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Brief the owner about the project"
-                                                            onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}></textarea>
-                                                        <span className="error">{this.state.errors["projectdescription"]}</span>
-                                                    </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Start Date</label>
+                                                    <DatePicker
+                                                        placeholder="Select start date"
+                                                        onSelectDate={this.handleChange.bind(this, "startdate")}
+                                                        value={this.state.fields["startdate"]}
+                                                    />
+                                                    <span className="error">{this.state.errors["startdate"]}</span>
                                                 </div>
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <label>Start Date</label>
-                                                        <DatePicker
-                                                            placeholder="Select start date"
-                                                            onSelectDate={this.handleChange.bind(this, "startdate")}
-                                                            value={this.state.fields["startdate"]}
-                                                        />
-                                                        <span className="error">{this.state.errors["startdate"]}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <label>Due Date</label>
-                                                        <DatePicker
-                                                            placeholder="Select due date"
-                                                            onSelectDate={this.handleChange.bind(this, "duedate")}
-                                                            value={this.state.fields["duedate"]}
-                                                        />
-                                                        <span className="error">{this.state.errors["duedate"]}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <label>Project Status</label>
-                                                        <select ref="projectstatus" className={formControl + " " + (this.state.errorClass["projectstatus"] ? this.state.errorClass["projectstatus"] : '')}
-                                                            onChange={this.handleChange.bind(this, "projectstatus")} value={this.state.fields["projectstatus"]}>
-                                                            {this.state.statusList.map((obj) =>
-                                                                <option key={obj.Status} value={obj.Id}>{obj.Status}</option>
-                                                            )}
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <label>Priority</label>
-                                                        <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
-                                                            <option>Low</option>
-                                                            <option>Medium</option>
-                                                            <option>High</option>
-                                                        </select>
-                                                        <span className="error">{this.state.errors["priority"]}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <label>Tags</label>
-                                                        <CreatableSelect
-                                                            isMulti
-                                                            onChange={this.handleChange2}
-                                                            options={this.state.tagOptions}
-                                                            value={this.state.fields["tags"]}
-                                                        />
-                                                        <span className="error">{this.state.errors["tags"]}</span>
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <label>Risk</label>
-                                                        <select className={formControl + " " + (this.state.errorClass["risk"] ? this.state.errorClass["risk"] : '')} ref="risk" onChange={this.handleChange.bind(this, "risk")} value={this.state.fields["risk"]}>
-                                                            <option>Low</option>
-                                                            <option>Medium</option>
-                                                            <option>High</option>
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <label>Project Type</label>
-                                                        <div>
-                                                            <Checkbox checked={this.state.fields["departmentspecific"]} label="Department Specific" onChange={this.handleChange.bind(this, "departmentspecific")} value={this.state.fields["departmentspecific"]} />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {/* department ID */}
-                                                {departmentContent}
                                             </div>
-                                            <div className="row addSection">
-                                                {/* {statusContent} */}
-                                                <div className="col-lg-6">
-                                                    <div className="form-group">
-                                                        <label>On Hold Status</label>
-                                                        {/* <select ref="status" className={formControl + " " + (this.state.errorClass["status"] ? this.state.errorClass["status"] : '')}
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Due Date</label>
+                                                    <DatePicker
+                                                        placeholder="Select due date"
+                                                        onSelectDate={this.handleChange.bind(this, "duedate")}
+                                                        value={this.state.fields["duedate"]}
+                                                    />
+                                                    <span className="error">{this.state.errors["duedate"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Project Status</label>
+                                                    <select ref="projectstatus" className={formControl + " " + (this.state.errorClass["projectstatus"] ? this.state.errorClass["projectstatus"] : '')}
+                                                        onChange={this.handleChange.bind(this, "projectstatus")} value={this.state.fields["projectstatus"]}>
+                                                        {this.state.statusList.map((obj) =>
+                                                            <option key={obj.Status} value={obj.Id}>{obj.Status}</option>
+                                                        )}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Priority</label>
+                                                    <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
+                                                        <option>Low</option>
+                                                        <option>Medium</option>
+                                                        <option>High</option>
+                                                    </select>
+                                                    <span className="error">{this.state.errors["priority"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Tags</label>
+                                                    <CreatableSelect
+                                                        isMulti
+                                                        onChange={this.handleChange2}
+                                                        options={this.state.tagOptions}
+                                                        value={this.state.fields["tags"]}
+                                                    />
+                                                    <span className="error">{this.state.errors["tags"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Risk</label>
+                                                    <select className={formControl + " " + (this.state.errorClass["risk"] ? this.state.errorClass["risk"] : '')} ref="risk" onChange={this.handleChange.bind(this, "risk")} value={this.state.fields["risk"]}>
+                                                        <option>Low</option>
+                                                        <option>Medium</option>
+                                                        <option>High</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Project Type</label>
+                                                    <div>
+                                                        <Checkbox checked={this.state.fields["departmentspecific"]} label="Department Specific" onChange={this.handleChange.bind(this, "departmentspecific")} value={this.state.fields["departmentspecific"]} />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {/* department ID */}
+                                            {departmentContent}
+                                        </div>
+                                        <div className="row addSection">
+                                            {/* {statusContent} */}
+                                            <div className="col-lg-6">
+                                                <div className="form-group">
+                                                    <label>On Hold Status</label>
+                                                    {/* <select ref="status" className={formControl + " " + (this.state.errorClass["status"] ? this.state.errorClass["status"] : '')}
                                                         onChange={this.handleChange.bind(this, "status")} value={this.state.fields["status"]}>
                                                         <option>On Hold</option>
                                                         <option>Resume </option>
                                                     </select> */}
-                                                        <Toggle
-                                                            checked={this.state.fields["status"]}
-                                                            defaultChecked={false}
-                                                            onText="On"
-                                                            offText="Off"
-                                                            onChanged={this.handleChange.bind(this, "status")}
-                                                            onFocus={() => console.log('onFocus called')}
-                                                            onBlur={() => console.log('onBlur called')}
-                                                        />
-                                                    </div>
+                                                    <Toggle
+                                                        checked={this.state.fields["status"]}
+                                                        defaultChecked={false}
+                                                        onText="On"
+                                                        offText="Off"
+                                                        onChanged={this.handleChange.bind(this, "status")}
+                                                        onFocus={() => console.log('onFocus called')}
+                                                        onBlur={() => console.log('onBlur called')}
+                                                    />
                                                 </div>
-                                                {statusDate}
                                             </div>
-                                            <div className="row addSection">
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <label>Reccuring Project?</label>
-                                                        <div>
-                                                            <Checkbox label="Yes" checked={this.state.fields["requringproject"]} onChange={this.handleChange.bind(this, "requringproject")} value={this.state.fields["requringproject"]} />
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div className="col-sm-6 col-12">
-                                                    <div className="form-group">
-                                                        <label>Occurance</label>
-                                                        <select ref="occurance" className={formControl + " " + (this.state.errorClass["occurance"] ? this.state.errorClass["occurance"] : '')}
-                                                            onChange={this.handleChange.bind(this, "occurance")} value={this.state.fields["occurance"]}>
-                                                            <option>Daily</option>
-                                                            <option>Weekly </option>
-                                                            <option>Months</option>
-                                                        </select>
-                                                        <span className="error">{this.state.errors["occurance"]}</span>
+                                            {statusDate}
+                                        </div>
+                                        <div className="row addSection">
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Reccuring Project?</label>
+                                                    <div>
+                                                        <Checkbox label="Yes" checked={this.state.fields["requringproject"]} onChange={this.handleChange.bind(this, "requringproject")} value={this.state.fields["requringproject"]} />
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="row addSection">
-                                                <div className="col-lg-6">
-                                                    <div className="form-group">
-                                                        <label>Project Outline</label>
-                                                        <div className="fileupload" data-provides="fileupload">
-                                                            <input ref="projectoutline" type="file" id="uploadFile"
-                                                                onChange={this.handleChange.bind(this, "projectoutline")} >
-                                                            </input>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                {attachmentDiv}
-                                            </div>
-                                            <div className="row addSection">
-                                                <div className="col-sm-12 col-12">
-                                                    <div className="btn-sec">
-                                                        <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
-                                                        <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
-                                                    </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Occurance</label>
+                                                    <select ref="occurance" className={formControl + " " + (this.state.errorClass["occurance"] ? this.state.errorClass["occurance"] : '')}
+                                                        onChange={this.handleChange.bind(this, "occurance")} value={this.state.fields["occurance"]}>
+                                                        <option>Daily</option>
+                                                        <option>Weekly </option>
+                                                        <option>Months</option>
+                                                    </select>
+                                                    <span className="error">{this.state.errors["occurance"]}</span>
                                                 </div>
                                             </div>
-                                        </form>
-                                    </div>
+                                        </div>
+                                        <div className="row addSection">
+                                            <div className="col-lg-6">
+                                                <div className="form-group">
+                                                    <label>Project Outline</label>
+                                                    <div className="fileupload" data-provides="fileupload">
+                                                        <input ref="projectoutline" type="file" id="uploadFile"
+                                                            onChange={this.handleChange.bind(this, "projectoutline")} >
+                                                        </input>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {attachmentDiv}
+                                        </div>
+                                        <div className="row addSection">
+                                            <div className="col-sm-12 col-12">
+                                                <div className="btn-sec">
+                                                    <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
+                                                    <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
                                 </div>
-                            </section>
-                        </div>
-                    </Panel>
+                            </div>
+                        </section>
+                    </div>
+                </Panel>
 
-                    <Modal
-                        show={this.state.showModal}
-                        onHide={this._closeModal}
-                        container={this}
-                        aria-labelledby="contained-modal-title"
-                        animation={false}
-                    >
-                        <Modal.Header>
-                            <Modal.Title id="contained-modal-title">
-                                Project Created
+                <Modal
+                    show={this.state.showModal}
+                    onHide={this._closeModal}
+                    container={this}
+                    aria-labelledby="contained-modal-title"
+                    animation={false}
+                >
+                    <Modal.Header>
+                        <Modal.Title id="contained-modal-title">
+                            Project Created
                         </Modal.Title>
-                        </Modal.Header>
-                        <Modal.Body>
-                            Project Created Successfully! Do you want to configure Project
+                    </Modal.Header>
+                    <Modal.Body>
+                        Project Created Successfully! Do you want to configure Project
     Schedule and Project Team now?
                     </Modal.Body>
-                        <Modal.Footer>
-                            <Button onClick={this._closeModal}>I'll Do it Later</Button>
-                            <Link to={`/viewProjectDetails/${this.state.savedProjectID}`}>
-                                <Button>Continue</Button>
-                            </Link>
+                    <Modal.Footer>
+                        <Button onClick={this._closeModal}>I'll Do it Later</Button>
+                        <Link to={`/viewProjectDetails/${this.state.savedProjectID}`}>
+                            <Button>Continue</Button>
+                        </Link>
 
-                        </Modal.Footer>
-                    </Modal>
-                </div >
-                : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div>
+                    </Modal.Footer>
+                </Modal>
+            </div >
         );
     }
 

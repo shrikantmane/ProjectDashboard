@@ -56,7 +56,7 @@ export default class ProjectListTable extends React.Component<
 
     statusTemplate(rowData: Project, column) {
         if (rowData.Status0)
-            return (<div style={{ backgroundColor: rowData.Status0['Status_x0020_Color'], borderRadius: '3rem', textAlign: 'center', padding: '2px', color: 'white',width:'75%' }}>{rowData.Status0['Status']}</div>);
+            return (<div style={{ backgroundColor: rowData.Status0['Status_x0020_Color'], borderRadius: '3rem', textAlign: 'center', padding: '2px', color: 'white' }}>{rowData.Status0['Status']}</div>);
     }
 
     ownerTemplate(rowData: Project, column) {
@@ -80,6 +80,44 @@ export default class ProjectListTable extends React.Component<
                 <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn action-btn-style black-color btn-xs" type="button"><abbr className="tooltip-style" title="View Details"><i className="fas fa-arrow-right"></i></abbr></button></Link>
             </div>
         );
+    }
+    fileTemplate(rowData: any, column) {
+        if (rowData.AttachmentFiles.length > 0) {
+            let iconClass = "";
+            let type = "";
+            let data = rowData.AttachmentFiles[0].FileName.split(".");
+            if (data.length > 1) {
+                type = data[1];
+            }
+            switch (type.toLowerCase()) {
+                case "doc":
+                case "docx":
+                    iconClass = "far fa-file-word";
+                    break;
+                case "pdf":
+                    iconClass = "far fa-file-pdf";
+                    break;
+                case "xls":
+                case "xlsx":
+                    iconClass = "far fa-file-excel";
+                    break;
+                case "png":
+                case "jpeg":
+                case "gif":
+                    iconClass = "far fa-file-image";
+                    break;
+                default:
+                    iconClass = "fa fa-file";
+                    break;
+            }
+            return (
+                <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                    <a href={rowData.AttachmentFiles[0].ServerRelativeUrl} ><i
+                        style={{ marginRight: "5px" }}
+                        className={iconClass} ></i> {rowData.AttachmentFiles[0].FileName} </a>
+                </div>
+            );
+        }
     }
     editTemplate(rowData, column) {
         return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i> </a>;
@@ -129,13 +167,15 @@ export default class ProjectListTable extends React.Component<
                             }
                             <div className="project-list">
                                 <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
-                                    <Column body={this.editTemplate} style={{ width: "3%"}} className="projectEdit" />
-                                    <Column field="Project" sortable={true} header="Project" style={{ width: "27%" }} />
-                                    <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} style={{ width: "12%" }}/>
+                                    <Column body={this.editTemplate} style={{ width: "3%", textAlign: "center" }} />
+                                    <Column field="Project" sortable={true} header="Project" style={{ width: "19%" }} />
+                                    <Column field="StartDate" sortable={true} header="Start Date" body={this.duedateTemplate} style={{ width: "8%" }} />
+                                    <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} style={{ width: "8%" }} />
                                     <Column field="Status0" sortable={true} header="Status" body={this.statusTemplate} style={{ width: "10%" }} />
-                                    <Column field="AssignedTo" sortable={true} header="Owner" body={this.ownerTemplate} style={{ width: "13%" }} />
-                                    <Column field="Priority" sortable={true} header="Priority" style={{ width: "10%" }}/>
-                                    <Column field="Risks" sortable={true} header="Risk" style={{ width: "10%" }}/>
+                                    <Column field="AssignedTo" sortable={true} header="Owner" body={this.ownerTemplate} style={{ width: "10%" }} />
+                                    <Column field="Priority" sortable={true} header="Priority" style={{ width: "8%" }} />
+                                    <Column field="Risks" sortable={true} header="Risk" style={{ width: "8%" }} />
+                                    <Column field="AttachmentFiles" sortable={true} header="Project Outline" body={this.fileTemplate} style={{ width: "15%" }} />
                                     <Column header="Action" body={this.actionTemplate} style={{ width: "15%" }} />
                                 </DataTable>
                             </div>
@@ -153,17 +193,18 @@ export default class ProjectListTable extends React.Component<
         // get Project Documents list items for all projects
         sp.web.lists.getByTitle("Project").items
             .select(
-                "Project",
-                "DueDate",
-                "Status0/ID",
-                "Status0/Status",
-                "Status0/Status_x0020_Color",
-                "AssignedTo/Title",
-                "AssignedTo/ID",
-                "Priority",
-                "Risks",
-                "ID")
-            .expand("Status0", "AssignedTo")
+            "Project",
+            "StartDate",
+            "DueDate",
+            "Status0/ID",
+            "Status0/Status",
+            "Status0/Status_x0020_Color",
+            "AssignedTo/Title",
+            "AssignedTo/ID",
+            "Priority",
+            "Risks",
+            "ID", "AttachmentFiles", "AttachmentFiles/ServerRelativeUrl", "AttachmentFiles/FileName")
+            .expand("Status0", "AssignedTo", "AttachmentFiles")
             .getAll()
             .then((response) => {
                 console.log('Project by name', response);

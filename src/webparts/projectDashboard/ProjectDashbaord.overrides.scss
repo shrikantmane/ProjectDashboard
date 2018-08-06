@@ -1517,7 +1517,7 @@ div[class^="footerBar_"] {
   }
   .all-milestones .col-sm-4.col-6 {
     border-left: 1px solid #dddee2;
-    max-width: 142px;
+    max-width: 145px;
     height: 100%;
     padding-left: 10px;
     padding-right: 10px;
@@ -1830,32 +1830,16 @@ div[class^="footerBar_"] {
   .zoom-bar-button {
     margin-right: 3px;
   }
-  .taskListPadding{
-    padding-left: 15px !important;
-    padding-right: 5px !important;
-    }
-  .documentListPadding{
-    padding-left: 5px !important;
-    padding-right: 15px !important;
-    }
-  .teamMemeberListPadding{
-    padding-left: 15px !important;
-    padding-right: 5px !important;
-    }
-  .rolesListPadding{
+  .cardPadding{
     padding-left: 5px !important;
     padding-right: 5px !important;
-    }
-  .conversationListPadding{
-    padding-left: 5px !important;
-    padding-right: 15px !important;
-    }
-    .jobName {
-      font-weight: 600;
-      color: #6f6f6f;
-      font-size: 0.7rem;
-      font-style: italic;
-    }
+  }  
+  .jobName {
+    font-weight: 600;
+    color: #6f6f6f;
+    font-size: 0.7rem;
+    font-style: italic;
+  }
 }
 
 .CEOProjectDashboardContainer {

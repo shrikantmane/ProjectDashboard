@@ -53,7 +53,7 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
 
   public render(): React.ReactElement<IProjectTeamMembersProps> {
     return (
-      <div className="col-xs-12 col-sm-3 teamMemeberListPadding">
+      <div className="col-xs-12 col-sm-3 cardPadding">
         <div className="well recommendedProjects userFeedback">
           <div className="row">
             <div className="col-sm-12 cardHeading">

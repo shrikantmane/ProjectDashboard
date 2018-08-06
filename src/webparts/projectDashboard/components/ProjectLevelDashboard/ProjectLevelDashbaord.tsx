@@ -1,5 +1,6 @@
 import * as React from "react";
 import { sp, ItemAddResult } from "@pnp/sp";
+import moment from 'moment/src/moment';
 import { IProjectLevelDashboardProps } from "./IProjectLevelDashboardProps";
 import { IProjectLevelDashboardState } from "./IProjectLevelDashboardState";
 import { Project, Tag } from "./Project";
@@ -96,15 +97,15 @@ export default class ProjectLevelDashboard extends React.Component<
           <section className="main-content-section dashboardSection">
             <div className="wrapper">
               <div className="row conversationTasks">
-                <div className="project-tabs col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div className="project-tabs col-xs-12 col-sm-12 col-md-12 col-lg-12 cardPadding">
                   <div className="projectName" id="projectDashboard_projectName">{this.state.project.Project}
-                <span className="due-date-style">Due on : { new Date(this.state.project.DueDate).toDateString()}</span>
+                <span className="due-date-style">Due on : {moment(this.state.project.DueDate).format("DD MMM YYYY")}</span>
                     <div className="tagList">
                       <span className="delayedStatus priority-btn">Priority: {this.state.project.Priority}</span>
                     </div>
                   </div>
                 </div>
-                <div className="col-lg-12 col-md-12 col-sm-12">
+                <div className="col-lg-12 col-md-12 col-sm-12 cardPadding">
                   <div className="card well recommendedProjects">
                     <div className="row">
                       <div className="Status-block col-xs-12 col-sm-12 col-md-12 col-lg-12">

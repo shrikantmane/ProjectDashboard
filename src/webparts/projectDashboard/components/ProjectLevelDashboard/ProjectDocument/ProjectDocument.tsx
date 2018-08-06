@@ -90,13 +90,13 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
 
   private timeDateTemplate(rowData: Document, column) {
     return (
-      <span>{moment(rowData.Created).format("MMM DD YYYY")}</span>
+      <span>{moment(rowData.Created).format("DD MMM YYYY")}</span>
     );
   }
 
   public render(): React.ReactElement<IProjectDocumentProps> {
     return (
-      <div className="col-xs-12 col-md-5 documentListPadding">
+      <div className="col-xs-12 col-md-5 cardPadding">
         <div className="well recommendedProjects">
           <div className="row">
             <div className="col-sm-12 col-12 cardHeading">

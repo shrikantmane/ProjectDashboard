@@ -54,7 +54,7 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
 
   public render(): React.ReactElement<IProjectRoleResponsibilityProps> {
     return (
-      <div className="col-xs-12 col-sm-5 rolesListPadding">
+      <div className="col-xs-12 col-sm-5 cardPadding">
         <div className="well recommendedProjects userFeedback">
           <div className="row">
             <div className="col-sm-12 cardHeading">

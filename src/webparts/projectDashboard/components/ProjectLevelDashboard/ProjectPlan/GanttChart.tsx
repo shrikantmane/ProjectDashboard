@@ -11,7 +11,6 @@ export default class Gantt extends React.Component<any, any>{
 
   constructor(props) {
     super(props);
-    console.log('constructor');
     this.initGanttChart();
   }
   setZoom(value) {
@@ -102,6 +101,7 @@ export default class Gantt extends React.Component<any, any>{
 
   componentDidMount() {
     gantt.init(this.ganttContainer);
+    gantt.clearAll();
     gantt.parse(this.props.tasks);
     this.initGanttChart()
   }

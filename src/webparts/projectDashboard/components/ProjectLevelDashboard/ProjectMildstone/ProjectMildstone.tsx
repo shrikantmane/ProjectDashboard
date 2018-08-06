@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { sp, ItemAddResult } from "@pnp/sp";
+import moment from 'moment/src/moment';
 import { ProgressBar } from 'react-bootstrap';
 import { IProjectMildstoneProps } from './IProjectMildstoneProps';
 import { IProjectMildstoneState } from './IProjectMildstoneState';
@@ -22,7 +23,7 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
 
   componentDidUpdate()
   {
-     let container_width = 142 * document.getElementsByClassName("milestonesClass").length;
+     let container_width = 145 * document.getElementsByClassName("milestonesClass").length;
      let elements =  document.getElementsByClassName("row container-inner");
      if(elements && elements[0] && container_width > 0){
       elements[0].setAttribute("style", "width:" +  container_width.toString() + "px;");
@@ -81,7 +82,7 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
                               </tr>
                               <tr>
                                 <td><i className="far fa-calendar-check"></i> Due Date</td>
-                                <td>{new Date(item.DueDate).toDateString()}</td>
+                                <td>{moment(item.DueDate).format("DD MMM YYYY")}</td>
                               </tr>
                             </tbody>
                           </table>

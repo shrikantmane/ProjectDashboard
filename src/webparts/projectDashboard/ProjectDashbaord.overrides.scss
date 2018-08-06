@@ -653,13 +653,13 @@ div[class^="footerBar_"] {
   }
   .ReactTable .rt-thead.-filters .rt-th {
     border-right: 1px solid rgba(0, 0, 0, .02);
-    background-color: #002741;
-    padding-top: 0;
+   // background-color: #002741;
+   //  padding-top: 0;
   }
   .ReactTable .rt-thead.-filters .rt-th input {
     width: 100%;
     background-color: #f7f8f9;
-    border: 1px solid #2a404e;
+    border: 1px solid #9ca0a2;
     height: 1.6rem;
   }
   .main-content-section section:first-child,
@@ -1517,7 +1517,7 @@ div[class^="footerBar_"] {
   }
   .all-milestones .col-sm-4.col-6 {
     border-left: 1px solid #dddee2;
-    max-width: 142px;
+    max-width: 145px;
     height: 100%;
     padding-left: 10px;
     padding-right: 10px;
@@ -1830,32 +1830,16 @@ div[class^="footerBar_"] {
   .zoom-bar-button {
     margin-right: 3px;
   }
-  .taskListPadding{
-    padding-left: 15px !important;
-    padding-right: 5px !important;
-    }
-  .documentListPadding{
-    padding-left: 5px !important;
-    padding-right: 15px !important;
-    }
-  .teamMemeberListPadding{
-    padding-left: 15px !important;
-    padding-right: 5px !important;
-    }
-  .rolesListPadding{
+  .cardPadding{
     padding-left: 5px !important;
     padding-right: 5px !important;
-    }
-  .conversationListPadding{
-    padding-left: 5px !important;
-    padding-right: 15px !important;
-    }
-    .jobName {
-      font-weight: 600;
-      color: #6f6f6f;
-      font-size: 0.7rem;
-      font-style: italic;
-    }
+  }  
+  .jobName {
+    font-weight: 600;
+    color: #6f6f6f;
+    font-size: 0.7rem;
+    font-style: italic;
+  }
 }
 
 .CEOProjectDashboardContainer {

@@ -101,7 +101,7 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
 
   public render(): React.ReactElement<IProjectPlanProps> {
     return (
-      <div className="col-lg-12 col-md-12 col-sm-12">
+      <div className="col-lg-12 col-md-12 col-sm-12 cardPadding">
         <div className="well recommendedProjects" style={{maxHeight:'none'}}>
           <div className="row">
             <div className="col-sm-12 col-12 cardHeading">

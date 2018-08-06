@@ -140,10 +140,12 @@ export default class ProjectTaskList extends React.Component<
                       accessor: "Week",
                       sortable: false,
                       filterable: false,
+                      width: 115
                     },
                     {
                       Header: "Title",
                       accessor: "Title",
+                      width: 250,
                       Cell: ({ row, original }) => {
                         if (original && original.Title) {
                           return (
@@ -162,6 +164,7 @@ export default class ProjectTaskList extends React.Component<
                     {
                       Header: "Owner",
                       accessor: "OwnerName",
+                      width: 130,
                       Cell: ({ row, original }) => {
                         if (original && original.AssignedTo && original.AssignedTo.length > 0) {
                           return (
@@ -181,6 +184,7 @@ export default class ProjectTaskList extends React.Component<
                     {
                       Header: "Status",
                       accessor: "Status",
+                      width: 110,
                       Cell: ({ row, original }) => {
                         if (original && original.Status0 && original.Status0.Status != "") {
                           return (

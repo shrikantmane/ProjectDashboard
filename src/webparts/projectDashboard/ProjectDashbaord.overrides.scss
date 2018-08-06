@@ -1743,8 +1743,23 @@ div[class^="footerBar_"] {
     .notstarted {
       font-size: 10px;
     }
-    .ProjectLevelDashboard .well.card {
-      height: 400px;
+    .well.card {
+      height: 400px !important;
+    }
+    .rolesImage {
+      width: 24%;
+    }
+    .image-style {
+      width: 24%;
+    }
+    .profileDetails-container .ui-datatable tr.ui-widget-content>td {
+      padding: .5rem 0;
+      color: #696d80;
+      border-left: 0;
+      border-right: 0;
+      font-weight: 600;
+      text-align: left;
+      font-size: 12px;
     }
   }
   @media (max-width: 767px) {
@@ -1848,7 +1863,7 @@ div[class^="footerBar_"] {
     font-style: italic;
   }
   .ReactTable .rt-thead .rt-th {
-    padding : 3px;
+    padding: 3px;
   }
 }
 

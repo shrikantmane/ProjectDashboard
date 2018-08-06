@@ -139,7 +139,10 @@ export default class ProjectListTable extends React.Component<
 
                     <a href={rowData.File.ServerRelativeUrl} ><i
                         style={{ marginRight: "5px" }}
-                        className={iconClass} ></i> {rowData.File.Name} </a>
+                        className={iconClass} ></i>
+                             <span title={rowData.File.Name}>{rowData.File.Name}</span>
+                        
+                        </a>
                     
                 </div>
             );

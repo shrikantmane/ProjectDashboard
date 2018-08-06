@@ -368,18 +368,18 @@ if(tempState.length>0){
                                                     {/* <div > */}
                                                         <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
                                                             <div className="row addSection">
-                                                                <div className="col-sm-6 col-12">
+                                                                <div className="col-sm-12 col-12">
                                                                     <div className="form-group">
-                                                                        <label>Information<span style={textcolor}>*</span></label>
-                                                                        <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
+                                                                    <span className="error">* </span><label>Roles/Responsbility</label>
+                                                                        <textarea rows={4} ref="projectname" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
                                                                             onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
-                                                                        </input>
+                                                                        </textarea>
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
-                                                                        <label>Assigned To<span style={textcolor}>*</span></label>
+                                                                    <span className="error">*</span><label>Owner</label>
                                                                         {this._renderControlledPicker()}
                                                                          {/* <span className="calendar-style"><i className="fas fa-user icon-style"></i>
                                                                             {/* <input ref="ownername"  className={paddingInputStyle + " " + formControl + " " + (this.state.errorClass["ownername"] ? this.state.errorClass["ownername"] : '')}

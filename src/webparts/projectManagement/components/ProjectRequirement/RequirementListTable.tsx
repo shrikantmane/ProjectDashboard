@@ -95,8 +95,8 @@ export default class ProjectListTable extends React.Component<
             );
     }
 
-    impactTemplate(rowData: Requirement, Impact_x0020_on_x0020_Timelines) {
-        if (rowData.Impact_x0020_on_x0020_Timelines  === true){
+    impactTemplate(rowData: Requirement, Impact_x0020_On_x0020_Timelines) {
+        if (rowData.Impact_x0020_On_x0020_Timelines  === true){
             return (
                 <div style={{textAlign : "center"}}>
                     Yes
@@ -154,43 +154,26 @@ export default class ProjectListTable extends React.Component<
         if (rowData.AttachmentFiles) {
             let iconClass = "";
             let type = "";
-            if(rowData.AttachmentFiles[0].length>0){
-            let data = rowData.AttachmentFiles[0].FileName;}
-            // if (data.length > 1) {
-            //     type = data[1];
-            // }
-            // switch (type.toLowerCase()) {
-            //     case "doc":
-            //     case "docx":
-            //         iconClass = "far fa-file-word";
-            //         break;
-            //     case "pdf":
-            //         iconClass = "far fa-file-pdf";
-            //         break;
-            //     case "xls":
-            //     case "xlsx":
-            //         iconClass = "far fa-file-excel";
-            //         break;
-            //     case "png":
-            //     case "jpeg":
-            //     case "gif":
-            //         iconClass = "far fa-file-image";
-            //         break;
-            //     default:
-            //         iconClass = "fa fa-file";
-            //         break;
-            // }
-
-
+             if(rowData.AttachmentFiles.length>0){
+             let data = rowData.AttachmentFiles[0].FileName;
             return (
                 <div>
-
-                    <a href={rowData.AttachmentFiles[0].ServerRelativeUrl} >{rowData.AttachmentFiles[0].FileName} </a>
-                    
+                    <a href={rowData.AttachmentFiles[0].ServerRelativeUrl} >{rowData.AttachmentFiles[0].FileName} </a>  
                 </div>
             );
-
         }
+        }
+    }
+
+    RequirementTemplate(rowData: Requirement, column) {
+        if (rowData.Requirement)
+            return (
+                // <div className={styles.Responsibility}>
+                <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                    {/* {rowData.Roles_Responsibility} */}
+                    <span title={rowData.Requirement}>{rowData.Requirement}</span>
+                </div>
+            );
     }
     private onEditProject(rowData, e): any {
         e.preventDefault();
@@ -226,7 +209,7 @@ export default class ProjectListTable extends React.Component<
                 <div className="content-section implementation">
                     <h5>Requirements</h5>
                     <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px"}} onClick={this.onAddProject}>
-                        Add Requirement
+                        Add Requirements
                     </button>
                     {this.state.showComponent ?
                         <AddRequirement id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId} /> :
@@ -235,11 +218,11 @@ export default class ProjectListTable extends React.Component<
                     <div className="requirement-list">
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
                             <Column body={this.editTemplate}style={{ width: "3%", textAlign:"center" }} />
-                            <Column field="Requirement" sortable={true} header="Requirement"style={{ width: "29%" }} />
+                            <Column field="Requirement" sortable={true} header="Requirement"style={{ width: "29%" }} body={this.RequirementTemplate} />
                             <Column field="AttachmentFiles" header="Attachment"  body={this.fileTemplate}style={{ width: "29%" }} />
                             <Column field="Resources" sortable={true} header="Resources"style={{ width: "10%", align: "center" }} body={this.resourceTemplate}  />
                             
-                             <Column field="Impact_x0020_on_x0020_Timelines" sortable={true} header="Impact on Timelines?"  body={this.impactTemplate} style={{ width: "20%" }} /> 
+                             <Column field="Impact_x0020_On_x0020_Timelines" sortable={true} header="Impact on Timelines?"  body={this.impactTemplate} style={{ width: "20%" }} /> 
                             <Column field="Efforts" header="Efforts" sortable={true}style={{ width: "10%" }}body={this.effortsTemplate}   />
                            
                             {/* <Column field="Apporval_x0020_Status" sortable={true} header="Approval Status" />
@@ -292,7 +275,7 @@ export default class ProjectListTable extends React.Component<
         if ((list) != "") {
 
 
-            sp.web.lists.getByTitle(list).items.select("ID", "Requirement", "Resources", "Impact_x0020_on_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created","AttachmentFiles","AttachmentFiles/ServerRelativeUrl","AttachmentFiles/FileName")
+            sp.web.lists.getByTitle(list).items.select("ID", "Requirement", "Resources", "Impact_x0020_On_x0020_Timelines", "Efforts", "Attachments", "Apporval_x0020_Status", "Approver/Title", "Approver/ID", "Author/Title", "Author/ID", "Created","AttachmentFiles","AttachmentFiles/ServerRelativeUrl","AttachmentFiles/FileName")
                 .expand("Approver", "Author","AttachmentFiles")
                 .get().
                 then((response) => {

@@ -146,6 +146,7 @@ ICalendarProps,
         items.getById(rowData.ID).delete().then((response) => {
           console.log(this.props.list + ` item deleted`);
           this.getProjectCalendar(this.props.list);
+          this.props.onRefreshCalender();
         });
     }
     }
@@ -157,7 +158,7 @@ ICalendarProps,
                 <div className="content-section implementation">
                     <h5>Holidays</h5>
                     <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
-                        Add Event
+                        Add Events
                     </button>
                     {this.state.showComponent ?
                         <AddEvent id={this.state.informationID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} list={this.props.list} projectId={this.props.projectId}  /> :

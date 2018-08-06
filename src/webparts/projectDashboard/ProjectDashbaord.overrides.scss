@@ -653,13 +653,13 @@ div[class^="footerBar_"] {
   }
   .ReactTable .rt-thead.-filters .rt-th {
     border-right: 1px solid rgba(0, 0, 0, .02);
-    background-color: #002741;
-    padding-top: 0;
+   // background-color: #002741;
+   //  padding-top: 0;
   }
   .ReactTable .rt-thead.-filters .rt-th input {
     width: 100%;
     background-color: #f7f8f9;
-    border: 1px solid #2a404e;
+    border: 1px solid #9ca0a2;
     height: 1.6rem;
   }
   .main-content-section section:first-child,

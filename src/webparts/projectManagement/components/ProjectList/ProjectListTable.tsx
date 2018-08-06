@@ -74,10 +74,10 @@ export default class ProjectListTable extends React.Component<
     actionTemplate(rowData, column) {
         return (
             <div style={{textAlign:'center'}}>
-                <Link to={`/viewProjectDetails/${rowData.ID + '_member'}`}><button className="btn btn-primary action-btn-style blue-light-color btn-xs" type="button"><abbr className="tooltip-style" title="Add member"><i className="fas fa-user-plus"></i></abbr></button></Link>
-                <Link to={`/viewProjectDetails/${rowData.ID +'_document'}`}><button className="btn  btn-primary action-btn-style blue-color btn-xs" type="button"><abbr className="tooltip-style" title="Add Document"><i className="fas fa-file"></i></abbr></button></Link>
-                <Link to={`/viewProjectDetails/${rowData.ID +'_requirement'}`}><button className="btn  btn-primary action-btn-style blue-dark-color btn-xs" type="button"><abbr className="tooltip-style" title="Requirments"><i className="fas fa-clipboard-list"></i></abbr></button></Link>
-                <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn btn-primary action-btn-style  black-color btn-xs" type="button"><abbr className="tooltip-style" title="View Details"><i className="white fas fa-info"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID + '_member'}`}><button className="btn action-btn-style btn-xs" type="button"><abbr className="tooltip-style" title="Add member"><i className="fas fa-user-friends"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID +'_document'}`}><button className="btn action-btn-style btn-xs" type="button"><abbr className="tooltip-style" title="Add Document"><i className="far fa-file"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID +'_requirement'}`}><button className="btn action-btn-style btn-xs" type="button"><abbr className="tooltip-style" title="Requirments"><i className="fas fa-tasks"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn action-btn-style black-color btn-xs" type="button"><abbr className="tooltip-style" title="View Details"><i className="fas fa-arrow-right"></i></abbr></button></Link>
             </div>
         );
     }

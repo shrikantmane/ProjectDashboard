@@ -321,7 +321,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                     <div className="form-group">
                                                                         <label>Attachments</label>
                                                                         <div className="form-control fileupload" data-provides="fileupload">
-                                                                            <input ref="filedescription" type="file" id="uploadFile" className={formControl + " " + (this.state.errorClass["filedescription"] ? this.state.errorClass["filedescription"] : '')}
+                                                                            <input ref="filedescription" type="file" id="uploadFile" className={(this.state.errorClass["filedescription"] ? this.state.errorClass["filedescription"] : '')}
                                                                                 onChange={this.handleChange.bind(this, "filedescription")} >
                                                                             </input>
                                                                             <span className="error">{this.state.errors["filedescription"]}</span>

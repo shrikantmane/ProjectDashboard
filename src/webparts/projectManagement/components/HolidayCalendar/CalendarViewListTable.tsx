@@ -99,6 +99,7 @@ export default class ProjectListTable extends React.Component<
                         }}
                         navLinks={true} // can click day/week names to navigate views
                         // editable={true}
+                        
                         eventLimit={true} // allow "more" link when too many events
                         events={this.state.events}
                     />
@@ -123,8 +124,11 @@ export default class ProjectListTable extends React.Component<
                   var date1:any
 
                   date1=  date.setDate(date.getDate() + 1);
+                  var date2:any
+                  date2=new Date(date1).toISOString();
+                  console.log("date2",date2);
                         tempArray = {
-                            title: element.Title, start:element.EventDate.split('T')[0], end: date1
+                            title: element.Title, start:element.EventDate.split('T')[0], end: date2.split('T')[0]
                         }
                         tempList.push(tempArray);
                         console.log('information by name', response);

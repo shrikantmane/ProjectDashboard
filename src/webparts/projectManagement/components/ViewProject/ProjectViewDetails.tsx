@@ -37,9 +37,9 @@ export default class ProjectViewDetails extends React.Component<
             Id: "",
             calendarList: "",
             showComponent: false,
-            refreshCalender:false,
-            imgURL:"",
-            Risks:"",
+            refreshCalender: false,
+            imgURL: "",
+            Risks: "",
             events: [
                 {
                     id: 10,
@@ -100,24 +100,24 @@ export default class ProjectViewDetails extends React.Component<
         if (elmnt)
             elmnt.scrollIntoView();
     }
-    onRefreshCalender (refresh){
-        this.setState({refreshCalender : true});
+    onRefreshCalender(refresh) {
+        this.setState({ refreshCalender: true });
     }
     getProjectData(id) {
         console.log('params : ' + id);
         sp.web.lists.getByTitle("Project").items
-            .select("ID", "Project", "DueDate", "Priority", "On_x0020_Hold_x0020_Status", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "AssignedTo/EMail", "Priority", "Task_x0020_List", "Project_x0020_Team_x0020_Members", "Project_x0020_Document", "Requirements", "Project_x0020_Infromation", "Project_x0020_Calender", "StartDate","Risks").expand("Status0", "AssignedTo")
+            .select("ID", "Project", "DueDate", "Priority", "On_x0020_Hold_x0020_Status", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "AssignedTo/EMail", "Priority", "Task_x0020_List", "Project_x0020_Team_x0020_Members", "Project_x0020_Document", "Requirements", "Project_x0020_Infromation", "Project_x0020_Calender", "StartDate", "Risks").expand("Status0", "AssignedTo")
             .filter('ID eq \'' + id + '\'')
             .getAll()
             .then((response) => {
                 let status;
                 if (response != null) {
-                   
+
                     console.log('Project by names', response);
-                    if( response[0].On_x0020_Hold_x0020_Status === "OnHold")
-                          status = "Yes";
-                    else 
-                          status = "No";
+                    if (response[0].On_x0020_Hold_x0020_Status === "OnHold")
+                        status = "Yes";
+                    else
+                        status = "No";
                     this.setState({
                         project: response ? response[0].Project : '',
                         startdate: response ? new Date(response[0].StartDate).toDateString() : '',
@@ -135,7 +135,7 @@ export default class ProjectViewDetails extends React.Component<
                         statuscolor: response ? (response[0].Status0 ? response[0].Status0.Status_x0020_Color : '') : '',
                         imgURL: "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" + response[0].AssignedTo[0].EMail + "&UA=0&size=HR64x64&sc=1531997060853",
                         Risks: response ? response[0].Risks : '',
-                        
+
                     });
                     console.log("helllo", this.state)
                 }
@@ -162,60 +162,52 @@ export default class ProjectViewDetails extends React.Component<
                         <div className="wrapper">
                             <div className="row">
                                 <div className="col-12 col-sm-12">
-                                    <div className="well">
+                                    <div className="well headerWell">
                                         <div className="row">
-                                            <div className="col-sm-4 col-12">
+                                            <div className="col-sm-2 col-12">
                                                 <div className="current-project-conatiner">
                                                     <p id="project-name">{this.state.project}</p>
                                                     <img className="profile-img-style" src={this.state.imgURL} alt="owner name" />
                                                     <p>{this.state.owner}</p>
                                                 </div>
                                             </div>
-                                            <div className="col-12 col-sm-8">
+                                            <div className="col-12 col-sm-10">
                                                 <div className="row">
-                                                    <div className="col-12 col-sm-4">
+                                                    <div className="col-12 col-sm-2 offset-sm-1">
                                                         <div className="current-project-conatiner">
-                                                            <p>Start Date</p>
-                                                            <p>{this.state.startdate}</p>
+                                                            <span>Start Date</span>
+                                                            <span>{this.state.startdate}</span>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 col-sm-4">
+                                                    <div className="col-12 col-sm-2">
                                                         <div className="current-project-conatiner">
-                                                            <p>End Date</p>
-                                                            <p>{this.state.enddate}</p>
+                                                            <span>End Date</span>
+                                                            <span>{this.state.enddate}</span>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 col-sm-4">
+                                                    <div className="col-12 col-sm-1">
                                                         <div className="current-project-conatiner">
-                                                            <p>On Hold</p>
-                                                            <p>{this.state.onhold}</p>
+                                                            <span>On Hold</span>
+                                                            <span>{this.state.onhold}</span>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                <div className="row">
-                                                <div className="col-12 col-sm-4">
+                                                    <div className="col-12 col-sm-2">
                                                         <div className="current-project-conatiner">
-                                                            <p>Status</p>
-                                                            <p>
-                                                                <a className="tags orange" style={{ color: this.state.statuscolor, border: "1px solid " + this.state.statuscolor }}>{this.state.status}</a>
-                                                            </p>
+                                                            <span>Priority</span>
+                                                            <span className="tags grey">{this.state.priority}</span>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 col-sm-4">
+
+                                                    <div className="col-12 col-sm-2">
                                                         <div className="current-project-conatiner">
-                                                            <p>Priority</p>
-                                                            <p>
-                                                                <a className="tags grey">{this.state.priority}</a>
-                                                            </p>
+                                                            <span>Complexity</span>
+                                                            <span className="tags grey">{this.state.Risks}</span>
                                                         </div>
                                                     </div>
-                                                    
-                                                    <div className="col-12 col-sm-4">
+                                                    <div className="col-12 col-sm-2">
                                                         <div className="current-project-conatiner">
-                                                            <p>Complexity</p>
-                                                            <p>
-                                                                <a className="tags grey">{this.state.Risks}</a>
-                                                            </p>
+                                                            <span>Status</span>
+                                                            <span className="tags orange" style={{ color: this.state.statuscolor, border: "1px solid " + this.state.statuscolor }}>{this.state.status}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -225,37 +217,37 @@ export default class ProjectViewDetails extends React.Component<
                                 </div>
                                 <div className="col-12 col-sm-6 half-list-left" id="member">
                                     <div className="well hbc-list hbc-list-member">
-                                    <div><TeamListTable list={this.state.teammemberlist} projectId={this.state.Id}></TeamListTable></div>
+                                        <div><TeamListTable list={this.state.teammemberlist} projectId={this.state.Id}></TeamListTable></div>
                                     </div>
                                 </div>
                                 <div className="col-12 col-sm-6 half-list-right" id="document">
                                     <div className="well hbc-list hbc-list-document">
-                                    <div><DocumentListTable list={this.state.documentlist} projectId={this.state.Id}></DocumentListTable></div>
+                                        <div><DocumentListTable list={this.state.documentlist} projectId={this.state.Id}></DocumentListTable></div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="col-12 col-sm-12">
                                     <div className="well hbc-list hbc-list-roles">
-                                    <div><InformationListTable list={this.state.informationlist} projectId={this.state.Id}></InformationListTable></div>
+                                        <div><InformationListTable list={this.state.informationlist} projectId={this.state.Id}></InformationListTable></div>
                                     </div>
                                 </div>
-                              
+
                                 <div className="col-12 col-sm-12" id="requirement">
                                     <div className="well hbc-list hbc-list-requirement">
-                                    <div><RequirementListTable list={this.state.requirementlist} projectId={this.state.Id}></RequirementListTable></div>
-                                        
+                                        <div><RequirementListTable list={this.state.requirementlist} projectId={this.state.Id}></RequirementListTable></div>
+
                                     </div>
                                 </div>
                                 <div className="col-12 col-sm-6 half-list-left" ref={(section) => { this.violet = section; }}>
                                     <div className="well  hbc-list-holidaylist">
-                                    <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id} onRefreshCalender ={this.onRefreshCalender}></CalendarListTable></div>
+                                        <div><CalendarListTable list={this.state.calendarList} projectId={this.state.Id} onRefreshCalender={this.onRefreshCalender}></CalendarListTable></div>
                                     </div>
                                 </div>
                                 <div className="col-12 col-sm-6 half-list-right" id="content2">
                                     <div className="well hbc-list-holidaycalender">
-                                    <div className="content-section implementation">
-                    <h5>Holiday Calender</h5>
-                </div>
+                                        <div className="content-section implementation">
+                                            <h5>Holiday Calender</h5>
+                                        </div>
                                         <div className="col-sm-12 col-12 cardHeading">
                                             <div className="content-section implementation">
                                                 {/* <h5>Events</h5> */}
@@ -277,7 +269,7 @@ export default class ProjectViewDetails extends React.Component<
                                                           eventLimit={true} // allow "more" link when too many events
                                                           events={this.state}
                                                           /> */}
-                                                    <CalendarViewListTable list={this.state.calendarList} projectId={this.state.Id} refreshCalender ={this.state.refreshCalender}></CalendarViewListTable> 
+                                                    <CalendarViewListTable list={this.state.calendarList} projectId={this.state.Id} refreshCalender={this.state.refreshCalender}></CalendarViewListTable>
                                                 </div>
                                             </div>
                                         </div>

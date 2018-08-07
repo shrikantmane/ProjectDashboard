@@ -207,7 +207,7 @@ export default class ProjectListTable extends React.Component<
                                     <Column field="AssignedTo" sortable={true} header="Owner" body={this.ownerTemplate} style={{ width: "10%" }} />
                                     <Column field="Priority" sortable={true} header="Priority" style={{ width: "8%" }} />
                                     <Column field="Risks" sortable={true} header="Risk" style={{ width: "8%" }} />
-                                    <Column field="AttachmentFiles" sortable={true} header="Project Outline" body={this.fileTemplate} style={{ width: "15%" }} />
+                                    <Column field="AttachmentFiles" sortable={true} header="Project Outline" body={this.fileTemplate} style={{ width: "13%" }} />
                                     <Column header="Action" body={this.actionTemplate} style={{ width: "15%" }} />
                                 </DataTable>
                             </div>

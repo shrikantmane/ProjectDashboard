@@ -157,8 +157,11 @@ export default class ProjectListTable extends React.Component<
              if(rowData.AttachmentFiles.length>0){
              let data = rowData.AttachmentFiles[0].FileName;
             return (
-                <div>
-                    <a href={rowData.AttachmentFiles[0].ServerRelativeUrl} >{rowData.AttachmentFiles[0].FileName} </a>  
+                <div  style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                    <a href={rowData.AttachmentFiles[0].ServerRelativeUrl} >
+                   
+                    <span title={rowData.AttachmentFiles[0].FileName}>{rowData.AttachmentFiles[0].FileName}</span>
+                    </a>  
                 </div>
             );
         }
@@ -175,6 +178,7 @@ export default class ProjectListTable extends React.Component<
                 </div>
             );
     }
+    
     private onEditProject(rowData, e): any {
         e.preventDefault();
         console.log('Edit :' + rowData);

@@ -197,14 +197,6 @@ export default class AddProject extends React.Component<IAddInformationProps, {
             formIsValid = false;
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
-        } else if (fields["projectname"].trim() === '') {
-            formIsValid = false;
-            errors["projectname"] = "Cannot be empty";
-            errorClass["projectname"] = "classError";
-        } else {
-            formIsValid = true;
-            errors["projectname"] = "";
-            errorClass["projectname"] = "";
         }
         if (!this.state.currentSelectedItems || this.state.currentSelectedItems.length===0) {
             formIsValid = false;
@@ -261,7 +253,7 @@ if(tempState.length>0){
 
             if (this.props.id) {
             sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
-                Roles_Responsibility: obj.projectname ? obj.projectname.trim() : '',
+                Roles_Responsibility: obj.projectname ? obj.projectname : '',
 
                 OwnerId: tempState[0].key//{ results: obj.ownername },
                 //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
@@ -283,7 +275,7 @@ if(tempState.length>0){
             });
         } else {
             sp.web.lists.getByTitle(this.props.list).items.add({
-                Roles_Responsibility: obj.projectname ? obj.projectname.trim() : '',
+                Roles_Responsibility: obj.projectname ? obj.projectname : '',
                 OwnerId: tempState[0].key
             }).then((response) => {
                 console.log('Item adding-', response);
@@ -387,7 +379,7 @@ if(tempState.length>0){
                                                                 </div>
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
-                                                                    <span className="error">* </span><label>Owner</label>
+                                                                    <span className="error">*</span><label>Owner</label>
                                                                         {this._renderControlledPicker()}
                                                                          {/* <span className="calendar-style"><i className="fas fa-user icon-style"></i>
                                                                             {/* <input ref="ownername"  className={paddingInputStyle + " " + formControl + " " + (this.state.errorClass["ownername"] ? this.state.errorClass["ownername"] : '')}

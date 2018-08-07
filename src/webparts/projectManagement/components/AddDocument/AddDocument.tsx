@@ -331,8 +331,8 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
                     <div className="row addSection">
                       <div className="col-sm-6 col-12">
                         <div className="form-group">
-                          <label>
-                            Documents <span style={textcolor}>*</span>
+                        <span className="error">* </span> <label>
+                            Documents 
                           </label>
                           <input
                             type="file"

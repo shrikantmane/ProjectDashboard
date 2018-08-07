@@ -323,7 +323,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                             <div className="row addSection">
                                                                 <div className="col-sm-12 col-12">
                                                                     <div className="form-group">
-                                                                    <span className="error">* </span><label>Requirementss</label>
+                                                                    <span className="error">* </span><label>Requirements</label>
                                                                         <textarea ref="projectname" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
                                                                             onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
                                                                         </textarea>

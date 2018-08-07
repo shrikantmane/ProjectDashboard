@@ -2,7 +2,7 @@ import * as React from "react";
 import { sp, ItemAddResult } from "@pnp/sp";
 import { DataTable } from "primereact/components/datatable/DataTable";
 import { Column } from "primereact/components/column/Column";
-
+import { Button, Modal } from 'react-bootstrap';
 import { Link, Redirect } from 'react-router-dom';
 import styles from "../ProjectManagement.module.scss";
 import { IProjectListProps } from "./IProjectListProps";
@@ -24,12 +24,19 @@ export default class ProjectListTable extends React.Component<
         super(props);
         this.state = {
             projectList: new Array<Project>(),
-            showComponent: false
+            showComponent: false,
+            isLoading: false,
+            showModal: false,
+            newProjectID: 0,
+            PanelContainerLoader: null
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
         this.reopenPanel = this.reopenPanel.bind(this);
         this.editTemplate = this.editTemplate.bind(this);
+        this.handleLoader = this.handleLoader.bind(this);
+        this.getCreatedProjectID = this.getCreatedProjectID.bind(this);
+        this._closeModal = this._closeModal.bind(this);
     }
     dt: any;
     componentDidMount() {
@@ -75,8 +82,8 @@ export default class ProjectListTable extends React.Component<
         return (
             <div className="actionItemsIcons">
                 <Link to={`/viewProjectDetails/${rowData.ID + '_member'}`}><button className="btn action-btn-style btn-xs" type="button"><abbr className="tooltip-style" title="Add member"><i className="fas fa-user-friends"></i></abbr></button></Link>
-                <Link to={`/viewProjectDetails/${rowData.ID +'_document'}`}><button className="btn action-btn-style btn-xs" type="button"><abbr className="tooltip-style" title="Add Document"><i className="far fa-file"></i></abbr></button></Link>
-                <Link to={`/viewProjectDetails/${rowData.ID +'_requirement'}`}><button className="btn action-btn-style btn-xs" type="button"><abbr className="tooltip-style" title="Requirments"><i className="fas fa-tasks"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID + '_document'}`}><button className="btn action-btn-style btn-xs" type="button"><abbr className="tooltip-style" title="Add Document"><i className="far fa-file"></i></abbr></button></Link>
+                <Link to={`/viewProjectDetails/${rowData.ID + '_requirement'}`}><button className="btn action-btn-style btn-xs" type="button"><abbr className="tooltip-style" title="Requirments"><i className="fas fa-tasks"></i></abbr></button></Link>
                 <Link to={`/viewProjectDetails/${rowData.ID}`}><button className="btn action-btn-style black-color btn-xs" type="button"><abbr className="tooltip-style" title="View Details"><i className="fas fa-arrow-right"></i></abbr></button></Link>
             </div>
         );
@@ -149,20 +156,45 @@ export default class ProjectListTable extends React.Component<
             projectID: null
         })
     }
+    handleLoader(data) {
+        this.setState({
+            isLoading: data,
+            showComponent: false,
+            PanelContainerLoader: data ? 'PanelContainerLoaderVisible' : ''
+        });
+    }
+    getCreatedProjectID(id) {
+        this._showModal();
+        this.setState({
+            newProjectID: id
+        });
+    }
+    _showModal() {
+        this.setState({ showModal: true });
+    };
+    _closeModal() {
+        this.setState({ showModal: false });
+        this.refreshGrid();
+        this.reopenPanel();
+    };
     public render(): React.ReactElement<IProjectListProps> {
-
+        let PanelContainer = 'PanelContainer'
+        const loaderContent = this.state.isLoading ?
+            <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div> : null;
+        const panelContainerCSS = this.state.PanelContainerLoader ? 'PanelContainerLoaderVisible' : '';
         return (
             <div>
                 {/* <DataTableSubmenu /> */}
-                <div className="PanelContainer">
+                {loaderContent}
+                <div className={PanelContainer + " " + panelContainerCSS}>
                     <div className="well">
                         <div className="content-section implementation">
                             <h5>Projects</h5>
                             <button type="button" className="btn btn-outline btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddProject}>
                                 Add Project
-                        </button>
+                                </button>
                             {this.state.showComponent ?
-                                <AddProject id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} /> :
+                                <AddProject id={this.state.projectID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} handleLoader={this.handleLoader} createdProjectId={this.getCreatedProjectID} /> :
                                 null
                             }
                             <div className="project-list">
@@ -182,9 +214,33 @@ export default class ProjectListTable extends React.Component<
                         </div>
                     </div>
                 </div>
+                <Modal
+                    show={this.state.showModal}
+                    onHide={this._closeModal}
+                    container={this}
+                    aria-labelledby="contained-modal-title"
+                    animation={false}
+                >
+                    <Modal.Header>
+                        <Modal.Title id="contained-modal-title">
+                            Project Created
+                        </Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        Project Created Successfully! Do you want to configure Project
+    Schedule and Project Team now?
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={this._closeModal}>I'll Do it Later</Button>
+                        <Link to={`/viewProjectDetails/${this.state.newProjectID}`}>
+                            <Button>Continue</Button>
+                        </Link>
+
+                    </Modal.Footer>
+                </Modal>
                 {/* <DataTableDoc></DataTableDoc> */}
             </div >
-        );
+        )
     }
 
     /* Api Call*/

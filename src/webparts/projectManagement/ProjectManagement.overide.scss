@@ -904,6 +904,14 @@ div#workbenchPageContent {
   padding-right: 2px !important;
 }
 
+div[name="Recycle bin"] {
+  display: none !important;
+}
+
+div[class^="footerBar_"] {
+  display: none !important;
+}
+
 div[class="commandBarWrapper"] {
   display: none !important;
 }

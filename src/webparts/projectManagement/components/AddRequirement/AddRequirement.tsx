@@ -247,13 +247,20 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
     _closeModal() {
         this.setState({ showModal: false });
     };
-    removeAttachment(i, event) {
-        var result = confirm("Are you sure you want to delete item?");
+    removeAttachment(rowData, event) {
+        var result = confirm("File will be deleted permanently, do you Want to delete?");
         if (result) {
-            console.log('index1', i);
-            let tempAttachment = this.state.attachmentFiles;
-            tempAttachment.splice(i, 1);
-            this.setState({ attachmentFiles: tempAttachment });
+            let item = sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id);
+            item.attachmentFiles.getByName(rowData.FileName).delete().then(v => {
+                console.log("delete", v);
+                this._closePanel();
+                this.props.parentMethod();
+                this.props.parentReopen();
+            });
+            // console.log('index1', i);
+            // let tempAttachment = this.state.attachmentFiles;
+            // tempAttachment.splice(i, 1);
+            // this.setState({ attachmentFiles: tempAttachment });
         }
     }
     public render(): React.ReactElement<IAddRequirementProps> {
@@ -266,7 +273,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                         <label style={{ float: 'left', width: '90%' }}><a href={obj.ServerRelativeUrl}><i
                             style={{ marginRight: "5px" }}
                             className='fa fa-file' ></i>{obj.FileName}</a></label>
-                        <i className="far fa-times-circle" style={{ float: 'right', cursor: 'pointer' }} onClick={this.removeAttachment.bind(this, i)}></i>
+                        <i className="far fa-times-circle" style={{ float: 'right', cursor: 'pointer' }} onClick={this.removeAttachment.bind(this, obj)}></i>
                     </div>
                 )}
             </div> : null;

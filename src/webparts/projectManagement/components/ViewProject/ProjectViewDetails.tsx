@@ -114,26 +114,28 @@ export default class ProjectViewDetails extends React.Component<
                 if (response != null) {
 
                     console.log('Project by names', response);
-                    if (response[0].On_x0020_Hold_x0020_Status === "OnHold")
+                     if (response[0].On_x0020_Hold_x0020_Status === true)
                         status = "Yes";
                     else
                         status = "No";
                     this.setState({
                         project: response ? response[0].Project : '',
-                        startdate: response ? new Date(response[0].StartDate).toDateString() : '',
-                        enddate: response ? new Date(response[0].DueDate).toDateString() : '',
-                        onhold: response ? status : '',
-                        owner: response ? (response[0].AssignedTo ? response[0].AssignedTo[0].Title : '') : '',
+                        //startdate: response[0].StartDate ? new Date(response[0].StartDate).toDateString() : '',
+                        //enddate: response[0].DueDate ? new Date(response[0].DueDate).toDateString() : '',
+                        onhold: response ? status : null,
+                        owner: response ? (response[0].AssignedTo===undefined ?(response[0].AssignedTo? response[0].AssignedTo[0].Title: null) : null) : null,
                         priority: response ? response[0].Priority : '',
-                        status: response ? (response[0].Status0 ? response[0].Status0.Status : '') : '',
+                        status: response ? (response[0].Status0===undefined ?(response[0].Status0? response[0].Status0.Status: null) : null) : null,
+                      //  status: response ? (response[0].Status0 ? response[0].Status0.Status : null) : '',
                         informationlist: response ? response[0].Project_x0020_Infromation : '',
                         teammemberlist: response ? response[0].Project_x0020_Team_x0020_Members : '',
                         requirementlist: response ? response[0].Requirements : '',
                         documentlist: response ? response[0].Project_x0020_Document : '',
                         Id: response ? response[0].ID : '',
                         calendarList: response ? response[0].Project_x0020_Calender : '',
-                        statuscolor: response ? (response[0].Status0 ? response[0].Status0.Status_x0020_Color : '') : '',
-                        imgURL: "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" + response[0].AssignedTo[0].EMail + "&UA=0&size=HR64x64&sc=1531997060853",
+                        statuscolor: response ? (response[0].Status0===undefined ?(response[0].Status0? response[0].Status0.Status_x0020_Color: null) : null) : null,
+                        //statuscolor: response ? (response[0].Status0 ? response[0].Status0.Status_x0020_Color : null) : null,
+                        imgURL: "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" + response ? (response[0].AssignedTo===undefined ?(response[0].AssignedTo? response[0].AssignedTo[0].EMail: null) : null) : null + "&UA=0&size=HR64x64&sc=1531997060853",
                         Risks: response ? response[0].Risks : '',
 
                     });

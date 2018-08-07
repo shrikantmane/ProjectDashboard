@@ -60,6 +60,14 @@ export default class ProjectListTable extends React.Component<
                 </div>
             );
     }
+    startdateTemplate(rowData: Project, column) {
+        if (rowData.StartDate)
+            return (
+                <div>
+                    {(new Date(rowData.StartDate)).toLocaleDateString()}
+                </div>
+            );
+    }
 
     statusTemplate(rowData: Project, column) {
         if (rowData.Status0)

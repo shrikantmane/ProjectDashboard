@@ -132,6 +132,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     errors: {},
     errorClass: {},
     cloneProjectChecked: boolean,
+    disableCloneProject: boolean,
     showModal: boolean,
     projectList: any,
     peopleList: any[],
@@ -208,6 +209,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             errors: {},
             errorClass: {},
             cloneProjectChecked: false,
+            disableCloneProject: false,
             showModal: false,
             projectList: Array<Project>(),
             peopleList: peopleList,
@@ -462,13 +464,20 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             this.setState({ fields });
         }
     }
-    removeAttachment(i, event) {
-        console.log('index1', i);
-        var result = confirm("Want to delete?");
+    removeAttachment(rowData, event) {
+        var result = confirm("File will be deleted permanently, do you Want to delete?");
         if (result) {
-            let fields = this.state.fields;
-            fields['projectoutline'].splice(i, 1);
-            this.setState(fields);
+            let item = sp.web.lists.getByTitle('Project').items.getById(this.props.id);
+            item.attachmentFiles.getByName(rowData.FileName).delete().then(v => {
+                console.log("delete", v);
+                this._closePanel();
+                this.props.parentMethod();
+                this.props.parentReopen();
+            });
+            // console.log('index1', i);
+            // let tempAttachment = this.state.attachmentFiles;
+            // tempAttachment.splice(i, 1);
+            // this.setState({ attachmentFiles: tempAttachment });
         }
     }
     validateDateDiff(field) {
@@ -659,7 +668,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this.props.parentMethod();
                     if (this.state.fields["projectoutline"]) {
                         console.log('Saving project outline....................');
-                        i.item.attachmentFiles.add(this.state.fields["projectoutline"].name, this.state.fields["projectoutline"]);
+                        i.item.attachmentFiles.add(this.state.fields["projectoutline"].name, this.state.fields["projectoutline"]).then((result) => {
+                            this.props.parentMethod();
+                        });
                     }
                     if (this.state.fields['tags']) {
                         this.state.fields['tags'].forEach(element => {
@@ -1358,7 +1369,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             }
             this.getListIDs(ProName);
             // this.CreateTaskList(ProName);
-            
+
             if (this.state.fields['tags']) {
                 this.state.fields['tags'].forEach(element => {
                     this.addProjectTagByTagName(element.value, iar.data.Id);
@@ -3418,7 +3429,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             <div className="col-lg-12">
                 <div className="form-group">
                     <span className="error">* </span><label>Select Project</label>
-                    <select className="form-control" ref="project" onChange={this.handleChange.bind(this, "project")} value={this.state.fields["project"]}>
+                    <select className="form-control" ref="project" onChange={this.handleChange.bind(this, "project")} value={this.state.fields["project"]} disabled={this.state.disableCloneProject}>
                         <option value="" selected disabled>Select</option>
                         {this.state.projectList.map((obj) =>
                             <option key={obj.Project} value={obj.Project}>{obj.Project}</option>
@@ -3432,7 +3443,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             <div className="col-lg-6">
                 <div className="form-group">
                     <div>
-                        <Checkbox label="Clone Schedule" checked={this.state.fields["cloneschedule"]} onChange={this.handleChange.bind(this, "cloneschedule")} value={this.state.fields["cloneschedule"]} />
+                        <Checkbox label="Clone Schedule" checked={this.state.fields["cloneschedule"]} onChange={this.handleChange.bind(this, "cloneschedule")} value={this.state.fields["cloneschedule"]} disabled={this.state.disableCloneProject} />
                     </div>
                 </div>
             </div> : null;
@@ -3440,7 +3451,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             <div className="col-lg-6">
                 <div className="form-group">
                     <div>
-                        <Checkbox label="Clone Documents" checked={this.state.fields["clonedocuments"]} onChange={this.handleChange.bind(this, "clonedocuments")} value={this.state.fields["clonedocuments"]} />
+                        <Checkbox label="Clone Documents" checked={this.state.fields["clonedocuments"]} onChange={this.handleChange.bind(this, "clonedocuments")} value={this.state.fields["clonedocuments"]} disabled={this.state.disableCloneProject} />
                     </div>
                 </div>
             </div> : null;
@@ -3448,7 +3459,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             <div className="col-lg-6">
                 <div className="form-group">
                     <div>
-                        <Checkbox label="Clone Requirements" checked={this.state.fields["clonerequirements"]} onChange={this.handleChange.bind(this, "clonerequirements")} value={this.state.fields["clonerequirements"]} />
+                        <Checkbox label="Clone Requirements" checked={this.state.fields["clonerequirements"]} onChange={this.handleChange.bind(this, "clonerequirements")} value={this.state.fields["clonerequirements"]} disabled={this.state.disableCloneProject} />
                     </div>
                 </div>
             </div> : null;
@@ -3456,7 +3467,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             <div className="col-lg-6">
                 <div className="form-group">
                     <div>
-                        <Checkbox label="Clone Calender" checked={this.state.fields["clonecalender"]} onChange={this.handleChange.bind(this, "clonecalender")} value={this.state.fields["clonecalender"]} />
+                        <Checkbox label="Clone Calender" checked={this.state.fields["clonecalender"]} onChange={this.handleChange.bind(this, "clonecalender")} value={this.state.fields["clonecalender"]} disabled={this.state.disableCloneProject} />
                     </div>
                 </div>
             </div> : null;
@@ -3467,7 +3478,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         <label style={{ float: 'left', width: '90%' }}><a href={obj.ServerRelativeUrl}><i
                             style={{ marginRight: "5px" }}
                             className='fa fa-file' ></i>{obj.FileName}</a></label>
-                        <i className="far fa-times-circle" style={{ float: 'right', cursor: 'pointer' }} onClick={this.removeAttachment.bind(this, i)}></i>
+                        <i className="far fa-times-circle" style={{ float: 'right', cursor: 'pointer' }} onClick={this.removeAttachment.bind(this, obj)}></i>
                     </div>
                 )}
             </div> : null;
@@ -3506,9 +3517,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                         <div className="row addSection">
                                             <div className="col-sm-6 col-12">
                                                 <div className="form-group">
-                                                    <span className="error">* </span><label>Project Name</label>
-                                                    <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
-                                                        onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName}>
+                                                    <span className="error">* </span><label>Project Name <i className="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" title="Maximum 50 characters are allowed"></i></label>
+                                                    <input ref="projectname" type="text" maxLength={50} className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
+                                                        onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName} >
                                                     </input>
                                                     <span className="error">{this.state.errors["projectname"]}</span>
                                                 </div>
@@ -3528,7 +3539,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                 <div className="form-group">
                                                     {/* <label>Clone Project</label> */}
                                                     <div>
-                                                        <Checkbox label="Clone Project" checked={this.state.fields["cloneproject"]} onChange={this.handleChange.bind(this, "cloneproject")} value={this.state.fields["cloneproject"]} />
+                                                        <Checkbox label="Clone Project" checked={this.state.fields["cloneproject"]} onChange={this.handleChange.bind(this, "cloneproject")} value={this.state.fields["cloneproject"]} disabled={this.state.disableCloneProject} />
                                                     </div>
                                                 </div>
                                             </div>
@@ -3757,9 +3768,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 }
 
                 if (response[0].Clone_x0020_Project) {
-                    this.setState({ cloneProjectChecked: true });
+                    this.setState({ cloneProjectChecked: true, disableCloneProject: true });
                 } else {
-                    this.setState({ cloneProjectChecked: false });
+                    this.setState({ cloneProjectChecked: false, disableCloneProject: false });
                 }
                 if (response[0].On_x0020_Hold_x0020_Status) {
                     this.state.fields["statusdate"] = response[0].On_x0020_Hold_x0020_Date ? new Date(response[0].On_x0020_Hold_x0020_Date) : null;

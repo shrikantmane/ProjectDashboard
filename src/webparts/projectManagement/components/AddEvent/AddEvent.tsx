@@ -289,7 +289,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
 
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
-                                                                        <label>Title <span style={textcolor}>*</span></label>
+                                                                    <span className="error">* </span><label>Title </label>
                                                                         <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} 
                                                                             onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
                                                                         </input>
@@ -309,7 +309,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                 </div> */}
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
-                                                                        <label>Impact<span style={textcolor}>*</span></label>
+                                                                    <span className="error">* </span><label>Category</label>
                                                                         <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
                                                                             <option>Meeting</option>
                                                                             <option>Business</option>
@@ -320,7 +320,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                 </div>
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
-                                                                        <label>Start Time<span style={textcolor}>*</span> </label>
+                                                                    <span className="error">* </span><label>Start Date </label>
                                                                         <DatePicker
                                                                             placeholder="Select start date"
                                                                             onSelectDate={this.handleChange.bind(this, "startdate")}
@@ -331,7 +331,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                 </div>
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
-                                                                        <label>End Time<span style={textcolor}>*</span></label>
+                                                                    <span className="error">* </span><label>End Date</label>
                                                                         <DatePicker
                                                                             placeholder="Select end date"
                                                                             onSelectDate={this.handleChange.bind(this, "enddate")}

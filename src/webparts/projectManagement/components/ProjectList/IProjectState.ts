@@ -16,5 +16,9 @@ export interface IProjectListState {
     //   isTagLoaded :boolean,
     //   expandedRowID : number,
     showComponent: boolean,
-    projectID ?: number
+    projectID ?: number,
+    isLoading: boolean,
+    showModal: boolean,
+    newProjectID: any,
+    PanelContainerLoader:string
 }

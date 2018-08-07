@@ -27,7 +27,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
     showModal: boolean,
     isDataSaved: boolean,
     attachmentFiles: any,
-   // isLoading: boolean
+    // isLoading: boolean
 }> {
 
     constructor(props) {
@@ -41,7 +41,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             showModal: false,
             isDataSaved: false,
             attachmentFiles: [],
-           // isLoading: false
+            // isLoading: false
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -95,6 +95,14 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             formIsValid = false;
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
+        } else if (fields["projectname"].trim() === '') {
+            formIsValid = false;
+            errors["projectname"] = "Cannot be empty";
+            errorClass["projectname"] = "classError";
+        } else {
+            formIsValid = true;
+            errors["projectname"] = "";
+            errorClass["projectname"] = "";
         }
         // if (!fields["projectdescription"]) {
         //     formIsValid = false;
@@ -171,9 +179,9 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
 
             let obj: any = this.state.fields;
             if (this.props.id) {
-               // this.setState({ isLoading: true });
+                // this.setState({ isLoading: true });
                 sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
-                    Requirement: obj.projectname ? obj.projectname : '',
+                    Requirement: obj.projectname ? obj.projectname.trim() : '',
                     //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
                     Resources: obj.projectdescription ? obj.projectdescription : null,
                     Efforts: obj.effortdescription ? obj.effortdescription : null,
@@ -188,44 +196,42 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     //Status0Id: 2
 
                 }).then((response) => {
-                    if(this.state.fields["filedescription"]!=null)
-                    {
-                    //response.item.attachmentFiles.add(this.state.fields["filedescription"], this.state.selectedFile);
-                    response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
-                       // this.setState({ isLoading: false });
+                    if (this.state.fields["filedescription"] != null) {
+                        //response.item.attachmentFiles.add(this.state.fields["filedescription"], this.state.selectedFile);
+                        response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
+                            // this.setState({ isLoading: false });
+                            this._closePanel();
+                            this.props.parentMethod();
+                            this.props.parentReopen();
+                        })
+                    }
+                    else {
                         this._closePanel();
                         this.props.parentMethod();
                         this.props.parentReopen();
-                    })
-                }
-                else{
-                    this._closePanel();
-                        this.props.parentMethod();
-                        this.props.parentReopen();
-                }
+                    }
                 });
             } else {
-             //   this.setState({ isLoading: true });
+                //   this.setState({ isLoading: true });
                 sp.web.lists.getByTitle(this.props.list).items.add({
-                    Requirement: obj.projectname ? obj.projectname : '',
+                    Requirement: obj.projectname ? obj.projectname.trim() : '',
                     //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
                     Resources: obj.projectdescription ? obj.projectdescription : null,
                     Efforts: obj.effortdescription ? obj.effortdescription : null,
                 }).then((response) => {
-                    if(this.state.fields["filedescription"]!=null)
-                    {
-                    //const formData = new FormData();
-                    //formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
-                    response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
-                        //this.setState({ isLoading: false });
+                    if (this.state.fields["filedescription"] != null) {
+                        //const formData = new FormData();
+                        //formData.append('myFile', this.state.selectedFile, this.state.selectedFile.name);
+                        response.item.attachmentFiles.add(this.state.fields["filedescription"].name, this.state.fields["filedescription"]).then((response) => {
+                            //this.setState({ isLoading: false });
+                            this.props.parentMethod();
+                            this._closePanel();
+                        })
+                    }
+                    else {
                         this.props.parentMethod();
                         this._closePanel();
-                    })
-                }
-                else{
-                    this.props.parentMethod();
-                    this._closePanel();
-                }
+                    }
                     console.log('Item adding-', response);
                     this.setState({ isDataSaved: true });
                     //this._closePanel();
@@ -244,12 +250,12 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
     removeAttachment(i, event) {
         var result = confirm("Are you sure you want to delete item?");
         if (result) {
-        console.log('index1', i);
-        let tempAttachment = this.state.attachmentFiles;
-        tempAttachment.splice(i, 1);
-        this.setState({ attachmentFiles: tempAttachment });
+            console.log('index1', i);
+            let tempAttachment = this.state.attachmentFiles;
+            tempAttachment.splice(i, 1);
+            this.setState({ attachmentFiles: tempAttachment });
+        }
     }
-}
     public render(): React.ReactElement<IAddRequirementProps> {
         let formControl = 'form-control';
         let paddingInputStyle = 'padding-input-style';
@@ -301,7 +307,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         //     </div> : null;
         return (
             // className="PanelContainer"
-           // !this.state.isLoading ?
+            // !this.state.isLoading ?
             <div>
                 <Panel
                     isOpen={this.state.showPanel}
@@ -312,83 +318,83 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                     <div className="PanelContainer">
                         <section className="main-content-section">
                             {/* <div className="wrapper"> */}
-                                <div className="row">
-                                    <div className="col-sm-12 col-12">
-                                        {/* <section id="step1">
+                            <div className="row">
+                                <div className="col-sm-12 col-12">
+                                    {/* <section id="step1">
                                             <div className="well">
                                                 <div className="row"> */}
-                                                    <h3 className="hbc-form-header">Project Requirement</h3>
-                                                    {/* <div > */}
-                                                        <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
-                                                            <div className="row addSection">
-                                                                <div className="col-sm-12 col-12">
-                                                                    <div className="form-group">
-                                                                    <span className="error">* </span><label>Requirementss</label>
-                                                                        <textarea ref="projectname" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
-                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
-                                                                        </textarea>
-                                                                        <span className="error">{this.state.errors["projectname"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                              
-                                                                <div className="col-sm-6 col-12">
-                                                                    <div className="form-group">
-                                                                        <label>Number Of Resources</label>
-                                                                        <input ref="projectdescription" type="number" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Total Number Of People"
-                                                                            onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}>
-                                                                        </input>
-                                                                        <span className="error">{this.state.errors["projectdescription"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6 col-12">
-                                                                    <div className="form-group">
-                                                                        <label>Efforts</label>
-                                                                        <input ref="effortdescription" type="number" className={formControl + " " + (this.state.errorClass["effortdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Enter Number Of Day"
-                                                                            onChange={this.handleChange.bind(this, "effortdescription")} value={this.state.fields["effortdescription"]}>
-                                                                        </input>
-                                                                        <span className="error">{this.state.errors["effortdescription"]}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="col-sm-6 col-12">
-                                                                    <div className="form-group">
-                                                                        <label>Attachments</label>
-                                                                        <div className="form-control fileupload" data-provides="fileupload">
-                                                                            <input ref="filedescription" type="file" id="uploadFile" className={(this.state.errorClass["filedescription"] ? this.state.errorClass["filedescription"] : '')}
-                                                                                onChange={this.handleChange.bind(this, "filedescription")} >
-                                                                            </input>
-                                                                            <span className="error">{this.state.errors["filedescription"]}</span>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                {emptyDiv}
-                                                                {attachmentDiv}
-                                                                </div>
-                                                                <div className="row addSection">
-                                                                {/* <div className="col-sm-12 col-12">
+                                    <h3 className="hbc-form-header">Project Requirement</h3>
+                                    {/* <div > */}
+                                    <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
+                                        <div className="row addSection">
+                                            <div className="col-sm-12 col-12">
+                                                <div className="form-group">
+                                                    <span className="error">* </span><label>Requirements</label>
+                                                    <textarea ref="projectname" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
+                                                        onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
+                                                    </textarea>
+                                                    <span className="error">{this.state.errors["projectname"]}</span>
+                                                </div>
+                                            </div>
+
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Number Of Resources</label>
+                                                    <input ref="projectdescription" type="number" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Total Number Of People"
+                                                        onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}>
+                                                    </input>
+                                                    <span className="error">{this.state.errors["projectdescription"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Efforts</label>
+                                                    <input ref="effortdescription" type="number" className={formControl + " " + (this.state.errorClass["effortdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Enter Number Of Day"
+                                                        onChange={this.handleChange.bind(this, "effortdescription")} value={this.state.fields["effortdescription"]}>
+                                                    </input>
+                                                    <span className="error">{this.state.errors["effortdescription"]}</span>
+                                                </div>
+                                            </div>
+                                            <div className="col-sm-6 col-12">
+                                                <div className="form-group">
+                                                    <label>Attachments</label>
+                                                    <div className="form-control fileupload" data-provides="fileupload">
+                                                        <input ref="filedescription" type="file" id="uploadFile" className={(this.state.errorClass["filedescription"] ? this.state.errorClass["filedescription"] : '')}
+                                                            onChange={this.handleChange.bind(this, "filedescription")} >
+                                                        </input>
+                                                        <span className="error">{this.state.errors["filedescription"]}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            {emptyDiv}
+                                            {attachmentDiv}
+                                        </div>
+                                        <div className="row addSection">
+                                            {/* <div className="col-sm-12 col-12">
                                                                 </div> */}
-                                                                {/* <div className="clearfix"></div>
+                                            {/* <div className="clearfix"></div>
                                                                 <div className="clearfix"></div> */}
-                                                                <div className="col-sm-12 col-12">
-                                                                    <div className="btn-sec">
-                                                                        <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
-                                                                        <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    {/* </div> */}
-                                                {/* </div>
+                                            <div className="col-sm-12 col-12">
+                                                <div className="btn-sec">
+                                                    <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
+                                                    <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                    {/* </div> */}
+                                    {/* </div>
                                             </div>
                                         </section> */}
-                                    </div>
                                 </div>
+                            </div>
 
                             {/* </div> */}
                         </section>
                     </div>
                 </Panel>
             </div>
-//: <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div>
+            //: <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div>
         );
     }
     private _closePanel = (): void => {

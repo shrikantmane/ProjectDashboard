@@ -216,6 +216,7 @@ export default class ProjectListTable extends React.Component<
         .select("ID", "Roles_Responsibility", "Owner/ID", "Owner/Title","Owner/EMail").expand("Owner")
           .get()
           .then((response: Array<Information>) => {
+            if(response && response.length > 0){
             let currentScope = this;
             let count = 1;
             response.forEach(item => {
@@ -237,6 +238,10 @@ export default class ProjectListTable extends React.Component<
                 count++;
               }
             });
+        }
+        else{
+            this.setState({ projectList: response });
+        }
           });
         }
       }

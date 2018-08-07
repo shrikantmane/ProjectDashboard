@@ -129,6 +129,16 @@ ICalendarProps,
                 </div>
             );
     }
+    TitleTemplate(rowData: CalendarList, column) {
+        if (rowData.Title)
+            return (
+                // <div className={styles.Responsibility}>
+                <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                    {/* {rowData.Roles_Responsibility} */}
+                    <span title={rowData.Title}>{rowData.Title}</span>
+                </div>
+            );
+    }
     private onEditProject(rowData, e): any {
         e.preventDefault();
         console.log('Edit :' + rowData);
@@ -169,7 +179,7 @@ ICalendarProps,
                     <div className="holiday-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
                             <Column header="" body={this.editTemplate} style={{width: "5%", textAlign:"center"}}/>
-                            <Column header="Title" field="Title" />
+                            <Column header="Title" field="Title" body={this.TitleTemplate} />
                             <Column field="EventDate" sortable={true} header="Start Date"   body={this.startdateTemplate}  style={{width: "21%"}}/>
                             {/* <Column field="Owner" sortable={true} header="Owner" body={this.ownerTemplate} /> */}
                             <Column field="EndDate" sortable={true} header="End Date" body={this.duedateTemplate}  style={{width: "20%"}}/>

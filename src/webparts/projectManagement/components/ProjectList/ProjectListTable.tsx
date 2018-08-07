@@ -60,6 +60,14 @@ export default class ProjectListTable extends React.Component<
                 </div>
             );
     }
+    startdateTemplate(rowData: Project, column) {
+        if (rowData.StartDate)
+            return (
+                <div>
+                    {(new Date(rowData.StartDate)).toLocaleDateString()}
+                </div>
+            );
+    }
 
     statusTemplate(rowData: Project, column) {
         if (rowData.Status0)
@@ -201,7 +209,7 @@ export default class ProjectListTable extends React.Component<
                                 <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
                                     <Column body={this.editTemplate} style={{ width: "3%", textAlign: "center" }} />
                                     <Column field="Project" sortable={true} header="Project" style={{ width: "19%" }} />
-                                    <Column field="StartDate" sortable={true} header="Start Date" body={this.duedateTemplate} style={{ width: "8%" }} />
+                                    <Column field="StartDate" sortable={true} header="Start Date" body={this.startdateTemplate} style={{ width: "8%" }} />
                                     <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} style={{ width: "8%" }} />
                                     <Column field="Status0" sortable={true} header="Status" body={this.statusTemplate} style={{ width: "10%" }} />
                                     <Column field="AssignedTo" sortable={true} header="Owner" body={this.ownerTemplate} style={{ width: "10%" }} />

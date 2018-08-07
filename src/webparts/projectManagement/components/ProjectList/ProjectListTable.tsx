@@ -88,6 +88,16 @@ export default class ProjectListTable extends React.Component<
             </div>
         );
     }
+    ProjectTemplate(rowData: any, column) {
+        if (rowData.Project)
+            return (
+                // <div className={styles.Responsibility}>
+                <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                    {/* {rowData.Roles_Responsibility} */}
+                    <span title={rowData.Project}>{rowData.Project}</span>
+                </div>
+            );
+    }
     fileTemplate(rowData: any, column) {
         if (rowData.AttachmentFiles.length > 0) {
             let iconClass = "";
@@ -121,7 +131,7 @@ export default class ProjectListTable extends React.Component<
                 <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     <a href={rowData.AttachmentFiles[0].ServerRelativeUrl} ><i
                         style={{ marginRight: "5px" }}
-                        className={iconClass} ></i> {rowData.AttachmentFiles[0].FileName} </a>
+                        className={iconClass} ></i><span title={rowData.AttachmentFiles[0].FileName}>{rowData.AttachmentFiles[0].FileName}</span> </a>
                 </div>
             );
         }
@@ -200,7 +210,7 @@ export default class ProjectListTable extends React.Component<
                             <div className="project-list">
                                 <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={10} rowsPerPageOptions={[5, 10, 20]}>
                                     <Column body={this.editTemplate} style={{ width: "3%", textAlign: "center" }} />
-                                    <Column field="Project" sortable={true} header="Project" style={{ width: "19%" }} />
+                                    <Column field="Project" sortable={true} header="Project" style={{ width: "19%" }} body={this.ProjectTemplate} />
                                     <Column field="StartDate" sortable={true} header="Start Date" body={this.duedateTemplate} style={{ width: "8%" }} />
                                     <Column field="DueDate" sortable={true} header="Due Date" body={this.duedateTemplate} style={{ width: "8%" }} />
                                     <Column field="Status0" sortable={true} header="Status" body={this.statusTemplate} style={{ width: "10%" }} />

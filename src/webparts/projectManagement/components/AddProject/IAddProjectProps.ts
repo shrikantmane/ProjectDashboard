@@ -4,6 +4,8 @@ export interface IAddProjectProps {
   // projectList: Array<CEOProjects>,
   parentMethod: any,
   parentReopen: any,
+  handleLoader: any
+  createdProjectId: any,
   id?: number,
   // context: any;
   // siteurl : string

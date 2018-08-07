@@ -139,7 +139,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     currentSelectedItems?: IPersonaProps[];
     delayResults?: boolean,
     currentPicker?: number | string,
-    isDataSaved: boolean,
+    isDataSaved?: boolean,
     showStatusDate: boolean,
     selectedOption: null,
     inputValue: any,
@@ -154,7 +154,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     ProjectList: string,
     // TaskStatusColor: string,
     roleAssignments: IRoleAssignments[],
-    savedProjectID: any,
+    savedProjectID?: any,
     statusList: any,
     departmentList: any,
     showDepartment: boolean,
@@ -194,6 +194,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     public CEO_COOGrpID: string | number;
     public ProjectOwnerGrpID: string | number;
     public TaskStatusColor: string;
+    public newProjectID: number;
+    public isDataSaved: boolean = false;
 
 
     constructor(props) {
@@ -652,6 +654,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                 }).then(i => {
                     this.setState({ isLoading: false });
+                    // this.props.handleLoader(false); 
                     this._closePanel();
                     this.props.parentMethod();
                     if (this.state.fields["projectoutline"]) {
@@ -693,6 +696,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 //     // this._showModal();
                 // });
                 this.setState({ isLoading: true });
+                this.props.handleLoader(true);
                 this.getGroupID();
                 // this.CreateProjectGroup();
                 // this._closePanel();
@@ -785,14 +789,17 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     }
                 }).catch(e => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while creating " + OwnersGroup + " group: " + e);
                 });
             }).catch(e => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while creating " + ContributersGroup + " group: " + e);
             });
         }).catch(e => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating " + ViewersGroup + " group: " + e);
         });
     }
@@ -809,6 +816,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                 }).catch(e => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("error while adding HBCOwner " + loginName + " to owner group");
                 });
         }
@@ -1341,14 +1349,16 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Task_x0020_Comments: TaskCommentsClmn,
             Task_x0020_Comments_x0020_Histor: TaskCommentsHistoryClmn
         }).then((iar: ItemAddResult) => {
-
+            this.newProjectID = iar.data.Id;
+            this.isDataSaved = true
+            //this.setState({ isDataSaved: true, savedProjectID: iar.data.Id });
             if (this.state.fields["projectoutline"]) {
                 console.log('Saving project outline....................');
                 iar.item.attachmentFiles.add(this.state.fields["projectoutline"].name, this.state.fields["projectoutline"]);
             }
             this.getListIDs(ProName);
             // this.CreateTaskList(ProName);
-            this.setState({ isDataSaved: true, savedProjectID: iar.data.Id });
+            
             if (this.state.fields['tags']) {
                 this.state.fields['tags'].forEach(element => {
                     this.addProjectTagByTagName(element.value, iar.data.Id);
@@ -1356,6 +1366,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             }
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while adding items for ", ProName, " to Project List -", err);
         });
     }
@@ -1396,6 +1407,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating task List, Error -", err);
         });
     }
@@ -1427,16 +1439,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
                 }); //Comment
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while creating column Duration - ", " in list -", ListName, " Error -", err);
             }); //Duration
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
         }); //Status
         // }).catch(err => {
@@ -1458,6 +1473,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating Schedule List, Error -", err);
         });
     }
@@ -1489,16 +1505,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
                 }); //Comment
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while creating column Duration - ", " in list -", ListName, " Error -", err);
             }); //Duration
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
         }); //Status
         // }).catch(err => {
@@ -1518,6 +1537,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating Task Comments List, Error -", err);
         });
     }
@@ -1541,11 +1561,13 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this.CreateTaskCommentHistory(TaskCommentsHistory, ProName, spWeb, spEnableCT, TaskCommentsID);
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
             }); //Comment
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating column task - ", " in list -", ListName, " Error -", err);
         }); //Task Name
     }
@@ -1561,6 +1583,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating Task Comments History List, Error -", err);
         });
     }
@@ -1587,16 +1610,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this.CreateProjectDocument(ProName, ProjectDocument, spWeb, spEnableCT);
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
                 }); //IsDeleted 
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
             }); //Comment
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating column Task Comment ID - ", " in list -", ListName, " Error -", err);
         }); //Task Comment ID
     }
@@ -1611,6 +1637,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             reactHandler.AddProjectDocColumns(ProjectDocument, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating Project Doc List, Error -", err);
         });
     }
@@ -1635,6 +1662,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating column Owner - ", " in list -", ListName, " Error -", err);
         }); //Owner
 
@@ -1654,6 +1682,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             reactHandler.AddRequirementColumns(Requirements, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating Requirement List, Error -", err);
         });
     }
@@ -1706,31 +1735,37 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                 this.CreateProjectTeamMembers(ProName, ProjectTeamMembers, spWeb, spEnableCT);
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while creating column ImpactOnTimelines - ", " in list -", ListName, " Error -", err);
                             }); //ImpactOnTimelines  
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while creating column Resources - ", " in list -", ListName, " Error -", err);
                         }); //Resources     
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while creating column  Efforts - ", " in list -", ListName, " Error -", err);
                     }); //Efforts
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while creating column Apporval Status - ", " in list -", ListName, " Error -", err);
                 }); //Apporval Status
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while creating column Approver - ", " in list -", ListName, " Error -", err);
             }); //Approver
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating column Requirement - ", " in list -", ListName, " Error -", err);
         }); //Requirement
         // }).catch(err => {
@@ -1749,6 +1784,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             reactHandler.AddTeamMemberColumns(ProjectTeamMembers, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating Team Members List, Error -", err);
         });
     }
@@ -1791,21 +1827,25 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while creating column Status - ", " in list -", ListName, " Error -", err);
                     }); //Status
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while creating column EndDate - ", " in list -", ListName, " Error -", err);
                 }); //EndDate
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while creating column StartDate - ", " in list -", ListName, " Error -", err);
             }); //StartDate
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating column TeamMember - ", " in list -", ListName, " Error -", err);
         }); //TeamMember
 
@@ -1825,6 +1865,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             reactHandler.AddProjectInfoColumns(ProjectInfo, ProName, spWeb, spEnableCT, splist.list);
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating Team Members List, Error -", err);
         });
     }
@@ -1853,11 +1894,13 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while creating column Roles_Responsibility - ", " in list -", ListName, " Error -", err);
             }); //Roles_Responsibility
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating column Owner - ", " in list -", ListName, " Error -", err);
         }); //Owner
 
@@ -1882,6 +1925,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             //reactHandler.AddPermissionsToList(ProjectCalender, ProName, splist.list);
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating Project Calender List, Error -", err);
         });
     }
@@ -1914,6 +1958,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             reactHandler.AddProjectCommentsColumns(ProjectComments, ProName, spWeb, spEnableCT, ProjectListID, splist.list);
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating Project Comments List, Error -", err);
         });
     }
@@ -1944,14 +1989,17 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this.CreateProjectCommentHistory(ProjectCommentsHistory, ProName, spWeb, spEnableCT, ProjectListID);
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
                 }); //IsDeleted 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while creating column Comment ID - ", " in list -", ListName, " Error -", err);
             }); //CommentID
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
         }); //Comment
         // }).catch(err => {
@@ -1971,6 +2019,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             //reactHandler.cloneListItems(ProName);
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating Project Comments History List, Error -", err);
         });
     }
@@ -1996,16 +2045,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while creating column IsDeleted - ", " in list -", ListName, " Error -", err);
                 }); //IsDeleted
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while creating column Comment - ", " in list -", ListName, " Error -", err);
             }); //Comment
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while creating column CommentID - ", " in list -", ListName, " Error -", err);
         }); //CommentID
     }
@@ -2032,31 +2084,37 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while adding permissions - ProjectOwnerGrp");
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ");
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp");
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ");
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp");
             });; // HBCAdminGrp
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while breakRoleInheritance for list - ", ListName)
         });
     }
@@ -2083,31 +2141,37 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while adding permissions - ProjectOwnerGrp");
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ");
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp");
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ");
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp");
             });; // HBCAdminGrp
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while breakRoleInheritance for list - ", ListName)
         });
     }
@@ -2139,26 +2203,31 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ");
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp");
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ");
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp");
             });; // HBCAdminGrp
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while breakRoleInheritance for list - ", ListName)
         });
     }
@@ -2186,31 +2255,37 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while adding permissions - ProjectOwnerGrp");
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ");
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp");
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ");
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp");
             });; // HBCAdminGrp
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while breakRoleInheritance for list - ", ListName)
         });
     }
@@ -2237,30 +2312,36 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while adding permissions - ProjectOwnerGrp");
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ");
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp");
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ");
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp");
             });; // HBCAdminGrp
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while breakRoleInheritance for list - ", ListName)
         });
     }
@@ -2289,31 +2370,37 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while adding permissions - ProjectOwnerGrp");
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ");
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp");
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ");
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp");
             });; // HBCAdminGrp
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while breakRoleInheritance for list - ", ListName)
         });
     }
@@ -2342,31 +2429,37 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while adding permissions - ProjectOwnerGrp");
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ");
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp");
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ");
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp");
             });; // HBCAdminGrp
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while breakRoleInheritance for list - ", ListName)
         });
     }
@@ -2393,32 +2486,38 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while adding permissions - ProjectOwnerGrp");
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ");
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp");
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ");
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp");
             });; // HBCAdminGrp
 
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while breakRoleInheritance for list - ", ListName)
         });
     }
@@ -2445,32 +2544,38 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while adding permissions - ProjectOwnerGrp");
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ");
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp");
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ");
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp");
             });; // HBCAdminGrp
 
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while breakRoleInheritance for list - ", ListName)
         });
     }
@@ -2497,26 +2602,31 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while adding permissions - ProjectOwnerGrp");
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ");
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp");
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ");
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp");
             });; // HBCAdminGrp
 
@@ -2552,44 +2662,52 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                     let oldProject = (this.state.fields['project']).split(' ').join('_');
                                     reactHandler.cloneListItems(ProName, oldProject);
                                 } else {
-                                    this.setState({ isLoading: false });
+                                    //this.setState({ isLoading: false });
+
                                     if (this.props.id) {
                                         this._closePanel();
                                         this.props.parentMethod();
                                     } else {
+                                        this.props.handleLoader(false);
                                         this._closePanel();
-                                        this._showModal();
+                                        //this._showModal();
                                     }
                                 }
 
 
                             }).catch(err => {
                                 this.setState({ isLoading: false });
+                                this.props.handleLoader(false);
                                 console.log("Error while adding permissions - ProjectOwnerGrp", err);
                             });// ProjectOwnerGrp
 
                         }).catch(err => {
                             this.setState({ isLoading: false });
+                            this.props.handleLoader(false);
                             console.log("Error while adding permissions - CEO_COOGrp ", err);
                         });// CEO_COOGrp
 
                     }).catch(err => {
                         this.setState({ isLoading: false });
+                        this.props.handleLoader(false);
                         console.log("Error while adding permissions - DepartmentHeadGrp", err);
                     });// DepartmentHeadGrp
 
                 }).catch(err => {
                     this.setState({ isLoading: false });
+                    this.props.handleLoader(false);
                     console.log("Error while adding permissions ", ProName, " Contributers ", err);
                 });// ContributersGroup
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while adding permissions -  HBCAdminGrp", err);
             });; // HBCAdminGrp
 
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Error while breakRoleInheritance for list - ", ListName, "-", err)
         });
     }
@@ -2617,13 +2735,14 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             this.copyDocumentListItems(oldProject + this.ProjectDocument, ProName + this.ProjectDocument);
         }
         if (!flag) {
-            this.setState({ isLoading: false });
+            //this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             if (this.props.id) {
                 this._closePanel();
                 this.props.parentMethod();
             } else {
                 this._closePanel();
-                this._showModal();
+                //this._showModal();
             }
         }
     }
@@ -2662,6 +2781,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("error while fetching items in ", oldCalendarList, " - ", err);
             });
     }
@@ -2681,16 +2801,18 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
         }).then((iar: ItemAddResult) => {
             console.log("Items added successfully in list ", newCalendarList);
-            this.setState({ isLoading: false });
+            //this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             if (this.props.id) {
                 this._closePanel();
                 this.props.parentMethod();
             } else {
                 this._closePanel();
-                this._showModal();
+                //this._showModal();
             }
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("error while adding items in ", newCalendarList, " - ", err);
         });
     }
@@ -2726,6 +2848,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
             }).catch((err) => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("error while fetching items in ", oldRequirementsList, " - ", err);
             });
     }
@@ -2742,18 +2865,20 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             ApproverId: ApproverId,
             Apporval_x0020_Status: ApporvalStatus,
         }).then((iar: ItemAddResult) => {
-            this.setState({ isLoading: false });
+            //this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             if (this.props.id) {
                 this._closePanel();
                 this.props.parentMethod();
                 //this.props.parentReopen();
             } else {
                 this._closePanel();
-                this._showModal();
+                //this._showModal();
             }
             console.log("Items added successfully in list ", newRequirementsList);
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("error while adding items in ", newRequirementsList, " - ", err);
         });
     }
@@ -2804,6 +2929,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
             }).catch((err) => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("error while fetching items in ", oldScheduleList, " - ", err);
             });
     }
@@ -2823,7 +2949,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             Status: TaskStatus
 
         }).then((iar: ItemAddResult) => {
-            this.setState({ isLoading: false });
+            //this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("Items added successfully in list ", newScheduleList);
             if (this.props.id) {
                 this._closePanel();
@@ -2831,10 +2958,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 //this.props.parentReopen();
             } else {
                 this._closePanel();
-                this._showModal();
+                //this._showModal();
             }
         }).catch(err => {
             this.setState({ isLoading: false });
+            this.props.handleLoader(false);
             console.log("error while adding items in ", newScheduleList, " - ", err);
         });;
     }
@@ -2860,17 +2988,19 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         .copyTo(siteurl + destinationList + response[i].LinkFilename, true)
                 }
                 console.log(response);
-                this.setState({ isLoading: false });
+                //this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 if (this.props.id) {
                     this._closePanel();
                     this.props.parentMethod();
                     //this.props.parentReopen();
                 } else {
                     this._closePanel();
-                    this._showModal();
+                    //this._showModal();
                 }
             }).catch(err => {
                 this.setState({ isLoading: false });
+                this.props.handleLoader(false);
                 console.log("Error while copying document in list ", newDocumentList, " - ", err);
             });
     }
@@ -3244,9 +3374,13 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     };
     private _closePanel = (): void => {
         this.setState({ showPanel: false });
-        if (!this.state.isDataSaved) {
+        if (!this.isDataSaved) {
             this.props.parentReopen();
+        } else {
+            this.props.createdProjectId(this.newProjectID);
         }
+        this.setState({ showPanel: false });
+        //this.props.createdProjectId(this.state.savedProjectID);
     };
     showSuccess() {
         this.state.growl.show({ severity: 'success', summary: 'Success Message', detail: 'Order submitted' });
@@ -3356,7 +3490,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             // className="PanelContainer"
             <div>
                 {/* <Growl value={this.state.growl} /> */}
-                {/* !this.state.isLoading ? : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fa fa-spinner fa-spin"></i></div> */}
                 <Panel
                     isOpen={this.state.showPanel}
                     onDismiss={this._closePanel}
@@ -3564,31 +3697,6 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                         </section>
                     </div>
                 </Panel>
-
-                <Modal
-                    show={this.state.showModal}
-                    onHide={this._closeModal}
-                    container={this}
-                    aria-labelledby="contained-modal-title"
-                    animation={false}
-                >
-                    <Modal.Header>
-                        <Modal.Title id="contained-modal-title">
-                            Project Created
-                        </Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                        Project Created Successfully! Do you want to configure Project
-    Schedule and Project Team now?
-                    </Modal.Body>
-                    <Modal.Footer>
-                        <Button onClick={this._closeModal}>I'll Do it Later</Button>
-                        <Link to={`/viewProjectDetails/${this.state.savedProjectID}`}>
-                            <Button>Continue</Button>
-                        </Link>
-
-                    </Modal.Footer>
-                </Modal>
             </div >
         );
     }
@@ -3665,7 +3773,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 }
                 console.log('State........', this.state.fields)
             }).catch((e: Error) => {
-                alert(`There was an error : ${e.message}`);
+                console.log(`There was an error : ${e.message}`);
             });
     }
     private getProjectTagsByProjectName(id): void {
@@ -3699,7 +3807,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 console.log('projects', response);
                 this.setState({ projectList: response });
             }).catch((e: Error) => {
-                alert(`There was an error : ${e.message}`);
+                console.log(`There was an error : ${e.message}`);
             });
     }
     getDepartmentList() {
@@ -3764,7 +3872,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
 
                 this.setState({ fields, currentSelectedItems: selectedPeopleList });
             }).catch((e: Error) => {
-                alert(`There was an error : ${e.message}`);
+                console.log(`There was an error : ${e.message}`);
             });
     }
 

@@ -42,6 +42,7 @@ ICalendarProps,
         this.editTemplate = this.editTemplate.bind(this);
         this.refreshGrid = this.refreshGrid.bind(this);
         this.actionTemplate = this.actionTemplate.bind(this);
+       // this.deleteListItem=this.deleteListItem.bind(this);
     }
     dt: any;
     componentDidMount() {
@@ -145,8 +146,9 @@ ICalendarProps,
         sp.web.lists.getByTitle(this.props.list).
         items.getById(rowData.ID).delete().then((response) => {
           console.log(this.props.list + ` item deleted`);
+        this.props.onRefreshCalender();
           this.getProjectCalendar(this.props.list);
-          this.props.onRefreshCalender();
+      
         });
     }
     }

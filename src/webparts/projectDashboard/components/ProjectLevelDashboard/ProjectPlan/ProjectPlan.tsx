@@ -6,18 +6,6 @@ import Toolbar from './Toolbar';
 import { Plan, Chart, ChartData, ChartLink } from "../Project";
 import { IProjectPlanProps } from './IProjectPlanProps';
 import { IProjectPlanState } from './IProjectPlanState';
-let data = {
-  data: [
-    { id: 1, text: 'Task #1', start_date: '15-04-2017', attachment: 'attachment1', status: 'In Progress', duration: 3, progress: 0.6 },
-    { id: 2, text: 'Task #2', start_date: '25-04-2017', attachment: 'attachment2', status: 'Completed', duration: 2, progress: 0, parent: 1 },
-    { id: 3, text: 'Task #3', start_date: '26-04-2017', attachment: 'attachment2', status: 'Completed', duration: 2, progress: 0 },
-    { id: 4, text: 'Task #4', start_date: '03-05-2017', attachment: 'attachment2', status: 'Completed', duration: 2, progress: 0 }
-  ],
-  links: [
-    { id: 1, source: 2, target: 1, type: '0' },
-    { id: 2, source: 3, target: 4, type: '0' }
-  ]
-};
 
 export default class ProjectPlan extends React.Component<IProjectPlanProps, IProjectPlanState> {
 
@@ -88,8 +76,8 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
            item.Predecessors.forEach(predecessor => {
             chartData.links.push({
               id: linkId, 
-              source: item.ID, 
-              target:  predecessor.Id , 
+              source: predecessor.Id, 
+              target: item.ID, 
               type: '0'
             })
            })

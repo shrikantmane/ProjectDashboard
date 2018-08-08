@@ -1,4 +1,4 @@
 export interface IProjectTeamMembersProps {
   webPartTitle?: string;
-  projectTeamMembers : string;
+  department: string;
 }

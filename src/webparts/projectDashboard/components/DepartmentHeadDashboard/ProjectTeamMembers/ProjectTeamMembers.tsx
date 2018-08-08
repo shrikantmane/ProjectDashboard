@@ -13,10 +13,10 @@ export default class ProjectTeamMembers extends React.Component<IProjectTeamMemb
     };
   }
 componentDidMount(){
-  this.getTeamMember(this.props.projectTeamMembers);
+  this.getTeamMember();
 }
 
-  private getTeamMember(projectTeamMembers: string) {
+  private getTeamMember() {
     sp.web.lists.getByTitle("AlphaServe_Project_Team_Members").items
       .select("Team_x0020_Member/ID", "Team_x0020_Member/Title", "Team_x0020_Member/EMail").expand("Team_x0020_Member")
       .get()
@@ -64,10 +64,10 @@ componentDidMount(){
                     return (<div className="row">
                       <div className="col-sm-12">
                         <div className="row">
-                          <div className="col-sm-2">
-                            <img className="img-responsive image-style rolesImage" src={item.Team_x0020_Member.PictureURL} alt="" />
+                          <div className="col-sm-3">
+                            <img className="img-responsive image-style" src={item.Team_x0020_Member.PictureURL} alt="" />
                           </div>
-                          <div className="col-sm-10">
+                          <div className="col-sm-9">
                             <div className="profileDetail">
                               <div className="profileName">
                                 <a href={email} target="_blank">{item.Team_x0020_Member.Title}</a>

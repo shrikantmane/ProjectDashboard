@@ -16,9 +16,7 @@ export default class ProjectTaskList extends React.Component<
   constructor(props) {
     super(props);
     this.state = {
-      taskList: new Array<Task>(),
-      sortField : "Sort",
-      sortOrder : 1
+      taskList: new Array<Task>()
     };
   }
 
@@ -119,14 +117,6 @@ export default class ProjectTaskList extends React.Component<
     );
   }
   
-  sort(e){
-    let taskList = this.state.taskList;   
-    let sortedResponse = sortBy(taskList, function (task) {
-      return task[e.sortField];
-    });
-    this.setState({sortField: e.sortField, sortOrder: e.sortOrder, taskList: sortedResponse});
-  }
-
   public render(): React.ReactElement<IProjectTaskListProps> {
     return (
       <div className="well recommendedProjects  ">
@@ -140,13 +130,13 @@ export default class ProjectTaskList extends React.Component<
           <div className="clearfix" />
           <div className="col-sm-12 col-12 profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>
             <div>
-              <DataTable value={this.state.taskList} rowGroupMode="subheader" groupField="Week" sortField={this.state.sortField} sortOrder={this.state.sortOrder} onSort={this.sort.bind(this)} scrollable={true} scrollHeight="240px"
+              <DataTable value={this.state.taskList} rowGroupMode="subheader" groupField="Week" sortField="sort" sortOrder={1} scrollable={true} scrollHeight="200px"
                 rowGroupHeaderTemplate={this.headerTemplate} rowGroupFooterTemplate={() => { return; }}>
-                <Column field="Title" header="Title" sortable={true}/>
-                <Column field="OwnerName" header="Owner" sortable={true}/>
-                <Column field="StartDate" header="Start Date" sortable={true} body={this.startDateTemplate}/>
-                <Column field="DueDate" header="Due Date" sortable={true} body={this.endDateTemplate}/>
-                <Column field="Status" header="Status" sortable={true} body={this.statusTemplate}/>
+                <Column field="Title" header="Title" filter={true}/>
+                <Column field="OwnerName" header="Owner"  filter={true}/>
+                <Column field="StartDate" header="Start Date" sortable={true} body={this.startDateTemplate} filter={true}/>
+                <Column field="DueDate" header="Due Date" sortable={true} body={this.endDateTemplate} filter={true}/>
+                <Column field="Status" header="Status" body={this.statusTemplate} filter={true}/>
               </DataTable>
             </div>
           </div>

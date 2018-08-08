@@ -48,7 +48,7 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
             <div className="row dark-blue">
 
               <div className="status-title">
-                <span className="title-bullet inprogressStatus pull-left"></span>Health <span className="activityStatus"><button type="button" className="btn-outline btn btn-sm">Project Outline</button></span>
+                <span className="title-bullet inprogressStatus pull-left"></span>Health <span className="activityStatus"></span>
               </div>
 
               <div id="skill" className="mid-text mid-text col-sm-12 col-12">

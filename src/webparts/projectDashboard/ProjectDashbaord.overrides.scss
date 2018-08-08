@@ -526,6 +526,7 @@ div[class^="footerBar_"] {
 }
 
 .ProjectLevelDashboard {
+
   .radioContainer {
     display: inline-block;
     position: relative;
@@ -706,6 +707,18 @@ div[class^="footerBar_"] {
   }
   .project-tabs .tagList>span.priority-btn {
     width: 7rem;
+  }
+  .project-tabs .btn-outline{
+    border-radius: 5px!important;
+    border-color: #504f6c;
+    color: #fff!important;
+    width: auto;
+    background-color: #1b1a30;
+    height: auto;
+    display: inline-block;
+    text-align: center;
+    padding: .3rem 1.2rem;
+    font-weight: 600;
   }
   .Status-block {
     background-color: #fff;

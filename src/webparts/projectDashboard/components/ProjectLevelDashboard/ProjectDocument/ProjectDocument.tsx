@@ -18,10 +18,10 @@ export default class ProjectDocument extends React.Component<IProjectDocumentPro
 
   componentWillReceiveProps(nextProps) {
     if (this.props.projectDocument != nextProps.projectDocument)
-      this.getAllMildstones(nextProps.projectDocument);
+      this.getAllDocuments(nextProps.projectDocument);
   }
 
-  private getAllMildstones(projectDocument: string) {
+  private getAllDocuments(projectDocument: string) {
     sp.web.lists.getByTitle(projectDocument).items
       .select("File", "Author/ID", "Author/Title").expand("File", "Author")
       .get()

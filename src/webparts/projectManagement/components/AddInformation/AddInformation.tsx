@@ -96,6 +96,7 @@ export default class AddProject extends React.Component<IAddInformationProps, {
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
+        this.handleBlurOnRole=this.handleBlurOnRole.bind(this);
     }
     componentWillReceiveProps(nextProps) {
         if(nextProps.list!="" || nextProps.list!=null){
@@ -197,6 +198,14 @@ export default class AddProject extends React.Component<IAddInformationProps, {
             formIsValid = false;
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
+        } else if (fields["projectname"].trim() === '') {
+            formIsValid = false;
+            errors["projectname"] = "Cannot be empty";
+            errorClass["projectname"] = "classError";
+        } else {
+            formIsValid = true;
+            errors["projectname"] = "";
+            errorClass["projectname"] = "";
         }
         if (!this.state.currentSelectedItems || this.state.currentSelectedItems.length===0) {
             formIsValid = false;
@@ -231,6 +240,16 @@ export default class AddProject extends React.Component<IAddInformationProps, {
         this.setState({ errors: errors, errorClass: errorClass });
         return formIsValid;
     }
+    handleBlurOnRole(){
+        console.log(this.state.fields['projectname']);
+            let errors = this.state.errors;
+            let errorClass = this.state.errorClass;
+            if (!this.state.fields["projectname"])
+            {
+                errors["projectname"] = "Cannot be empty";
+                errorClass["projectname"] = "classError";
+            } 
+    }
 
     projectSubmit(e) {
         e.preventDefault();
@@ -253,7 +272,7 @@ if(tempState.length>0){
 
             if (this.props.id) {
             sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
-                Roles_Responsibility: obj.projectname ? obj.projectname : '',
+                Roles_Responsibility: obj.projectname ? obj.projectname.trim() : '',
 
                 OwnerId: tempState[0].key//{ results: obj.ownername },
                 //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
@@ -275,7 +294,7 @@ if(tempState.length>0){
             });
         } else {
             sp.web.lists.getByTitle(this.props.list).items.add({
-                Roles_Responsibility: obj.projectname ? obj.projectname : '',
+                Roles_Responsibility: obj.projectname ? obj.projectname.trim() : '',
                 OwnerId: tempState[0].key
             }).then((response) => {
                 console.log('Item adding-', response);
@@ -372,14 +391,14 @@ if(tempState.length>0){
                                                                     <div className="form-group">
                                                                     <span className="error">* </span><label>Roles/Responsbility</label>
                                                                         <textarea rows={4} ref="projectname" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
-                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
+                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}onBlur={this.handleBlurOnRole}>
                                                                         </textarea>
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
                                                                     </div>
                                                                 </div>
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
-                                                                    <span className="error">*</span><label>Owner</label>
+                                                                    <span className="error">* </span><label>Owner</label>
                                                                         {this._renderControlledPicker()}
                                                                          {/* <span className="calendar-style"><i className="fas fa-user icon-style"></i>
                                                                             {/* <input ref="ownername"  className={paddingInputStyle + " " + formControl + " " + (this.state.errorClass["ownername"] ? this.state.errorClass["ownername"] : '')}

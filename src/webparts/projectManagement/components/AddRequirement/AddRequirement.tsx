@@ -47,6 +47,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         this._closeModal = this._closeModal.bind(this);
         this.handleBlurOnResources=this.handleBlurOnResources.bind(this);
         this.handleBlurOnEfforts=this.handleBlurOnEfforts.bind(this);
+        this.handleBlurOnRequirement=this.handleBlurOnRequirement.bind(this);
     }
 
     handleChange(field, e) {
@@ -146,6 +147,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         this.setState({ errors: errors, errorClass: errorClass });
         return formIsValid;
     }
+ 
     private getProjectByID(id): void {
         // get Project Documents list items for all projects
         let filterString = "ID eq " + id;
@@ -275,6 +277,16 @@ handleBlurOnEfforts(){
              errorClass["effortdescription"] = "classError";
          }
 }
+handleBlurOnRequirement(){
+    console.log(this.state.fields['projectname']);
+        let errors = this.state.errors;
+        let errorClass = this.state.errorClass;
+        if (!this.state.fields["projectname"])
+        {
+            errors["projectname"] = "Cannot be empty";
+            errorClass["projectname"] = "classError";
+        } 
+}
     public render(): React.ReactElement<IAddRequirementProps> {
         let formControl = 'form-control';
         let paddingInputStyle = 'padding-input-style';
@@ -350,7 +362,7 @@ handleBlurOnEfforts(){
                                                                     <div className="form-group">
                                                                     <span className="error">* </span><label>Requirements</label>
                                                                         <textarea ref="projectname" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
-                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
+                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnRequirement}>
                                                                         </textarea>
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
                                                                     </div>

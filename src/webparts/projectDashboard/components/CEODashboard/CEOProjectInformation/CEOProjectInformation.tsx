@@ -566,7 +566,7 @@ export default class CEOProjectInformation extends React.Component<
                     />
                     <Column
                       field="MileStone"
-                      header="Mildstone"
+                      header="Milestone"
                       body={this.mildstoneTemplate}
                       style={{ width: "30%", fontSize:'14px' }}
                       filter={true}

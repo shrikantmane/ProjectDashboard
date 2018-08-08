@@ -641,6 +641,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             if (this.props.id) {
                 this.setState({ isLoading: true });
                 sp.web.lists.getByTitle("Project").items.getById(this.props.id).update({
+                    Project: obj.projectname.split('_').join(' '),
                     StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : null,
                     DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : null,
                     //Status0Id: 2,
@@ -668,7 +669,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     this.props.parentMethod();
                     if (this.state.fields["projectoutline"]) {
                         console.log('Saving project outline....................');
-                        i.item.attachmentFiles.add(this.state.fields["projectoutline"].name, this.state.fields["projectoutline"]).then((result) => {
+                        i.item.attachmentFiles.add(this.state.fields["projectoutline"][0].FileName, this.state.fields["projectoutline"][0]).then((result) => {
                             this.props.parentMethod();
                         });
                     }

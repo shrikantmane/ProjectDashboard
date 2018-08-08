@@ -3566,6 +3566,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                         placeholder="Select start date"
                                                         onSelectDate={this.handleChange.bind(this, "startdate")}
                                                         value={this.state.fields["startdate"]}
+                                                        
                                                     />
                                                     <span className="error">{this.state.errors["startdate"]}</span>
                                                 </div>

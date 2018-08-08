@@ -24,4 +24,5 @@ export interface IProjectViewState{
     calendarList:any;
     imgURL:any;
     statuscolor:any;
+    scheduleList:string;
 }

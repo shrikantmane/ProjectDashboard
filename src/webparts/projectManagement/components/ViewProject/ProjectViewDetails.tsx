@@ -8,6 +8,7 @@ import DocumentListTable from '.././ProjectDocuments/DocumentListTable'
 import RequirementListTable from '.././ProjectRequirement/RequirementListTable'
 import InformationListTable from '.././ProjectInformation/InformationListTable'
 import CalendarListTable from '.././HolidayList/CalendarListTable'
+import ProjectPlan from '.././ProjectPlan/ProjectPlan'
 //import FullCalendar from 'fullcalendar-reactwrapper';
 import { IProjectViewState } from './IProjectViewState';
 import CalendarViewListTable from '.././HolidayCalendar/CalendarViewListTable'
@@ -80,6 +81,7 @@ export default class ProjectViewDetails extends React.Component<
                 //       start: '2018-07-30'
                 //   }
             ],
+            scheduleList : ""
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.onRefreshCalender = this.onRefreshCalender.bind(this)
@@ -106,7 +108,7 @@ export default class ProjectViewDetails extends React.Component<
     getProjectData(id) {
         console.log('params : ' + id);
         sp.web.lists.getByTitle("Project").items
-            .select("ID", "Project", "DueDate", "Priority", "On_x0020_Hold_x0020_Status", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "AssignedTo/EMail", "Priority", "Task_x0020_List", "Project_x0020_Team_x0020_Members", "Project_x0020_Document", "Requirements", "Project_x0020_Infromation", "Project_x0020_Calender", "StartDate", "Risks").expand("Status0", "AssignedTo")
+            .select("ID", "Project", "DueDate", "Priority", "On_x0020_Hold_x0020_Status", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "AssignedTo/EMail", "Priority", "Task_x0020_List", "Project_x0020_Team_x0020_Members", "Project_x0020_Document", "Requirements", "Project_x0020_Infromation", "Project_x0020_Calender", "StartDate", "Risks","Schedule_x0020_List").expand("Status0", "AssignedTo")
             .filter('ID eq \'' + id + '\'')
             .getAll()
             .then((response) => {
@@ -137,6 +139,7 @@ export default class ProjectViewDetails extends React.Component<
                         //statuscolor: response ? (response[0].Status0 ? response[0].Status0.Status_x0020_Color : null) : null,
                         imgURL:response ? (response[0].AssignedTo!==undefined ?(response[0].AssignedTo? "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" + response[0].AssignedTo[0].EMail + "&UA=0&size=HR64x64&sc=1531997060853" : null) : null) : null,
                         Risks: response ? response[0].Risks : '',
+                        scheduleList : response[0] ? response[0].Schedule_x0020_List : ""
 
                     });
                     console.log("helllo", this.state)
@@ -227,10 +230,16 @@ export default class ProjectViewDetails extends React.Component<
                                         <div><DocumentListTable list={this.state.documentlist} projectId={this.state.Id}></DocumentListTable></div>
                                     </div>
                                 </div>
-
+                                
                                 <div className="col-12 col-sm-12">
                                     <div className="well hbc-list hbc-list-roles">
                                         <div><InformationListTable list={this.state.informationlist} projectId={this.state.Id}></InformationListTable></div>
+                                    </div>
+                                </div>
+
+                                <div className="col-12 col-sm-12">
+                                    <div className="well">
+                                        <div><ProjectPlan scheduleList={this.state.scheduleList}></ProjectPlan></div>
                                     </div>
                                 </div>
 

@@ -41,6 +41,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
+        this.handleBlurOnEvent=this.handleBlurOnEvent.bind(this);
     }
 
     handleChange(field, e) {
@@ -134,6 +135,30 @@ export default class AddProject extends React.Component<IAddEventProps, {
         this.setState({ errors: errors, errorClass: errorClass });
         return formIsValid;
     }
+    handleBlurOnEvent(){
+        console.log(this.state.fields['projectname']);
+            let errors = this.state.errors;
+            let errorClass = this.state.errorClass;
+            if (!this.state.fields["projectname"])
+            {
+                errors["projectname"] = "Cannot be empty";
+                errorClass["projectname"] = "classError";
+            } 
+    }
+    // handleBluronEventDate(){
+    //     console.log(this.state.fields['startdate']);
+    //     let errors = this.state.errors;
+    //     let errorClass = this.state.errorClass;
+    //     if (!this.state.fields["startdate"])
+    //     {
+    //         errors["startdate"] = "Cannot be empty";
+    //         errorClass["startdate"] = "classError";
+    //     } 
+    //     else if{
+            
+    //     }
+
+    // }
     private getProjectByID(id): void {
         // get Project Documents list items for all projects
         let filterString = "ID eq " + id;
@@ -291,7 +316,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                     <div className="form-group">
                                                                     <span className="error">* </span><label>Title </label>
                                                                         <input ref="projectname" type="text" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} 
-                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
+                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}onBlur={this.handleBlurOnEvent}>
                                                                         </input>
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
                                                                     </div>

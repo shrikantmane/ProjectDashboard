@@ -45,6 +45,9 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
+        this.handleBlurOnResources=this.handleBlurOnResources.bind(this);
+        this.handleBlurOnEfforts=this.handleBlurOnEfforts.bind(this);
+        this.handleBlurOnRequirement=this.handleBlurOnRequirement.bind(this);
     }
 
     handleChange(field, e) {
@@ -96,16 +99,21 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
         }
-        // if (!fields["projectdescription"]) {
+        if (!fields["projectdescription"]) {
+            formIsValid = false;
+            errors["projectdescription"] = "Cannot be empty";
+            errorClass["projectdescription"] = "classError";
+        }
+     if (fields["effortdescription"]<0) {
+            formIsValid = false;
+            errors["effortdescription"] = "Cannot be less than zero";
+             errorClass["effortdescription"] = "classError";
+         }
+        //  if (fields["projectdescription"]<0) {
         //     formIsValid = false;
-        //     errors["projectdescription"] = "Cannot be empty";
-        //     errorClass["projectdescription"] = "classError";
-        // }
-        // if (!fields["effortdescription"]) {
-        //     formIsValid = false;
-        //     errors["effortdescription"] = "Cannot be empty";
-        //     errorClass["effortdescription"] = "classError";
-        // }
+        //     errors["projectdescription"] = "Cannot be less than zero";
+        //      errorClass["projectdescription"] = "classError";
+        //  }
         // if (!fields["filedescription"]) {
         //     formIsValid = false;
         //     errors["filedescription"] = "Cannot be empty";
@@ -139,6 +147,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         this.setState({ errors: errors, errorClass: errorClass });
         return formIsValid;
     }
+ 
     private getProjectByID(id): void {
         // get Project Documents list items for all projects
         let filterString = "ID eq " + id;
@@ -250,6 +259,34 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
         this.setState({ attachmentFiles: tempAttachment });
     }
 }
+handleBlurOnResources(){
+    console.log(this.state.fields['projectdescription']);
+        let errors = this.state.errors;
+        let errorClass = this.state.errorClass;
+        if (this.state.fields["projectdescription"]<0) {
+            errors["projectdescription"] = "Cannot be less than zero";
+             errorClass["projectdescription"] = "classError";
+         }
+}
+handleBlurOnEfforts(){
+    console.log(this.state.fields['effortdescription']);
+        let errors = this.state.errors;
+        let errorClass = this.state.errorClass;
+        if (this.state.fields["effortdescription"]<0) {
+            errors["effortdescription"] = "Cannot be less than zero";
+             errorClass["effortdescription"] = "classError";
+         }
+}
+handleBlurOnRequirement(){
+    console.log(this.state.fields['projectname']);
+        let errors = this.state.errors;
+        let errorClass = this.state.errorClass;
+        if (!this.state.fields["projectname"])
+        {
+            errors["projectname"] = "Cannot be empty";
+            errorClass["projectname"] = "classError";
+        } 
+}
     public render(): React.ReactElement<IAddRequirementProps> {
         let formControl = 'form-control';
         let paddingInputStyle = 'padding-input-style';
@@ -323,9 +360,9 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                             <div className="row addSection">
                                                                 <div className="col-sm-12 col-12">
                                                                     <div className="form-group">
-                                                                    <span className="error">* </span><label>Requirementss</label>
+                                                                    <span className="error">* </span><label>Requirements</label>
                                                                         <textarea ref="projectname" className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Brief the owner about the project"
-                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]}>
+                                                                            onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnRequirement}>
                                                                         </textarea>
                                                                         <span className="error">{this.state.errors["projectname"]}</span>
                                                                     </div>
@@ -334,8 +371,8 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>Number Of Resources</label>
-                                                                        <input ref="projectdescription" type="number" className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Total Number Of People"
-                                                                            onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]}>
+                                                                        <input ref="projectdescription"   type="number"  className={formControl + " " + (this.state.errorClass["projectdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Total Number Of People"
+                                                                            onChange={this.handleChange.bind(this, "projectdescription")} value={this.state.fields["projectdescription"]} onBlur={this.handleBlurOnResources}>
                                                                         </input>
                                                                         <span className="error">{this.state.errors["projectdescription"]}</span>
                                                                     </div>
@@ -343,8 +380,8 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
                                                                         <label>Efforts</label>
-                                                                        <input ref="effortdescription" type="number" className={formControl + " " + (this.state.errorClass["effortdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Enter Number Of Day"
-                                                                            onChange={this.handleChange.bind(this, "effortdescription")} value={this.state.fields["effortdescription"]}>
+                                                                        <input ref="effortdescription" type="number"  className={formControl + " " + (this.state.errorClass["effortdescription"] ? this.state.errorClass["projectdescription"] : '')} placeholder="Enter Number Of Day"
+                                                                            onChange={this.handleChange.bind(this, "effortdescription")} value={this.state.fields["effortdescription"]} onBlur={this.handleBlurOnEfforts}>
                                                                         </input>
                                                                         <span className="error">{this.state.errors["effortdescription"]}</span>
                                                                     </div>

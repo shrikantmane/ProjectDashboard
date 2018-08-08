@@ -454,7 +454,7 @@ export default class AddProject extends React.Component<
                       <div className="col-sm-6 col-12">
                         <div className="form-group">
                           <label>
-                            Assigned To<span style={textcolor}>*</span>
+                          <span className="error">* </span> Name
                           </label>
                           {this._renderControlledPicker()}
                           {/* <span className="calendar-style"><i className="fas fa-user icon-style"></i>
@@ -471,7 +471,7 @@ export default class AddProject extends React.Component<
 
                       <div className="col-sm-6 col-12">
                         <div className="form-group">
-                          <label>Assigned Date</label>
+                        <span className="error">* </span><label>Assigned Date</label>
                           <DatePicker
                             placeholder="Select Assigned date"
                             onSelectDate={this.handleChange.bind(

@@ -1,6 +1,7 @@
 import { UserType }  from "./ProjectUser";
 
 export interface IMainDashboardState {
-   userType : UserType 
+   userType : UserType;
+   department : string;
 }
   

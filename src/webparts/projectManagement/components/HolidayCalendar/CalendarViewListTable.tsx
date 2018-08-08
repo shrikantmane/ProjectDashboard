@@ -143,19 +143,7 @@ export default class ProjectListTable extends React.Component<
         }
     }
 
-    getProjectDocuments(list) {
-        if ((list) != "") {
-
-            sp.web.lists.getByTitle(list).items
-                .select("ID", "File", "Author/ID", "Author/Title", "Created").expand("File", "Author")
-
-                .get()
-                .then((response) => {
-                    console.log('calendar by name', response);
-                    this.setState({ projectList: response });
-                });
-        }
-    }
+    
 
 
 

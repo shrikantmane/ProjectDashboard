@@ -25,10 +25,10 @@ export default class DepartmentHeadDashboard extends React.Component<IDepartment
                 <div className="col-md-12 col-xs-12 cardPadding">
                   <ProjectTaskList department={this.props.department}></ProjectTaskList>
                 </div>
-                <div className="col-md-6 col-xs-12 cardPadding">
-                  <ProjectTeamMembers projectTeamMembers=""></ProjectTeamMembers>
+                <div className="col-md-3 col-xs-12 cardPadding">
+                  <ProjectTeamMembers department={this.props.department}></ProjectTeamMembers>
                 </div>
-                <div className="col-md-6 col-xs-12 cardPadding">
+                <div className="col-md-9 col-xs-12 cardPadding">
                   <ProjectTeamConversation ></ProjectTeamConversation>
                 </div>
               </div>

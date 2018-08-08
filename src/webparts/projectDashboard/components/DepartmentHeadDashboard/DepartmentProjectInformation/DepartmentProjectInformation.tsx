@@ -455,7 +455,7 @@ export default class DepartmentProjectInformation extends React.Component<
 
     var header = (
       <div>
-        {/* <label className={styles.globalHeading}>Department Dashboard</label> */}
+        <label className={styles.globalHeading}>Department Projects</label>
         <div className={styles.globalSearch} style={{ textAlign: "left" }}>
           <input
             type="text"
@@ -593,7 +593,8 @@ export default class DepartmentProjectInformation extends React.Component<
                   </DataTable>
                 </div>
               </div>
-              : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fas fa-spinner"></i></div>
+              // : <div style={{ textAlign: "center", fontSize: "25px" }}><i className="fas fa-spinner"></i></div>
+              :null
           }
         </div>
       </div>

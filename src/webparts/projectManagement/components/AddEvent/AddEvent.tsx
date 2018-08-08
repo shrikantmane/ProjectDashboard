@@ -42,16 +42,19 @@ export default class AddProject extends React.Component<IAddEventProps, {
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
         this.handleBlurOnEvent=this.handleBlurOnEvent.bind(this);
+       // this.validateDateDiff=this.validateDateDiff.bind(this);
     }
 
     handleChange(field, e) {
         if (field === 'startdate') {
             let fields = this.state.fields;
             fields[field] = e;
+            this.validateDateDiff(field);
         }
         else if (field === 'enddate') {
             let fields = this.state.fields;
             fields[field] = e;
+            this.validateDateDiff(field);
         }
         else {
             let fields = this.state.fields;
@@ -72,6 +75,32 @@ export default class AddProject extends React.Component<IAddEventProps, {
             })
         }
     }
+    validateDateDiff(field) {
+        let fields = this.state.fields;
+        let errors = {};
+        let errorClass = {};
+        let formIsValid = true;
+        if (fields["startdate"] && fields["enddate"]) {
+            if (fields["enddate"] < fields["startdate"]) {
+                formIsValid = false;
+                if (field === 'startdate') {
+                    errors["startdate"] = "Start Date should always be less than Due Date";
+                    errorClass["startdate"] = "classError";
+                } else {
+                    errors["enddate"] = "Due Date should always be greater than Start Date";
+                    errorClass["enddate"] = "classError";
+                }
+            } else {
+                formIsValid = true;
+                errors["enddate"] = "";
+                errorClass["enddate"] = "";
+                errors["startdate"] = "";
+                errorClass["startdate"] = "";
+            }
+        }
+        this.setState({ errors: errors, errorClass: errorClass });
+        return formIsValid;
+    }
 
     handleValidation() {
         let fields = this.state.fields;
@@ -84,6 +113,15 @@ export default class AddProject extends React.Component<IAddEventProps, {
             formIsValid = false;
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
+        }
+        else if (fields["projectname"].trim() === '') {
+            formIsValid = false;
+            errors["projectname"] = "Cannot be empty";
+            errorClass["projectname"] = "classError";
+        } else {
+            formIsValid = true;
+            errors["projectname"] = "";
+            errorClass["projectname"] = "";
         }
         if (!fields["startdate"]) {
             formIsValid = false;
@@ -143,7 +181,19 @@ export default class AddProject extends React.Component<IAddEventProps, {
             {
                 errors["projectname"] = "Cannot be empty";
                 errorClass["projectname"] = "classError";
+                this.setState({ errors: errors, errorClass: errorClass });
             } 
+            else if (this.state.fields["projectname"].trim() === '') {
+           
+                errors["projectname"] = "Cannot be empty";
+                errorClass["projectname"] = "classError";
+                this.setState({ errors: errors, errorClass: errorClass });
+            }
+            else{
+                errors["projectname"] = "";
+                errorClass["projectname"] = "";
+                this.setState({ errors: errors, errorClass: errorClass });
+            }
     }
     // handleBluronEventDate(){
     //     console.log(this.state.fields['startdate']);
@@ -191,7 +241,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
             let obj: any = this.state.fields;
             if (this.props.id) {
             sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
-                Title: obj.projectname ? obj.projectname : '',
+                Title: obj.projectname ? obj.obj.projectname.trim() : '',
                // Description: obj.description ? obj.description : '',
                 EventDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
                 //EventDate: obj.projectdescription ? obj.projectdescription : '',
@@ -213,7 +263,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
             });
         } else {
             sp.web.lists.getByTitle(this.props.list).items.add({
-                Title: obj.projectname ? obj.projectname : '',
+                Title: obj.projectname ? obj.projectname.trim(): '',
                 EventDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
                // Description: obj.description ? obj.description : '',
                 EndDate: obj.enddate ? new Date(obj.enddate).toDateString(): '',
@@ -334,7 +384,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
                                                                 </div> */}
                                                                 <div className="col-sm-6 col-12">
                                                                     <div className="form-group">
-                                                                    <span className="error">* </span><label>Category</label>
+                                                                    <label>Category</label>
                                                                         <select className={formControl + " " + (this.state.errorClass["priority"] ? this.state.errorClass["priority"] : '')} ref="priority" onChange={this.handleChange.bind(this, "priority")} value={this.state.fields["priority"]}>
                                                                             <option>Meeting</option>
                                                                             <option>Business</option>

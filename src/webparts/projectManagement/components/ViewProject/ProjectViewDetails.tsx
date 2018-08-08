@@ -195,12 +195,18 @@ export default class ProjectViewDetails extends React.Component<
                                                     </div>
                                                     <div className="col-12 col-sm-2">
                                                         <div className="current-project-conatiner">
+                                                            <span>on Hold Date</span>
+                                                            <div>{this.state.startdate}</div>
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-12 col-sm-1">
+                                                        <div className="current-project-conatiner">
                                                             <span>Priority</span>
                                                             <span className="tags grey">{this.state.priority}</span>
                                                         </div>
                                                     </div>
 
-                                                    <div className="col-12 col-sm-2">
+                                                    <div className="col-12 col-sm-1">
                                                         <div className="current-project-conatiner">
                                                             <span>Complexity</span>
                                                             <span className="tags grey">{this.state.Risks}</span>
@@ -208,7 +214,7 @@ export default class ProjectViewDetails extends React.Component<
                                                     </div>
                                                     <div className="col-12 col-sm-2">
                                                         <div className="current-project-conatiner">
-                                                            <span>Status</span>
+                                                            {/* <span>Status</span> */}
                                                             <span className="tags orange" style={{ color: this.state.statuscolor, border: "1px solid " + this.state.statuscolor }}>{this.state.status}</span>
                                                         </div>
                                                     </div>

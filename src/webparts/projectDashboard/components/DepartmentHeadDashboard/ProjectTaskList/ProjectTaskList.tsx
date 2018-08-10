@@ -118,7 +118,15 @@ export default class ProjectTaskList extends React.Component<
       <span>{moment(rowData.DueDate).format("DD MMM YYYY")}</span>
     );
   }
-
+  private ownerTemplate(rowData: Task, column) {
+    if (rowData.AssignedTo)
+      return (
+        <div className="ownerImage">
+          <img src={rowData.AssignedTo[0].ImgURL} />
+          <div className="ownerName">{rowData.AssignedTo[0].Title}</div>
+        </div>
+      );
+  }
   startDateFilter(value, filter) {
     if (value && value != "" && filter && filter != "") {
       let startDate = moment(value).format("DD MMM YYYY");
@@ -144,7 +152,7 @@ export default class ProjectTaskList extends React.Component<
   }
   public render(): React.ReactElement<IProjectTaskListProps> {
     return (
-      <div className="well recommendedProjects  ">
+      <div className="well recommendedProjects taskListContainer  ">
         <div className="row">
           <div className="col-sm-12 col-12 cardHeading">
             <div className="tasklist-div">
@@ -165,7 +173,7 @@ export default class ProjectTaskList extends React.Component<
               <DataTable value={this.state.taskList} rowGroupMode="subheader" groupField="Week" sortField="sort" sortOrder={1} scrollable={true} scrollHeight="200px"
                 rowGroupHeaderTemplate={this.headerTemplate} rowGroupFooterTemplate={() => { return; }}>
                 <Column field="Title" header="Title" filter={true} />
-                <Column field="OwnerName" header="Owner" filter={true} />
+                <Column field="OwnerName" header="Owner"  filter={true}  body={this.ownerTemplate}/>
                 <Column field="StartDate" header="Start Date" sortable={true} body={this.startDateTemplate} filter={true} filterMatchMode="custom" filterFunction={this.startDateFilter} />
                 <Column field="DueDate" header="Due Date" sortable={true} body={this.endDateTemplate} filter={true} filterMatchMode="custom" filterFunction={this.endDateFilter} />
                 <Column field="Status" header="Status" body={this.statusTemplate} filter={true} />

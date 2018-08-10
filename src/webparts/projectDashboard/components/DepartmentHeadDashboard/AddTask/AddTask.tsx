@@ -3,6 +3,8 @@ import { sp, ItemAddResult, Web } from "@pnp/sp";
 import { IAddTasksProps } from './IAddTaskProps';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
 import { DatePicker, DayOfWeek, IDatePickerStrings } from 'office-ui-fabric-react/lib/DatePicker';
+import { find, filter, sortBy, uniqBy } from "lodash";
+import styles from "../../ProjectDashboard.module.scss";
 //Start: People Picker
 
 import { BaseComponent, assign } from 'office-ui-fabric-react/lib/Utilities';
@@ -45,6 +47,8 @@ export default class AddTask extends React.Component<IAddTasksProps, {
     delayResults: boolean,
     currentPicker?: number | string,
     statusList: any,
+    departmentList: any,
+    currentUserDetails: any
 }>{
     private _picker: IBasePicker<IPersonaProps>;
 
@@ -63,13 +67,28 @@ export default class AddTask extends React.Component<IAddTasksProps, {
             delayResults: false,
             currentPicker: 1,
             statusList: [],
+            departmentList: [],
+            currentUserDetails: ''
         };
 
         this.handleBlurOntitle = this.handleBlurOntitle.bind(this);
+        this.GetCurrentUserProperties = this.GetCurrentUserProperties.bind(this);
     }
     componentDidMount() {
         this._getAllSiteUsers();
         this.getStatusList();
+        this.getDepartment();
+        this.GetCurrentUserProperties();
+        if (this.props.id) {
+            this.setState({
+                fields: {}
+            })
+            this.getTaskByID(this.props.id);
+        } else {
+            this.setState({
+                fields: {}
+            })
+        }
     }
     getStatusList() {
         sp.web.lists.getByTitle('Task Status Color').items
@@ -79,6 +98,22 @@ export default class AddTask extends React.Component<IAddTasksProps, {
             .then((response: any[]) => {
                 console.log("All Colors -", response);
                 this.setState({ statusList: response });
+            });
+    }
+    getDepartment() {
+        sp.web.lists.getByTitle('Departments').items
+            .select('ID', 'Department')
+            .get()
+            .then((response: any[]) => {
+                console.log("All Department -", response);
+                this.setState({ departmentList: response });
+            });
+    }
+    GetCurrentUserProperties() {
+        sp.profiles.myProperties.get()
+            .then((result: any) => {
+                console.log("department -", result.UserProfileProperties[11].Value);
+                this.setState({ currentUserDetails: result.UserProfileProperties[11].Value });
             });
     }
     handleChange(field, e, isChecked: boolean) {
@@ -124,6 +159,8 @@ export default class AddTask extends React.Component<IAddTasksProps, {
     taskSubmit(e) {
         e.preventDefault();
         if (this.handleValidation()) {
+            let userDepartment = this.state.currentUserDetails;
+            let departmentid = find(this.state.departmentList, function (o: any) { return o.Department === userDepartment; }).ID;
             let obj: any = this.state.fields;
             let fields = this.state.fields;
             let tempState: any = this.state.currentSelectedItems;
@@ -132,22 +169,43 @@ export default class AddTask extends React.Component<IAddTasksProps, {
                 ownerArray.push(element.key);
             });
             fields['ownername'] = ownerArray;
-            this.setState({ fields });;
-            sp.web.lists.getByTitle("All Tasks").items.add({
-                Title: obj.title ? obj.title : '',
-                StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : null, //"2018-08-03T07:00:00Z"
-                DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : null,   //"2018-08-03T07:00:00Z" 
-                Status0Id: obj.status ? obj.status : 1,
-                Body: obj.description ? obj.description : '',
-                AssignedToId: { results: obj.ownername },
-                //ProjectId: null,
-                DepartmentId: 3
-            }).then((iar: ItemAddResult) => {
-                console.log("Task Added !");
-            }).catch(err => {
-                console.log("Error while adding task", err);
-            });
-
+            this.setState({ fields });
+            if (this.props.id) {
+                sp.web.lists
+                    .getByTitle("All Tasks")
+                    .items.getById(this.props.id).update({
+                        Title: obj.title ? obj.title : '',
+                        StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : null, //"2018-08-03T07:00:00Z"
+                        DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : null,   //"2018-08-03T07:00:00Z" 
+                        Status0Id: obj.status ? obj.status : 1,
+                        Body: obj.description ? obj.description : '',
+                        AssignedToId: { results: obj.ownername },
+                        //ProjectId: 4,
+                        DepartmentId: departmentid
+                    })
+                    .then(res => {
+                        console.log("res -", res);
+                        this._closePanel();
+                        this.props.parentMethod();
+                    });
+            } else {
+                sp.web.lists.getByTitle("All Tasks").items.add({
+                    Title: obj.title ? obj.title : '',
+                    StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : null, //"2018-08-03T07:00:00Z"
+                    DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : null,   //"2018-08-03T07:00:00Z" 
+                    Status0Id: obj.status ? obj.status : 1,
+                    Body: obj.description ? obj.description : '',
+                    AssignedToId: { results: obj.ownername },
+                    //ProjectId: null,
+                    DepartmentId: departmentid
+                }).then((iar: ItemAddResult) => {
+                    console.log("Task Added !");
+                    this._closePanel();
+                    this.props.parentMethod();
+                }).catch(err => {
+                    console.log("Error while adding task", err);
+                });
+            }
         } else {
             console.log('form has error');
         }
@@ -195,6 +253,57 @@ export default class AddTask extends React.Component<IAddTasksProps, {
             errorClass["title"] = "classError";
             this.setState({ errors: errors, errorClass: errorClass });
         }
+    }
+    private getTaskByID(id): void {
+        let filter = "ID eq " + id;
+        sp.web.lists
+            .getByTitle("All Tasks")
+            .items.select(
+            "ID",
+            "Title",
+            "StartDate",
+            "DueDate",
+            "Status0/ID",
+            "Body",
+            "Status0/Status",
+            "Status0/Status_x0020_Color",
+            "AssignedTo/Title",
+            "AssignedTo/ID",
+            "AssignedTo/EMail",
+            "Project/ID",
+            "Project/Title",
+            "Department/ID",
+            "Department/Department"
+            )
+            .expand("Status0", "AssignedTo", "Project", "Department")
+            .filter(filter)
+            .get()
+            .then(response => {
+                console.log("res -", response);
+                this.state.fields["title"] = response ? response[0].Title : '';
+                this.state.fields["description"] = response ? response[0].Body : '';
+                this.state.fields["status"] = response[0].Status0 ? response[0].Status0.ID : 1;
+                this.state.fields["duedate"] = response[0].DueDate ? new Date(response[0].DueDate) : null;
+                this.state.fields["startdate"] = response[0].StartDate ? new Date(response[0].StartDate) : null;
+
+                const selectedPeopleList: IPersonaWithMenu[] = [];
+                const selectedTarget: IPersonaWithMenu = {};
+                let tempSelectedPersona = {};
+                if (response[0].AssignedTo && response[0].AssignedTo.length > 0) {
+                    response[0].AssignedTo.forEach(element => {
+                        tempSelectedPersona = {
+                            key: element.ID,
+                            text: element.Title
+                        }
+                        //assign(selectedTarget, tempSelectedPersona);
+                        selectedPeopleList.push(tempSelectedPersona);
+                    });
+                }
+                // this.setState({
+                //     assignedTo: response[0].AssignedTo
+                // });
+                this.setState({ currentSelectedItems: selectedPeopleList })
+            });
     }
     public render(): React.ReactElement<IAddTasksProps> {
         let formControl = 'form-control';
@@ -276,7 +385,7 @@ export default class AddTask extends React.Component<IAddTasksProps, {
                                         <div className="row addSection">
                                             <div className="col-sm-12 col-12">
                                                 <div className="btn-sec">
-                                                    <button id="submit" value="Submit" className="btn-style btn btn-success">Save</button>
+                                                    <button id="submit" value="Submit" className="btn-style btn btn-success">{this.props.id ? 'Update' : 'Save'}</button>
                                                     <button type="button" className="btn-style btn btn-default" onClick={this._closePanel}>Cancel</button>
                                                 </div>
                                             </div>

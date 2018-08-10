@@ -1882,3 +1882,52 @@ div[class^="footerBar_"] {
     padding: 0 .25em 0 0;
   }
 }
+
+.PanelContainer {
+  background: #eff3f6;
+  .main-content-section {
+      padding-left: 0px;
+      padding-top: 0px;
+      padding-bottom: 0px;
+      padding-right: 0px; //height: 100vh;
+      font-size: 0.7rem;
+    }
+  .main-content-section section:first-child,
+  .main-content-section section#requirement {
+    padding: 0px;
+  }
+  section.main-content-section section:first-child {
+    display: block;
+  }
+  h3.hbc-form-header {
+    margin-left: 7px;
+    color: #0078d7;
+  }
+  form.hbc-form {
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+  .addSection {
+    box-shadow: 0 0 8px rgba(168, 214, 248, 0.3);
+    border-radius: 0.1rem;
+    margin-bottom: 0.6rem;
+    background-color: #fff;
+    padding: 0.3rem;
+  }
+  .btn-sec {
+    margin: 10px 0;
+  }
+  .btn-style {
+    padding: 6px 32px;
+    border-radius: 30px;
+    margin-right: 1rem;
+  }
+}
+
+.ms-Panel-main {
+  background: #eff3f6;
+}
+
+.ms-Panel-content {
+  padding: 1rem;
+}

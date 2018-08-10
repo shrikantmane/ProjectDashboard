@@ -19,15 +19,24 @@ export default class ProjectTaskList extends React.Component<
     this.state = {
       taskList: new Array<Task>(),
       showComponent: false,
-      projectID: 0,
+      taskID: 0,
     };
     this.onAddTask = this.onAddTask.bind(this);
     this.reopenPanel = this.reopenPanel.bind(this);
+    this.onEditTask = this.onEditTask.bind(this);
+    this.deleteTask = this.deleteTask.bind(this);
+    this.refreshGrid = this.refreshGrid.bind(this);
   }
   componentDidMount() {
     this.getAllTask();
   }
-
+  refreshGrid() {
+    this.setState({
+      showComponent: false,
+      taskID: null
+    })
+    this.getAllTask()
+  }
   private getAllTask() {
     let filter = "Department/Department eq '" + this.props.department + "'";
     sp.web.lists
@@ -92,7 +101,7 @@ export default class ProjectTaskList extends React.Component<
   reopenPanel() {
     this.setState({
       showComponent: false,
-      projectID: null
+      taskID: null
     })
   }
   headerTemplate(data) {
@@ -150,6 +159,20 @@ export default class ProjectTaskList extends React.Component<
       showComponent: true,
     });
   }
+  onEditTask() {
+    this.setState({
+      showComponent: true,
+      taskID: 1
+    });
+  }
+  private deleteTask(id): void {
+    sp.web.lists
+      .getByTitle("All Tasks").items.getById(id).delete()
+      .then(res => {
+        console.log("res -", res);
+        this.getAllTask();
+      });
+  }
   public render(): React.ReactElement<IProjectTaskListProps> {
     return (
       <div className="well recommendedProjects  ">
@@ -157,6 +180,12 @@ export default class ProjectTaskList extends React.Component<
           <div className="col-sm-12 col-12 cardHeading">
             <div className="tasklist-div">
               <h5>Task List</h5>
+              <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onEditTask}>
+                Edit Task
+              </button>
+              <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.deleteTask.bind(11)}>
+                Delete Task
+              </button>
               <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddTask}>
                 Add Task
               </button>
@@ -165,7 +194,7 @@ export default class ProjectTaskList extends React.Component<
 
           <div className="clearfix" />
           {this.state.showComponent ?
-            <AddTask parentReopen={this.reopenPanel} /> :
+            <AddTask id={this.state.taskID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} /> :
             null
           }
           <div className="col-sm-12 col-12 profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>

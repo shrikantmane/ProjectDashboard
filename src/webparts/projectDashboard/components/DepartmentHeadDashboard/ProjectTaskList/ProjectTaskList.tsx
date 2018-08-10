@@ -10,6 +10,7 @@ import "react-table/react-table.css";
 import { sortBy } from "lodash";
 import moment from "moment/src/moment";
 import AddTask from '../AddTask/AddTask';
+import  Documents from '../Documents/Documents';
 export default class ProjectTaskList extends React.Component<
   IProjectTaskListProps,
   IProjectTaskListState
@@ -19,12 +20,15 @@ export default class ProjectTaskList extends React.Component<
     this.state = {
       taskList: new Array<Task>(),
       showComponent: false,
+      showDocumentComponent: false,
       taskID: 0,
+      documentID: 0
     };
     this.onAddTask = this.onAddTask.bind(this);
     this.reopenPanel = this.reopenPanel.bind(this);
     this.onEditTask = this.onEditTask.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
+    this.onDocuments = this.onDocuments.bind(this);
     this.refreshGrid = this.refreshGrid.bind(this);
   }
   componentDidMount() {
@@ -101,6 +105,7 @@ export default class ProjectTaskList extends React.Component<
   reopenPanel() {
     this.setState({
       showComponent: false,
+      showDocumentComponent: false,
       taskID: null
     })
   }
@@ -173,6 +178,12 @@ export default class ProjectTaskList extends React.Component<
         this.getAllTask();
       });
   }
+  onDocuments(id): void {
+    this.setState({
+      showDocumentComponent: true,
+      documentID: 1
+    });
+  }
   public render(): React.ReactElement<IProjectTaskListProps> {
     return (
       <div className="well recommendedProjects  ">
@@ -186,6 +197,9 @@ export default class ProjectTaskList extends React.Component<
               <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.deleteTask.bind(11)}>
                 Delete Task
               </button>
+              <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onDocuments.bind(11)}>
+                Documents
+              </button>
               <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddTask}>
                 Add Task
               </button>
@@ -193,6 +207,10 @@ export default class ProjectTaskList extends React.Component<
           </div>
 
           <div className="clearfix" />
+          {this.state.showDocumentComponent ?
+            <Documents id={this.state.documentID} parentReopen={this.reopenPanel}/> :
+            null
+          }
           {this.state.showComponent ?
             <AddTask id={this.state.taskID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} /> :
             null

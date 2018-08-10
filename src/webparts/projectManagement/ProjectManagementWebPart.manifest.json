@@ -1,0 +1,23 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx/client-side-web-part-manifest.schema.json",
+  "id": "39e8e5e2-c2cc-4ec7-94a9-b2b2fbbf6438",
+  "alias": "ProjectManagementWebPart",
+  "componentType": "WebPart",
+
+  "version": "*",
+  "manifestVersion": 2,
+
+  
+  "requiresCustomScript": false,
+
+  "preconfiguredEntries": [{
+    "groupId": "5c03119e-3074-46fd-976b-c60198311f70", 
+    "group": { "default": "Other" },
+    "title": { "default": "ProjectManagement" },
+    "description": { "default": "ProjectManagement description" },
+    "officeFabricIconFontName": "Page",
+    "properties": {
+      "description": "ProjectManagement"
+    }
+  }]
+}

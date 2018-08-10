@@ -102,4 +102,5 @@ export class Document{
     public File: File;
     public Author:Team_x0020_Member;
     public Created:string;
+    public FileName:string;
 }

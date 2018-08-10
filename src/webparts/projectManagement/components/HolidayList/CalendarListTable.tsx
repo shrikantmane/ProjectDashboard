@@ -179,7 +179,7 @@ ICalendarProps,
                     <div className="holiday-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
                             <Column header="" body={this.editTemplate} style={{width: "5%", textAlign:"center"}}/>
-                            <Column header="Title" field="Title" body={this.TitleTemplate} />
+                            <Column header="Title" field="Title" sortable={true}  body={this.TitleTemplate} />
                             <Column field="EventDate" sortable={true} header="Start Date"   body={this.startdateTemplate}  style={{width: "21%"}}/>
                             {/* <Column field="Owner" sortable={true} header="Owner" body={this.ownerTemplate} /> */}
                             <Column field="EndDate" sortable={true} header="End Date" body={this.duedateTemplate}  style={{width: "20%"}}/>

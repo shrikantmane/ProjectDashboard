@@ -3,4 +3,5 @@ export interface IProjectTaskListState {
     description ?: string;
     taskList :  Array<Task>;
     showComponent: boolean,
+    projectID ?: number,
   }

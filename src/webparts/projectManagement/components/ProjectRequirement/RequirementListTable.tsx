@@ -121,20 +121,34 @@ export default class ProjectListTable extends React.Component<
             );
     }
     resourceTemplate(rowData: Requirement, column) {
-        if (rowData.Resources)
+        if (rowData.Resources==0)
             return (
                 <div style={{textAlign : "center"}}>
-                    {rowData.Resources}
+                    0
                 </div>
             );
+            else{
+                return (
+                    <div style={{textAlign : "center"}}>
+                        {rowData.Resources}
+                    </div>
+                );
+            }
     }
     effortsTemplate(rowData: Requirement, column) {
-        if (rowData.Efforts)
+        if (rowData.Efforts===0)
             return (
                 <div style={{textAlign : "center"}}>
-                    {rowData.Efforts}
+                 0
                 </div>
             );
+            else{
+                return (
+                    <div style={{textAlign : "center"}}>
+                        {rowData.Efforts}
+                    </div>
+                );
+            }
     }
 
 

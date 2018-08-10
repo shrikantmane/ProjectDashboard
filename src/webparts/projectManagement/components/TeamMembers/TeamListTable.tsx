@@ -222,7 +222,7 @@ export default class ProjectListTable extends React.Component<
                     <div className="member-list">
                         <DataTable value={this.state.projectList} responsive={true} paginator={true} rows={5} rowsPerPageOptions={[5, 10, 20]}>
                         <Column body={this.editTemplate}style={{ width: "8%", textAlign:"center" }} />
-                            <Column field="AssignedTo" header="Name" sortable={true} body={this.ownerTemplate}style={{ width: "35%" }} />
+                            <Column field="ownerName" sortable={true} header="Name"  style={{ width: "35%" }} />
 
                             <Column field="Start_x0020_Date" sortable={true} header="Assigned Date" body={this.duedateTemplate}style={{ width: "31%" }} />
                             {/* <Column field="End_x0020_Date" sortable={true} header="End Date" body={this.enddateTemplate}style={{ width: "21%" }} /> */}
@@ -245,10 +245,13 @@ export default class ProjectListTable extends React.Component<
     getAllProjectMemeber(list) {
         if ((list) != "") {
             sp.web.lists.getByTitle(list).items.select("ID", "Team_x0020_Member/ID", "Team_x0020_Member/Title", "Start_x0020_Date", "End_x0020_Date", "Status")
-                .expand("Team_x0020_Member").get().then((response) => {
+                .expand("Team_x0020_Member").orderBy('Team_x0020_Member/Title', true).get().then((response) => {
+                    response.forEach(item => {
+              item.ownerName=item.Team_x0020_Member.Title
+                
                     console.log('members by name', response);
                     this.setState({ projectList: response });
-
+                    });
                 });
         }
     }

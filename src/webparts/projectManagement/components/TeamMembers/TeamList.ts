@@ -62,6 +62,7 @@ export class TeamMembers {
     public End_x0020_Date: string;
     public Status: string;
     public Team_x0020_Member: Team_x0020_Member;
+    public ownerName:string;
 }
 
 export class File {

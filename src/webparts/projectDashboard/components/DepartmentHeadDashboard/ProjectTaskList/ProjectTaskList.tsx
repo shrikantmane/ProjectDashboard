@@ -19,7 +19,10 @@ export default class ProjectTaskList extends React.Component<
     this.state = {
       taskList: new Array<Task>(),
       showComponent: false,
+      projectID: 0,
     };
+    this.onAddTask = this.onAddTask.bind(this);
+    this.reopenPanel = this.reopenPanel.bind(this);
   }
   componentDidMount() {
     this.getAllTask();
@@ -86,7 +89,12 @@ export default class ProjectTaskList extends React.Component<
         this.setState({ taskList: sortedResponse });
       });
   }
-
+  reopenPanel() {
+    this.setState({
+      showComponent: false,
+      projectID: null
+    })
+  }
   headerTemplate(data) {
     return data.Week;
   }
@@ -157,7 +165,7 @@ export default class ProjectTaskList extends React.Component<
 
           <div className="clearfix" />
           {this.state.showComponent ?
-            <AddTask /> :
+            <AddTask parentReopen={this.reopenPanel} /> :
             null
           }
           <div className="col-sm-12 col-12 profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>

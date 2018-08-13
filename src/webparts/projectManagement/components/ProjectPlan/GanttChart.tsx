@@ -44,7 +44,7 @@ export default class Gantt extends React.Component<any, any>{
         gantt.config.date_scale = "%F";
         gantt.config.scale_height = 60;
         gantt.config.subscales = [
-          { unit: "week", step: 1, date: "#%W" }
+          { unit: "week", step: 1, date: "week %W" }
         ];
         break;
       default:

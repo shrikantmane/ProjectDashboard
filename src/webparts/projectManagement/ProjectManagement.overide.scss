@@ -938,6 +938,15 @@ div[class^="pageTitle_"] {
   width: 100%;
 }
 
+.milestone {
+  line-height: 30px !important;
+  background-color: #d33daf;
+  border: 0 solid #61164f;
+  box-sizing: content-box;
+  border-radius: 3rem;
+  font-size: 10px;
+}
+
 .title-bullet {
   border-radius: 50%;
   display: inline-block;

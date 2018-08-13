@@ -42,9 +42,7 @@ export default class Toolbar extends React.Component<any, any> {
         <ButtonToolbar>
           <Button className={dayClass} value="Days" onClick={this.handleZoomChange}>Days</Button>
           <Button className={monthsClass} value="Months" onClick={this.handleZoomChange}>Months</Button>
-          <Button className="zoom-bar-button">Import</Button>
-          <Button className="zoom-bar-button">View in Microsoft Project</Button>
-        </ButtonToolbar>          
+          </ButtonToolbar>          
       </div>
     );
   }

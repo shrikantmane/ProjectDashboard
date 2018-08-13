@@ -255,7 +255,7 @@ export default class ProjectViewDetails extends React.Component<
 
                                 <div className="col-12 col-sm-12">
                                     <div className="well">
-                                        <div><ProjectPlan scheduleList={this.state.scheduleList}></ProjectPlan></div>
+                                        <div><ProjectPlan scheduleList={this.state.scheduleList} teamMemberlist={this.state.teammemberlist}></ProjectPlan></div>
                                     </div>
                                 </div>
 

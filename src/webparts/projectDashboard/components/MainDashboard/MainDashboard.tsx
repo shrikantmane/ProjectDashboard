@@ -12,14 +12,14 @@ import DepartmentHeadDashboard from "../DepartmentHeadDashboard/DepartmentHeadDa
 import TeamMemberDashboard from "../TeamMemberDashboard/TeamMemberDashboard";
 import { UserType } from "./ProjectUser";
 export default class MainDashboard extends React.Component<
-IMainDashboardProps,
-IMainDashboardState
-> {
+  IMainDashboardProps,
+  IMainDashboardState
+  > {
   constructor(props) {
     super(props);
     this.state = {
       userType: UserType.Unknow,
-      department :""
+      department: ""
     };
   }
 
@@ -32,10 +32,10 @@ IMainDashboardState
     if (this.state.userType != UserType.Unknow) {
       switch (this.state.userType) {
         case UserType.CEO:
-          dashboard = <CEODashboard webPartTitle = {this.props.webPartTitle} {...this.props}/>;
+          dashboard = <CEODashboard webPartTitle={this.props.webPartTitle} {...this.props} />;
           break;
         case UserType.DepartmentHead:
-          dashboard = <DepartmentHeadDashboard department = {this.state.department}/>;
+          dashboard = <DepartmentHeadDashboard department={this.state.department} />;
           break;
         case UserType.Members:
           dashboard = <TeamMemberDashboard />;
@@ -51,7 +51,7 @@ IMainDashboardState
   // get current user details
   private getCurrentUser(): void {
     sp.web.currentUser.get().then(result => {
-      this.getUserGroup(result);     
+      this.getUserGroup(result);
     });
   }
 
@@ -79,13 +79,11 @@ IMainDashboardState
           });
 
           if (ceo == "CEO_COO") {
-          //  this.setState({ userType: UserType.CEO });
-            this.getDepartment(result.Email);  
+            this.setState({ userType: UserType.CEO });
           } else if (dep == "Department Head") {
-            this.getDepartment(result.Email);           
+            this.getDepartment(result.Email);
           } else if ((team == "Members"))
-          //  this.setState({ userType: UserType.Members });
-            this.getDepartment(result.Email);  
+            this.setState({ userType: UserType.Members });
         }
       });
   }
@@ -94,8 +92,8 @@ IMainDashboardState
     let currentScope = this;
     let loginName = "i:0#.f|membership|" + email;
     sp.profiles.getPropertiesFor(loginName).then(function (result) {
-    let department = result.UserProfileProperties ? result.UserProfileProperties[13].Value : "";
-      currentScope.setState({ userType: UserType.DepartmentHead, department : department });
+      let department = result.UserProfileProperties ? result.UserProfileProperties[13].Value : "";
+      currentScope.setState({ userType: UserType.DepartmentHead, department: department });
     }).catch(function (err) {
       console.log("Error: " + err);
     });

@@ -91,6 +91,7 @@ export class Task {
     public AssignedTo : Array<Owner>;
     public Status0: Status;
     public Sort : number;
+    public IsRemoved : boolean;
 }
 
 

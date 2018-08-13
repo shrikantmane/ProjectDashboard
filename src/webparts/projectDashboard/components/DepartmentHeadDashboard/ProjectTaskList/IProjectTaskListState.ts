@@ -4,6 +4,7 @@ export interface IProjectTaskListState {
     taskList :  Array<Task>;
     showComponent: boolean,
     showDocumentComponent: boolean,
+    showCommentComponent: boolean,
     taskID ?: number,
     documentID ?: number,
   }

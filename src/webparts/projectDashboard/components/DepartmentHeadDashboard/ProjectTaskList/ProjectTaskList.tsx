@@ -10,7 +10,8 @@ import "react-table/react-table.css";
 import { sortBy } from "lodash";
 import moment from "moment/src/moment";
 import AddTask from '../AddTask/AddTask';
-import  Documents from '../Documents/Documents';
+import Documents from '../Documents/Documents';
+import Comments from '../Comments/Comments';
 export default class ProjectTaskList extends React.Component<
   IProjectTaskListProps,
   IProjectTaskListState
@@ -21,15 +22,19 @@ export default class ProjectTaskList extends React.Component<
       taskList: new Array<Task>(),
       showComponent: false,
       showDocumentComponent: false,
+      showCommentComponent: false,
       taskID: 0,
       documentID: 0
     };
     this.onAddTask = this.onAddTask.bind(this);
     this.reopenPanel = this.reopenPanel.bind(this);
-    this.onEditTask = this.onEditTask.bind(this);
-    this.deleteTask = this.deleteTask.bind(this);
     this.onDocuments = this.onDocuments.bind(this);
+    this.onComment = this.onComment.bind(this);
     this.refreshGrid = this.refreshGrid.bind(this);
+    this.editTemplate = this.editTemplate.bind(this);
+    this.deleteTemplate = this.deleteTemplate.bind(this);
+    this.deleteListItem = this.deleteListItem.bind(this);
+    this.rowClassName = this.rowClassName.bind(this);
   }
   componentDidMount() {
     this.getAllTask();
@@ -46,6 +51,7 @@ export default class ProjectTaskList extends React.Component<
     sp.web.lists
       .getByTitle("All Tasks")
       .items.select(
+      "ID",
       "Title",
       "StartDate",
       "DueDate",
@@ -54,12 +60,14 @@ export default class ProjectTaskList extends React.Component<
       "Status0/Status_x0020_Color",
       "AssignedTo/ID",
       "AssignedTo/Title",
-      "AssignedTo/EMail"
+      "AssignedTo/EMail",
+      "IsRemoved"
       )
       .expand("Status0", "AssignedTo")
       .filter(filter)
       .get()
       .then((response: Array<Task>) => {
+        console.log('Task List:', response);
         let sortedResponse = sortBy(response, function (dateObj) {
           return new Date(dateObj.StartDate);
         });
@@ -112,7 +120,48 @@ export default class ProjectTaskList extends React.Component<
   headerTemplate(data) {
     return data.Week;
   }
-
+  editTemplate(rowData, column) {
+    if (rowData.IsRemoved) {
+      return <div style={{ display: "none" }}></div>
+    } else {
+      return <a href="#" onClick={this.onEditProject.bind(this, rowData)}><i className="far fa-edit"></i> </a>;
+    }
+  }
+  deleteTemplate(rowData, column) {
+    if (rowData.IsRemoved) {
+      return <div style={{ display: "none" }}></div>
+    } else {
+      return <a href="#" onClick={this.deleteListItem.bind(this, rowData)}><i className="fas fa-trash"></i></a>;
+    }
+  }
+  private onEditProject(rowData, e): any {
+    e.preventDefault();
+    console.log('Edit :' + rowData);
+    this.setState({
+      showComponent: true,
+      taskID: rowData.ID
+    });
+  }
+  private deleteListItem(rowData, e): any {
+    var result = confirm("Are you sure you want to remove this task?");
+    if (result) {
+      e.preventDefault();
+      console.log('Edit :' + rowData.ID);
+      sp.web.lists
+        .getByTitle("All Tasks")
+        .items.getById(rowData.ID).update({
+          IsRemoved: true
+        })
+        .then(res => {
+          console.log("res -", res);
+          this.getAllTask();
+        });
+    }
+  }
+  rowClassName(rowData) {
+    let removedClass = rowData.IsRemoved;
+    return { 'ui-state-highlight': (removedClass === true) };
+  }
   private statusTemplate(rowData: Task, column) {
     if (rowData && rowData.Status0 && rowData.Status0.Status != "") {
       return (
@@ -172,23 +221,15 @@ export default class ProjectTaskList extends React.Component<
       showComponent: true,
     });
   }
-  onEditTask() {
-    this.setState({
-      showComponent: true,
-      taskID: 1
-    });
-  }
-  private deleteTask(id): void {
-    sp.web.lists
-      .getByTitle("All Tasks").items.getById(id).delete()
-      .then(res => {
-        console.log("res -", res);
-        this.getAllTask();
-      });
-  }
   onDocuments(id): void {
     this.setState({
       showDocumentComponent: true,
+      documentID: 1
+    });
+  }
+  onComment(id): void {
+    this.setState({
+      showCommentComponent: true,
       documentID: 1
     });
   }
@@ -199,15 +240,12 @@ export default class ProjectTaskList extends React.Component<
           <div className="col-sm-12 col-12 cardHeading">
             <div className="tasklist-div">
               <h5>Task List</h5>
-              <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onEditTask}>
-                Edit Task
-              </button>
-              <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.deleteTask.bind(11)}>
-                Delete Task
-              </button>
-              <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onDocuments.bind(11)}>
+              {/* <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onDocuments.bind(11)}>
                 Documents
               </button>
+              <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onComment.bind(11)}>
+                Comments
+              </button> */}
               <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddTask}>
                 Add Task
               </button>
@@ -215,8 +253,12 @@ export default class ProjectTaskList extends React.Component<
           </div>
 
           <div className="clearfix" />
+          {this.state.showCommentComponent ?
+            <Comments id={this.state.documentID} parentReopen={this.reopenPanel} /> :
+            null
+          }
           {this.state.showDocumentComponent ?
-            <Documents id={this.state.documentID} parentReopen={this.reopenPanel}/> :
+            <Documents id={this.state.documentID} parentReopen={this.reopenPanel} /> :
             null
           }
           {this.state.showComponent ?
@@ -226,12 +268,14 @@ export default class ProjectTaskList extends React.Component<
           <div className="col-sm-12 col-12 profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>
             <div>
               <DataTable value={this.state.taskList} rowGroupMode="subheader" groupField="Week" sortField="sort" sortOrder={1} scrollable={true} scrollHeight="200px"
-                rowGroupHeaderTemplate={this.headerTemplate} rowGroupFooterTemplate={() => { return; }}>
+                rowGroupHeaderTemplate={this.headerTemplate} rowGroupFooterTemplate={() => { return; }} rowClassName={this.rowClassName}>
+                <Column body={this.editTemplate} style={{ width: "3%", textAlign: "center" }} />
                 <Column field="Title" header="Title" filter={true} />
                 <Column field="OwnerName" header="Owner"  filter={true}  body={this.ownerTemplate}/>
                 <Column field="StartDate" header="Start Date" sortable={true} body={this.startDateTemplate} filter={true} filterMatchMode="custom" filterFunction={this.startDateFilter} />
                 <Column field="DueDate" header="Due Date" sortable={true} body={this.endDateTemplate} filter={true} filterMatchMode="custom" filterFunction={this.endDateFilter} />
                 <Column field="Status" header="Status" body={this.statusTemplate} filter={true} />
+                <Column body={this.deleteTemplate} style={{ width: "7%" }} />
               </DataTable>
             </div>
           </div>

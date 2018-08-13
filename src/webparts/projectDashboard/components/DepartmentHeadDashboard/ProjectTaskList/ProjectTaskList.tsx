@@ -240,12 +240,12 @@ export default class ProjectTaskList extends React.Component<
           <div className="col-sm-12 col-12 cardHeading">
             <div className="tasklist-div">
               <h5>Task List</h5>
-              {/* <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onDocuments.bind(11)}>
+               {/* <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onDocuments.bind(11)}>
                 Documents
               </button>
               <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onComment.bind(11)}>
                 Comments
-              </button> */}
+              </button>  */}
               <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddTask}>
                 Add Task
               </button>
@@ -269,13 +269,13 @@ export default class ProjectTaskList extends React.Component<
             <div>
               <DataTable value={this.state.taskList} rowGroupMode="subheader" groupField="Week" sortField="sort" sortOrder={1} scrollable={true} scrollHeight="200px"
                 rowGroupHeaderTemplate={this.headerTemplate} rowGroupFooterTemplate={() => { return; }} rowClassName={this.rowClassName} responsive ={true} >
-                <Column body={this.editTemplate} style={{ width: "2%"}} />
-                <Column field="Title" header="Title" filter={true} style={{ width: "25%"}} />
-                <Column field="OwnerName" header="Owner"  filter={true}  body={this.ownerTemplate}  style={{ width: "20%"}}/>
-                <Column field="StartDate" header="Start Date" sortable={true} body={this.startDateTemplate} filter={true}  style={{ width: "15%"}} filterMatchMode="custom" filterFunction={this.startDateFilter} />
-                <Column field="DueDate" header="Due Date" sortable={true} body={this.endDateTemplate} filter={true} filterMatchMode="custom"  style={{ width: "15%"}} filterFunction={this.endDateFilter} />
-                <Column field="Status" header="Status" body={this.statusTemplate}  style={{ width: "15%"}} filter={true} />
-                <Column body={this.deleteTemplate} style={{ width: "7%" }} />
+                 {/* <Column body={this.editTemplate} />  */}
+                <Column field="Title" header="Title" filter={true}  />
+                <Column field="OwnerName" header="Owner"  filter={true}  body={this.ownerTemplate}  />
+                <Column field="StartDate" header="Start Date" sortable={true} body={this.startDateTemplate} filter={true}   filterMatchMode="custom" filterFunction={this.startDateFilter} />
+                <Column field="DueDate" header="Due Date" sortable={true} body={this.endDateTemplate} filter={true} filterMatchMode="custom"   filterFunction={this.endDateFilter} />
+                <Column field="Status" header="Status" body={this.statusTemplate} filter={true} />
+                 {/* <Column body={this.deleteTemplate} />  */}
               </DataTable>
             </div>
           </div>

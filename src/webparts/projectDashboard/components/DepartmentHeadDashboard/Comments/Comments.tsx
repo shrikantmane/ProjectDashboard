@@ -22,38 +22,35 @@ export default class Comments extends React.Component<ICommentsProps, {
         this.onSubmit = this.onSubmit.bind(this);
     }
     componentDidMount() {
-        this.getTaskDocuments();
+        this.getTaskComments();
     }
-    private getTaskDocuments() {
+    private getTaskComments() {
         let reactHandler = this;
         //let ScheduleList = currentProject.Schedule_x0020_List;
-        let ScheduleList = 'AlphaServe_Schedule_List';
+        let ScheduleList = 'AlphaServe_Task_Comments';
         sp.web.lists
             .getByTitle(ScheduleList)
             .items.select(
             "Created",
-            "Attachments",
-            "AttachmentFiles",
-            "AttachmentFiles/ServerRelativeUrl",
-            "AttachmentFiles/FileName",
+            "Comment",
             "Author/ID",
             "Author/Title"
             )
-            .expand("AttachmentFiles", "Author")
-            .filter("ID eq 10")
+            .expand("Author")
+            .filter("Task_x0020_Name/ID eq 10")
             .get()
             .then(response => {
-                console.log("response of Schedule List -", response);
-                if (response.length > 0) {
-                    if (response[0].AttachmentFiles.length > 0) {
-                        response[0].AttachmentFiles.forEach(element => {
-                            element.Created = response[0].Created;
-                            element.Auther = response[0].Author.Title;
-                        });
-                    }
-                    this.setState({ attachment: response[0].AttachmentFiles });
-                }
-                console.log('State', this.state.attachment);
+                console.log("response of Task List -", response);
+                // if (response.length > 0) {
+                //     if (response[0].AttachmentFiles.length > 0) {
+                //         response[0].AttachmentFiles.forEach(element => {
+                //             element.Created = response[0].Created;
+                //             element.Auther = response[0].Author.Title;
+                //         });
+                //     }
+                //     this.setState({ attachment: response[0].AttachmentFiles });
+                // }
+                //console.log('State', this.state.attachment);
                 //reactHandler.addAttachment(ScheduleList );
             });
 
@@ -83,13 +80,13 @@ export default class Comments extends React.Component<ICommentsProps, {
     }
     onSubmit() {
         if (this.handleValidation()) {
-            let ScheduleList = 'AlphaServe_Schedule_List';
+            let ScheduleList = 'AlphaServe_Task_Comments';
 
             sp.web.lists.getByTitle(ScheduleList).items.getById(10).update({
                 // Title: "My New Title",
             }).then(i => {
                 i.item.attachmentFiles.add(this.state.fields["attachment"].name, this.state.fields["attachment"]).then((result) => {
-                    this.getTaskDocuments();
+                    this.getTaskComments();
                 })
             });
 

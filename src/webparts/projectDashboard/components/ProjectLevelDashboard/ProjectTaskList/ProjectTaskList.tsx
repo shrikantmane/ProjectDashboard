@@ -167,7 +167,7 @@ export default class ProjectTaskList extends React.Component<
   public render(): React.ReactElement<IProjectTaskListProps> {
     return (
       <div className="col-md-7 col-xs-12 cardPadding">
-        <div className="well recommendedProjects  ">
+        <div className="well recommendedProjects taskListContainer">
           <div className="row">
             <div className="col-sm-12 col-12 cardHeading">
               <div className="tasklist-div">

@@ -79,11 +79,13 @@ IMainDashboardState
           });
 
           if (ceo == "CEO_COO") {
-            this.setState({ userType: UserType.CEO });
+          //  this.setState({ userType: UserType.CEO });
+            this.getDepartment(result.Email);  
           } else if (dep == "Department Head") {
             this.getDepartment(result.Email);           
           } else if ((team == "Members"))
-            this.setState({ userType: UserType.Members });
+          //  this.setState({ userType: UserType.Members });
+            this.getDepartment(result.Email);  
         }
       });
   }

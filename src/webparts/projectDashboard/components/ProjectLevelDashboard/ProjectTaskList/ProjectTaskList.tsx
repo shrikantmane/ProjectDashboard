@@ -7,6 +7,8 @@ import ReactTable from "react-table";
 import "react-table/react-table.css";
 import { sortBy } from "lodash";
 import moment from "moment/src/moment";
+import { DataTable } from "primereact/components/datatable/DataTable";
+import { Column } from "primereact/components/column/Column";
 export default class ProjectTaskList extends React.Component<
   IProjectTaskListProps,
   IProjectTaskListState
@@ -17,6 +19,7 @@ export default class ProjectTaskList extends React.Component<
       taskList: new Array<Task>(),
       expanded: { 0: true }
     };
+    this.rowClassName = this.rowClassName.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -28,15 +31,15 @@ export default class ProjectTaskList extends React.Component<
     sp.web.lists
       .getByTitle(taskList)
       .items.select(
-        "Title",
-        "StartDate",
-        "DueDate",
-        "Status0/ID",
-        "Status0/Status",
-        "Status0/Status_x0020_Color",
-        "AssignedTo/ID",
-        "AssignedTo/Title",
-        "AssignedTo/EMail"
+      "Title",
+      "StartDate",
+      "DueDate",
+      "Status0/ID",
+      "Status0/Status",
+      "Status0/Status_x0020_Color",
+      "AssignedTo/ID",
+      "AssignedTo/Title",
+      "AssignedTo/EMail"
       )
       .expand("Status0", "AssignedTo")
       .get()
@@ -85,7 +88,7 @@ export default class ProjectTaskList extends React.Component<
             expanded: {
               0: false,
               1: true,
-            }, 
+            },
             taskList: sortedResponse
           });
         } else {
@@ -101,11 +104,70 @@ export default class ProjectTaskList extends React.Component<
       },
     });
   }
+  headerTemplate(data) {
+    return data.Week;
+  }
+  private ownerTemplate(rowData: Task, column) {
+    if (rowData.AssignedTo)
+      return (
+        <div className="ownerImage">
+          <img src={rowData.AssignedTo[0].ImgURL} />
+          <div className="ownerName">{rowData.AssignedTo[0].Title}</div>
+        </div>
+      );
+  }
+  private startDateTemplate(rowData: Task, column) {
+    return (
+      <span>{moment(rowData.StartDate).format("DD MMM YYYY")}</span>
+    );
+  }
+
+  private endDateTemplate(rowData: Task, column) {
+    return (
+      <span>{moment(rowData.DueDate).format("DD MMM YYYY")}</span>
+    );
+  }
+  private statusTemplate(rowData: Task, column) {
+    if (rowData && rowData.Status0 && rowData.Status0.Status != "") {
+      return (
+        <div>
+          <div className="statusPill"
+            style={{
+              backgroundColor: rowData.Status0.Status_x0020_Color
+            }}
+          >
+            {rowData.Status0.Status}
+          </div>
+        </div>
+      )
+    }
+  }
+  rowClassName(rowData) {
+    let removedClass = rowData.IsRemoved;
+    return { 'ui-state-highlight': (removedClass === true) };
+  }
+  startDateFilter(value, filter) {
+    if (value && value != "" && filter && filter != "") {
+      let startDate = moment(value).format("DD MMM YYYY");
+      return startDate.toLowerCase().includes(filter.toLowerCase());
+    } else {
+      return true;
+    }
+  }
+
+  endDateFilter(value, filter) {
+    if (value && value != "" && filter && filter != "") {
+      let endDate = moment(value).format("DD MMM YYYY");
+      return endDate.toLowerCase().includes(filter.toLowerCase());
+    } else {
+      return true;
+    }
+  }
 
   public render(): React.ReactElement<IProjectTaskListProps> {
     return (
       <div className="col-md-7 col-xs-12 cardPadding">
-        <div className="well recommendedProjects  ">
+        <div className="well recommendedProjects taskListContainer">
           <div className="row">
             <div className="col-sm-12 col-12 cardHeading">
               <div className="tasklist-div">
@@ -114,7 +176,7 @@ export default class ProjectTaskList extends React.Component<
             </div>
 
             <div className="clearfix" />
-            <div className="col-sm-12 col-12 profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>
+            {/* <div className="col-sm-12 col-12 profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>
               <div>
                 <ReactTable
                   collapseOnSortingChange={false}
@@ -169,7 +231,6 @@ export default class ProjectTaskList extends React.Component<
                         if (original && original.AssignedTo && original.AssignedTo.length > 0) {
                           return (
                             <div>
-                              {/* <img src={original.AssignedTo[0].ImgURL} className="img-responsive"></img> */}
                               <span> {original.AssignedTo[0].Title}</span>
                             </div>
                           )
@@ -211,6 +272,18 @@ export default class ProjectTaskList extends React.Component<
                   defaultPageSize={4}
                   className="-striped -highlight"
                 />
+              </div>
+            </div> */}
+            <div className="col-sm-12 col-12 profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>
+              <div>
+                <DataTable value={this.state.taskList} rowGroupMode="subheader" groupField="Week" sortField="sort" sortOrder={1} scrollable={true} scrollHeight="200px"
+                  rowGroupHeaderTemplate={this.headerTemplate} rowGroupFooterTemplate={() => { return; }} rowClassName={this.rowClassName}>
+                  <Column field="Title" header="Title" filter={true} />
+                  <Column field="OwnerName" header="Owner" filter={true} body={this.ownerTemplate} />
+                  <Column field="StartDate" header="Start Date" sortable={true} body={this.startDateTemplate} filter={true} filterMatchMode="custom" filterFunction={this.startDateFilter} />
+                  <Column field="DueDate" header="Due Date" sortable={true} body={this.endDateTemplate} filter={true} filterMatchMode="custom" filterFunction={this.endDateFilter} />
+                  <Column field="Status" header="Status" body={this.statusTemplate} filter={true} />
+                </DataTable>
               </div>
             </div>
           </div>

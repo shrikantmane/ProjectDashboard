@@ -73,7 +73,7 @@ export class Task {
     public ID: number;
     public Week : Week;
     public StartDate : string;
-    public EndDate : string;
+    public DueDate : string;
     public Title : string;
     public OwnerName : string;
     public Status : string;

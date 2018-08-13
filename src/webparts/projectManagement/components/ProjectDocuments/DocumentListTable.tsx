@@ -140,7 +140,7 @@ export default class ProjectListTable extends React.Component<
                     <a href={rowData.File.ServerRelativeUrl} ><i
                         style={{ marginRight: "5px" }}
                         className={iconClass} ></i>
-                             <span title={rowData.File.Name}>{rowData.File.Name}</span>
+                             <span title={rowData.FileName}>{rowData.FileName}</span>
                         
                         </a>
                     
@@ -224,7 +224,7 @@ export default class ProjectListTable extends React.Component<
                     {/* <input type="button" value="Upload" className="btn btn-outline btn-sm" onClick={this.UploadFiles} /> */}
                     <div className="document-list">
                         <DataTable value={this.state.projectList} paginator={true} rows={5} responsive={true} rowsPerPageOptions={[5, 10, 20]}>
-                            <Column field="Title" sortable={true} header="Documents" body={this.fileTemplate}style={{ width: "47%" }}  />
+                            <Column field="FileName" sortable={true} header="Documents" body={this.fileTemplate}style={{ width: "47%" }}  />
                             <Column field="Author" sortable={true} header="Created By" body={this.ownerTemplate}style={{ width: "23%" }} />
                             <Column field="Created" sortable={true} header="Created On" body={this.duedateTemplate}style={{ width: "23%" }} />
                             <Column  body={this.actionTemplate}style={{ width: "7%" }}  />
@@ -251,9 +251,12 @@ export default class ProjectListTable extends React.Component<
 
                 .get()
                 .then((response) => {
-                    console.log('member by name', response);
+                    response.forEach(item => {
+                        item.FileName=item.File.Name
+                    console.log('file by name', response);
                     this.setState({ projectList: response });
                 });
+            });
         }
     }
 

@@ -10,6 +10,7 @@ import "react-table/react-table.css";
 import { sortBy } from "lodash";
 import moment from "moment/src/moment";
 import AddTask from '../AddTask/AddTask';
+import  Documents from '../Documents/Documents';
 export default class ProjectTaskList extends React.Component<
   IProjectTaskListProps,
   IProjectTaskListState
@@ -19,12 +20,27 @@ export default class ProjectTaskList extends React.Component<
     this.state = {
       taskList: new Array<Task>(),
       showComponent: false,
+      showDocumentComponent: false,
+      taskID: 0,
+      documentID: 0
     };
+    this.onAddTask = this.onAddTask.bind(this);
+    this.reopenPanel = this.reopenPanel.bind(this);
+    this.onEditTask = this.onEditTask.bind(this);
+    this.deleteTask = this.deleteTask.bind(this);
+    this.onDocuments = this.onDocuments.bind(this);
+    this.refreshGrid = this.refreshGrid.bind(this);
   }
   componentDidMount() {
     this.getAllTask();
   }
-
+  refreshGrid() {
+    this.setState({
+      showComponent: false,
+      taskID: null
+    })
+    this.getAllTask()
+  }
   private getAllTask() {
     let filter = "Department/Department eq '" + this.props.department + "'";
     sp.web.lists
@@ -86,7 +102,13 @@ export default class ProjectTaskList extends React.Component<
         this.setState({ taskList: sortedResponse });
       });
   }
-
+  reopenPanel() {
+    this.setState({
+      showComponent: false,
+      showDocumentComponent: false,
+      taskID: null
+    })
+  }
   headerTemplate(data) {
     return data.Week;
   }
@@ -150,6 +172,26 @@ export default class ProjectTaskList extends React.Component<
       showComponent: true,
     });
   }
+  onEditTask() {
+    this.setState({
+      showComponent: true,
+      taskID: 1
+    });
+  }
+  private deleteTask(id): void {
+    sp.web.lists
+      .getByTitle("All Tasks").items.getById(id).delete()
+      .then(res => {
+        console.log("res -", res);
+        this.getAllTask();
+      });
+  }
+  onDocuments(id): void {
+    this.setState({
+      showDocumentComponent: true,
+      documentID: 1
+    });
+  }
   public render(): React.ReactElement<IProjectTaskListProps> {
     return (
       <div className="well recommendedProjects taskListContainer  ">
@@ -157,6 +199,15 @@ export default class ProjectTaskList extends React.Component<
           <div className="col-sm-12 col-12 cardHeading">
             <div className="tasklist-div">
               <h5>Task List</h5>
+              <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onEditTask}>
+                Edit Task
+              </button>
+              <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.deleteTask.bind(11)}>
+                Delete Task
+              </button>
+              <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onDocuments.bind(11)}>
+                Documents
+              </button>
               <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddTask}>
                 Add Task
               </button>
@@ -164,8 +215,12 @@ export default class ProjectTaskList extends React.Component<
           </div>
 
           <div className="clearfix" />
+          {this.state.showDocumentComponent ?
+            <Documents id={this.state.documentID} parentReopen={this.reopenPanel}/> :
+            null
+          }
           {this.state.showComponent ?
-            <AddTask /> :
+            <AddTask id={this.state.taskID} parentReopen={this.reopenPanel} parentMethod={this.refreshGrid} /> :
             null
           }
           <div className="col-sm-12 col-12 profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>

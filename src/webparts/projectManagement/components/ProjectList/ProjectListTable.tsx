@@ -37,6 +37,7 @@ export default class ProjectListTable extends React.Component<
         this.handleLoader = this.handleLoader.bind(this);
         this.getCreatedProjectID = this.getCreatedProjectID.bind(this);
         this._closeModal = this._closeModal.bind(this);
+        this.fileTemplate = this.fileTemplate.bind(this);
     }
     dt: any;
     componentDidMount() {
@@ -100,7 +101,7 @@ export default class ProjectListTable extends React.Component<
         if (rowData.Project)
             return (
                 // <div className={styles.Responsibility}>
-                <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"}}>
+                <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
                     {/* {rowData.Roles_Responsibility} */}
                     <span title={rowData.Project}>{rowData.Project}</span>
                 </div>
@@ -108,38 +109,40 @@ export default class ProjectListTable extends React.Component<
     }
     fileTemplate(rowData: any, column) {
         if (rowData.AttachmentFiles.length > 0) {
-            let iconClass = "";
-            let type = "";
-            let data = rowData.AttachmentFiles[0].FileName.split(".");
-            if (data.length > 1) {
-                type = data[1];
-            }
-            switch (type.toLowerCase()) {
-                case "doc":
-                case "docx":
-                    iconClass = "far fa-file-word";
-                    break;
-                case "pdf":
-                    iconClass = "far fa-file-pdf";
-                    break;
-                case "xls":
-                case "xlsx":
-                    iconClass = "far fa-file-excel";
-                    break;
-                case "png":
-                case "jpeg":
-                case "gif":
-                    iconClass = "far fa-file-image";
-                    break;
-                default:
-                    iconClass = "fa fa-file";
-                    break;
-            }
             return (
                 <div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                    <a href={rowData.AttachmentFiles[0].ServerRelativeUrl} ><i
-                        style={{ marginRight: "5px" }}
-                        className={iconClass} ></i><span title={rowData.AttachmentFiles[0].FileName}>{rowData.AttachmentFiles[0].FileName}</span> </a>
+                    {rowData.AttachmentFiles.map(function (element, index) {
+                        let iconClass = "";
+                        let type = "";
+                        let data = element.FileName.split(".");
+                        if (data.length > 1) {
+                            type = data[1];
+                        }
+                        switch (type.toLowerCase()) {
+                            case "doc":
+                            case "docx":
+                                iconClass = "far fa-file-word";
+                                break;
+                            case "pdf":
+                                iconClass = "far fa-file-pdf";
+                                break;
+                            case "xls":
+                            case "xlsx":
+                                iconClass = "far fa-file-excel";
+                                break;
+                            case "png":
+                            case "jpeg":
+                            case "gif":
+                                iconClass = "far fa-file-image";
+                                break;
+                            default:
+                                iconClass = "fa fa-file";
+                                break;
+                        }
+                        return <a href={element.ServerRelativeUrl} key={index} ><i
+                            style={{ marginRight: "5px" }}
+                            className={iconClass}></i><span title={element.FileName}>{element.FileName}</span> </a>;
+                    })}
                 </div>
             );
         }

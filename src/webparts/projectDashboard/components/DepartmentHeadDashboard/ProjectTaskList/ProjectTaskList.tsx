@@ -268,13 +268,13 @@ export default class ProjectTaskList extends React.Component<
           <div className="col-sm-12 col-12 profileDetails-container" style={{ Width: "90%", marginLeft: "35px;" }}>
             <div>
               <DataTable value={this.state.taskList} rowGroupMode="subheader" groupField="Week" sortField="sort" sortOrder={1} scrollable={true} scrollHeight="200px"
-                rowGroupHeaderTemplate={this.headerTemplate} rowGroupFooterTemplate={() => { return; }} rowClassName={this.rowClassName}>
-                <Column body={this.editTemplate} style={{ width: "3%", textAlign: "center" }} />
-                <Column field="Title" header="Title" filter={true} />
-                <Column field="OwnerName" header="Owner"  filter={true}  body={this.ownerTemplate}/>
-                <Column field="StartDate" header="Start Date" sortable={true} body={this.startDateTemplate} filter={true} filterMatchMode="custom" filterFunction={this.startDateFilter} />
-                <Column field="DueDate" header="Due Date" sortable={true} body={this.endDateTemplate} filter={true} filterMatchMode="custom" filterFunction={this.endDateFilter} />
-                <Column field="Status" header="Status" body={this.statusTemplate} filter={true} />
+                rowGroupHeaderTemplate={this.headerTemplate} rowGroupFooterTemplate={() => { return; }} rowClassName={this.rowClassName} responsive ={true} >
+                <Column body={this.editTemplate} style={{ width: "2%"}} />
+                <Column field="Title" header="Title" filter={true} style={{ width: "25%"}} />
+                <Column field="OwnerName" header="Owner"  filter={true}  body={this.ownerTemplate}  style={{ width: "20%"}}/>
+                <Column field="StartDate" header="Start Date" sortable={true} body={this.startDateTemplate} filter={true}  style={{ width: "15%"}} filterMatchMode="custom" filterFunction={this.startDateFilter} />
+                <Column field="DueDate" header="Due Date" sortable={true} body={this.endDateTemplate} filter={true} filterMatchMode="custom"  style={{ width: "15%"}} filterFunction={this.endDateFilter} />
+                <Column field="Status" header="Status" body={this.statusTemplate}  style={{ width: "15%"}} filter={true} />
                 <Column body={this.deleteTemplate} style={{ width: "7%" }} />
               </DataTable>
             </div>

@@ -732,9 +732,9 @@
     vertical-align: middle;
     font-size: 11px;
   }
-  input.form-control.classError {
-    border: 1px solid red !important;
-  }
+  // input.form-control.classError {
+  //   border: 1px solid red !important;
+  // }
   form.hbc-form {
     padding-left: 25px;
     padding-right: 25px;
@@ -968,3 +968,24 @@ div[class^="pageTitle_"] {
 }
 
 /*********** SharePoint CSS  **************/
+
+
+.PanelContainer .well.headerWell {
+  padding-bottom: 15px!important;
+}
+.current-project-conatiner-status{
+  text-align: right;
+  margin-top: -50px;
+}
+.PanelContainer #project-name { 
+  margin-bottom: 25px;
+}
+.current-project-conatiner-owner{
+  padding-top: 9px;
+}
+.borderRight{
+  border-right: 1px dotted grey;
+}
+.topMargin10{
+  margin-top: 10px;
+}

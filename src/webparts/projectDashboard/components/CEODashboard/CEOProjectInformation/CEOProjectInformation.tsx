@@ -550,7 +550,7 @@ export default class CEOProjectInformation extends React.Component<
                       field="Project"
                       header="Project Name"
                       body={this.projectNameTemplate}
-                      style={{ width: "26%" }}
+                      style={{ width: "26%", fontSize:'14px' }}
                       filter={true}
                       sortable={true}
                       filterElement={projectNameFilter}
@@ -559,16 +559,16 @@ export default class CEOProjectInformation extends React.Component<
                       field="OwnerTitle"
                       header="Owner"
                       body={this.ownerTemplate}
-                      style={{ width: "20%" }}
+                      style={{ width: "20%", fontSize:'14px' }}
                       filter={true}
                       sortable={true}
                       filterElement={ownerNameFilter}
                     />
                     <Column
                       field="MileStone"
-                      header="Mildstone"
+                      header="Milestone"
                       body={this.mildstoneTemplate}
-                      style={{ width: "30%" }}
+                      style={{ width: "30%", fontSize:'14px' }}
                       filter={true}
                       filterElement={milstoneFilter}
                     />
@@ -576,7 +576,7 @@ export default class CEOProjectInformation extends React.Component<
                       field="StatusText"
                       header="Status"
                       body={this.statusTemplate}
-                      style={{ width: "10%" }}
+                      style={{ width: "10%", fontSize:'14px' }}
                       filter={true}
                       sortable={true}
                       filterElement={statusFilter}
@@ -585,7 +585,7 @@ export default class CEOProjectInformation extends React.Component<
                       field="Priority"
                       header="Priority"
                       body={this.priorityTemplate}
-                      style={{ width: "10%" }}
+                      style={{ width: "10%", fontSize:'14px' }}
                       filter={true}
                       sortable={true}
                       filterElement={priorityFilter}

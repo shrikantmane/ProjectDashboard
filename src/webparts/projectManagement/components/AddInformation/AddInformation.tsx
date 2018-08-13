@@ -248,7 +248,20 @@ export default class AddProject extends React.Component<IAddInformationProps, {
             {
                 errors["projectname"] = "Cannot be empty";
                 errorClass["projectname"] = "classError";
-            } 
+                this.setState({ errors: errors, errorClass: errorClass });
+            }
+            else if (this.state.fields["projectname"].trim() === '') {
+           
+                errors["projectname"] = "Cannot be empty";
+                errorClass["projectname"] = "classError";
+                this.setState({ errors: errors, errorClass: errorClass });
+            }
+            else{
+                errors["projectname"] = "";
+                errorClass["projectname"] = "";
+                this.setState({ errors: errors, errorClass: errorClass });
+            }
+             
     }
 
     projectSubmit(e) {
@@ -521,7 +534,7 @@ Schedule and Project Team now?
                     key={'controlled'}
                     selectedItems={this.state.currentSelectedItems}
                     onChange={this._onItemsChange}
-                    
+                
                     inputProps={{
                         onBlur: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onBlur called'),
                         onFocus: (ev: React.FocusEvent<HTMLInputElement>) => console.log('onFocus called')
@@ -555,6 +568,18 @@ Schedule and Project Team now?
         this.setState({
             currentSelectedItems: items
         });
+        let errors = this.state.errors;
+        let errorClass = this.state.errorClass;
+        if (!this.state.currentSelectedItems || this.state.currentSelectedItems.length===0) {
+           
+            errors["ownername"] = "";
+            errorClass["ownername"] = "";
+            this.setState({ errors: errors, errorClass: errorClass });
+        }else{
+            errors["ownername"] = "Cannot be empty";
+            errorClass["ownername"] = "classError";
+            this.setState({ errors: errors, errorClass: errorClass });
+        }
     };
 
     private _onSetFocusButtonClicked = (): void => {

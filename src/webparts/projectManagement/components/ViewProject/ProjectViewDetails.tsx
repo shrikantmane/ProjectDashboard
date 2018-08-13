@@ -41,6 +41,7 @@ export default class ProjectViewDetails extends React.Component<
             refreshCalender: false,
             imgURL: "",
             Risks: "",
+            onholddate:"",
             events: [
                 {
                     id: 10,
@@ -108,23 +109,31 @@ export default class ProjectViewDetails extends React.Component<
     getProjectData(id) {
         console.log('params : ' + id);
         sp.web.lists.getByTitle("Project").items
-            .select("ID", "Project", "DueDate", "Priority", "On_x0020_Hold_x0020_Status", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "AssignedTo/EMail", "Priority", "Task_x0020_List", "Project_x0020_Team_x0020_Members", "Project_x0020_Document", "Requirements", "Project_x0020_Infromation", "Project_x0020_Calender", "StartDate", "Risks","Schedule_x0020_List").expand("Status0", "AssignedTo")
+            .select("ID", "Project", "DueDate", "Priority", "On_x0020_Hold_x0020_Status", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "AssignedTo/EMail", "Priority", "Task_x0020_List", "Project_x0020_Team_x0020_Members", "Project_x0020_Document", "Requirements", "Project_x0020_Infromation", "Project_x0020_Calender", "StartDate", "Risks","On_x0020_Hold_x0020_Date","Schedule_x0020_List").expand("Status0", "AssignedTo")
             .filter('ID eq \'' + id + '\'')
             .getAll()
             .then((response) => {
                 let status;
+                let onHoldDate;
                 if (response != null) {
 
                     console.log('Project by names', response);
                      if (response[0].On_x0020_Hold_x0020_Status === true)
-                        status = "Yes";
+                        {status = "Yes";}
                     else
-                        status = "No";
+                       { status = "No";}
+// if(response[0].On_x0020_Hold_x0020_Date!=null){
+//     onHoldDate=new Date(response[0].On_x0020_Hold_x0020_Date).toDateString();
+// }
+// else{
+//     onHoldDate="-"
+// }
                     this.setState({
                         project: response ? response[0].Project : '',
-                        startdate: response[0].StartDate ? new Date(response[0].StartDate).toDateString() : '',
-                        enddate: response[0].DueDate ? new Date(response[0].DueDate).toDateString() : '',
+                        startdate: response[0].StartDate ? new Date(response[0].StartDate).toDateString() : "-",
+                        enddate: response[0].DueDate ? new Date(response[0].DueDate).toDateString() : "-",
                         onhold: response ? status : null,
+                        onholddate:response[0].On_x0020_Hold_x0020_Date ? new Date(response[0].On_x0020_Hold_x0020_Date).toDateString() : "-",
                         owner: response ? (response[0].AssignedTo!==undefined ?(response[0].AssignedTo? response[0].AssignedTo[0].Title: null) :null) : null,
                         priority: response ? response[0].Priority : '',
                         status: response ? (response[0].Status0===undefined ?(response[0].Status0? response[0].Status0.Status: null) : response[0].Status0.Status ) : null,
@@ -168,10 +177,14 @@ export default class ProjectViewDetails extends React.Component<
                             <div className="row">
                                 <div className="col-12 col-sm-12">
                                     <div className="well headerWell">
-                                        <div className="row">
-                                            <div className="col-sm-2 col-12">
-                                                <div className="current-project-conatiner">
-                                                    <p id="project-name">{this.state.project}</p>
+                                    <p id="project-name">{this.state.project}</p>
+                                    <div className="current-project-conatiner current-project-conatiner-status">
+                                        <span>Status</span>
+                                        <span className="tags " style={{ background: this.state.statuscolor ,color: "white" + this.state.statuscolor, fontSize: "11px!important;" }}>{this.state.status}</span>
+                                    </div>
+                                        <div className="row topMargin10">
+                                            <div className="col-sm-2 col-12 borderRight">
+                                                <div className="current-project-conatiner current-project-conatiner-owner">                                                    
                                                     <img className="profile-img-style" src={this.state.imgURL} style={{ display: !this.state.imgURL? 'none': '' }}  />
                                                     <p>{this.state.owner}</p>
                                                 </div>
@@ -181,39 +194,42 @@ export default class ProjectViewDetails extends React.Component<
                                                     <div className="col-12 col-sm-2">
                                                         <div className="current-project-conatiner">
                                                             <span>Start Date</span>
-                                                            <span>{this.state.startdate}</span>
+                                                            <div>{this.state.startdate}</div>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 col-sm-2">
+                                                    <div className="col-12 col-sm-2 borderRight">
                                                         <div className="current-project-conatiner">
                                                             <span>End Date</span>
-                                                            <span>{this.state.enddate}</span>
+                                                            <div>{this.state.enddate}</div>
                                                         </div>
                                                     </div>
-                                                    <div className="col-12 col-sm-2">
+                                                    <div className="col-12 col-sm-2 ">
                                                         <div className="current-project-conatiner">
                                                             <span>On Hold</span>
                                                             <div>{this.state.onhold}</div>  
                                                         </div>
                                                     </div>
+                                                    <div className="col-12 col-sm-2 borderRight">
+                                                        <div className="current-project-conatiner">
+                                                            <span>On Hold Date</span>
+                                                            <div>{this.state.onholddate}</div>  
+                                                        </div>
+                                                    </div>
                                                     <div className="col-12 col-sm-2">
                                                         <div className="current-project-conatiner">
                                                             <span>Priority</span>
-                                                            <span className="tags grey">{this.state.priority}</span>
+                                                            <div className="">{this.state.priority}</div>
                                                         </div>
                                                     </div>
 
                                                     <div className="col-12 col-sm-2">
                                                         <div className="current-project-conatiner">
                                                             <span>Complexity</span>
-                                                            <span className="tags grey">{this.state.Risks}</span>
+                                                            <div className="">{this.state.Risks}</div>
                                                         </div>
                                                     </div>
                                                     <div className="col-12 col-sm-2">
-                                                        <div className="current-project-conatiner">
-                                                            <span>Status</span>
-                                                            <span className="tags orange" style={{ color: this.state.statuscolor, border: "1px solid " + this.state.statuscolor }}>{this.state.status}</span>
-                                                        </div>
+                                                       
                                                     </div>
                                                 </div>
                                             </div>

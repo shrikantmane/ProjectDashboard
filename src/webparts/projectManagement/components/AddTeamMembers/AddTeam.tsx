@@ -213,16 +213,19 @@ export default class AddProject extends React.Component<
       formIsValid = false;
       errors["duedate"] = "Cannot be empty";
       errorClass["duedate"] = "classError";
+      this.setState({ errors: errors, errorClass: errorClass });
     }
     if (
-      !this.state.currentSelectedItems ||
-      this.state.currentSelectedItems.length === 0
+      this.state.currentSelectedItems.length===0
+      
     ) {
       formIsValid = false;
       errors["ownername"] = "Cannot be empty";
       errorClass["ownername"] = "classError";
+      this.setState({ errors: errors, errorClass: errorClass });
     }
-    if (this.state.currentSelectedItems) {
+    if (this.state.currentSelectedItems) 
+    {
       let flag = false;
 
       this.props.memberlist.forEach(element => {
@@ -245,6 +248,7 @@ export default class AddProject extends React.Component<
         this.setState({ errors: errors, errorClass: errorClass });
       }
     }
+    
 
     // if (typeof fields["name"] !== "undefined") {
     //     if (!fields["name"].match(/^[a-zA-Z]+$/)) {
@@ -647,6 +651,18 @@ Schedule and Project Team now?
     this.setState({
       currentSelectedItems: items
     });
+    let errors = this.state.errors;
+        let errorClass = this.state.errorClass;
+        if (!this.state.currentSelectedItems || this.state.currentSelectedItems.length===0) {
+           
+            errors["ownername"] = "";
+            errorClass["ownername"] = "";
+            this.setState({ errors: errors, errorClass: errorClass });
+        }else{
+            errors["ownername"] = "Cannot be empty";
+            errorClass["ownername"] = "classError";
+            this.setState({ errors: errors, errorClass: errorClass });
+        }
   };
 
   private _onSetFocusButtonClicked = (): void => {

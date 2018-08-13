@@ -14,6 +14,7 @@ export interface IProjectViewState{
     refreshCalender:boolean;
     Risks:string;
     Id:any;
+    onholddate:string,
     events:[{
         id?:number,
         title?:string,

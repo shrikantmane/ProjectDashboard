@@ -99,21 +99,30 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
         }
-        if (!fields["projectdescription"]) {
+        else if (fields["projectname"].trim() === '') {
             formIsValid = false;
-            errors["projectdescription"] = "Cannot be empty";
-            errorClass["projectdescription"] = "classError";
+            errors["projectname"] = "Cannot be empty";
+            errorClass["projectname"] = "classError";
+        } else {
+            formIsValid = true;
+            errors["projectname"] = "";
+            errorClass["projectname"] = "";
         }
+        // if (!fields["projectdescription"]) {
+        //     formIsValid = false;
+        //     errors["projectdescription"] = "Cannot be empty";
+        //     errorClass["projectdescription"] = "classError";
+        // }
      if (fields["effortdescription"]<0) {
             formIsValid = false;
             errors["effortdescription"] = "Cannot be less than zero";
              errorClass["effortdescription"] = "classError";
          }
-        //  if (fields["projectdescription"]<0) {
-        //     formIsValid = false;
-        //     errors["projectdescription"] = "Cannot be less than zero";
-        //      errorClass["projectdescription"] = "classError";
-        //  }
+         if (fields["projectdescription"]<0) {
+            formIsValid = false;
+            errors["projectdescription"] = "Cannot be less than zero";
+             errorClass["projectdescription"] = "classError";
+         }
         // if (!fields["filedescription"]) {
         //     formIsValid = false;
         //     errors["filedescription"] = "Cannot be empty";
@@ -182,7 +191,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             if (this.props.id) {
                // this.setState({ isLoading: true });
                 sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
-                    Requirement: obj.projectname ? obj.projectname : '',
+                    Requirement: obj.projectname ? obj.projectname.trim() : '',
                     //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
                     Resources: obj.projectdescription ? obj.projectdescription : null,
                     Efforts: obj.effortdescription ? obj.effortdescription : null,
@@ -216,7 +225,7 @@ export default class AddProject extends React.Component<IAddRequirementProps, {
             } else {
              //   this.setState({ isLoading: true });
                 sp.web.lists.getByTitle(this.props.list).items.add({
-                    Requirement: obj.projectname ? obj.projectname : '',
+                    Requirement: obj.projectname ?obj.projectname.trim() : '',
                     //Target_x0020_Date: obj.startdate ? new Date(obj.startdate) : '',
                     Resources: obj.projectdescription ? obj.projectdescription : null,
                     Efforts: obj.effortdescription ? obj.effortdescription : null,
@@ -266,6 +275,12 @@ handleBlurOnResources(){
         if (this.state.fields["projectdescription"]<0) {
             errors["projectdescription"] = "Cannot be less than zero";
              errorClass["projectdescription"] = "classError";
+             this.setState({ errors: errors, errorClass: errorClass });
+         }
+         else{
+            errors["projectdescription"] = "";
+            errorClass["projectdescription"] = "";
+            this.setState({ errors: errors, errorClass: errorClass });
          }
 }
 handleBlurOnEfforts(){
@@ -275,6 +290,12 @@ handleBlurOnEfforts(){
         if (this.state.fields["effortdescription"]<0) {
             errors["effortdescription"] = "Cannot be less than zero";
              errorClass["effortdescription"] = "classError";
+             this.setState({ errors: errors, errorClass: errorClass });
+         }
+         else{
+            errors["effortdescription"] = "";
+            errorClass["effortdescription"] = "";  
+            this.setState({ errors: errors, errorClass: errorClass });
          }
 }
 handleBlurOnRequirement(){
@@ -285,7 +306,19 @@ handleBlurOnRequirement(){
         {
             errors["projectname"] = "Cannot be empty";
             errorClass["projectname"] = "classError";
+            this.setState({ errors: errors, errorClass: errorClass });
         } 
+        else if (this.state.fields["projectname"].trim() === '') {
+           
+            errors["projectname"] = "Cannot be empty";
+            errorClass["projectname"] = "classError";
+            this.setState({ errors: errors, errorClass: errorClass });
+        }
+        else{
+            errors["projectname"] = "";
+            errorClass["projectname"] = "";
+            this.setState({ errors: errors, errorClass: errorClass });
+        }
 }
     public render(): React.ReactElement<IAddRequirementProps> {
         let formControl = 'form-control';
@@ -354,7 +387,7 @@ handleBlurOnRequirement(){
                                         {/* <section id="step1">
                                             <div className="well">
                                                 <div className="row"> */}
-                                                    <h3 className="hbc-form-header">Project Requirement</h3>
+                                                    <h3 className="hbc-form-header">Project Requirements</h3>
                                                     {/* <div > */}
                                                         <form name="projectform" className="hbc-form" onSubmit={this.projectSubmit.bind(this)}>
                                                             <div className="row addSection">

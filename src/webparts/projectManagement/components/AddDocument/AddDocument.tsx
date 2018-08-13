@@ -28,7 +28,8 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
     isDataSaved: boolean;
     selectedFile:any,
     showDiv: boolean,
-    isLoading: boolean
+    isLoading: boolean,
+    showComponent:boolean
 }> {
 
     constructor(props) {
@@ -43,11 +44,13 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
             isDataSaved: false,
             selectedFile: "",
             showDiv:false,
-            isLoading: false
+            isLoading: false,
+            showComponent:false
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
         this.UploadFiles=this.UploadFiles.bind(this);
+        this.handleBlurOnFile=this.handleBlurOnFile.bind(this);
     }
 
     handleChange(field, e) {
@@ -171,13 +174,21 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
     UploadFiles() {
 
         //in case of multiple files,iterate or else upload the first file.
+    if(this.state.selectedFile!=""){
+    this.setState({
+        showComponent:false
+    })
+
+    
 
         var file = this.state.selectedFile;
         if (file != undefined || file != null) {
            
             
                 this.setState({
-                    isLoading:true 
+                    isLoading:true ,
+                   // showComponent:false
+            
                 })
             
             
@@ -200,10 +211,34 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
 
         }
     }
+      else{
+        this.setState({
+            showComponent:true
+        })
+    }
+    }
     fileChangedHandler = (event) => {
         const file = event.target.files[0]
-        this.setState({ selectedFile: event.target.files[0] })
+        this.setState({ selectedFile: event.target.files[0],
+         })
     }
+    handleBlurOnFile(){
+        console.log(this.state.fields['projectname']);
+            let errors = this.state.errors;
+            let errorClass = this.state.errorClass;
+            if (!this.state.selectedFile)
+            {
+                this.setState({ 
+                    showComponent: true
+                   
+                });
+            } 
+            else{
+                this.setState({ 
+                    showComponent: false
+                     });
+            }
+        }
     projectSubmit(e) {
         e.preventDefault();
         if (this.handleValidation()) {
@@ -259,50 +294,7 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
         const html = '<div>Example HTML string</div>';
         let formControl = 'form-control';
         let paddingInputStyle = 'padding-input-style';
-        // const selectProjectContent = this.state.cloneProjectChecked ?
-        //     <div className="col-lg-12">
-        //         <div className="form-group">
-        //             <label>Select Project</label>
-        //             <select className="form-control" ref="project" onChange={this.handleChange.bind(this, "project")} value={this.state.fields["project"]}>
-        //                 <option>Project 1</option>
-        //                 <option>Project 2</option>
-        //                 <option>Project 3</option>
-        //             </select>
-        //         </div>
-        //     </div> : null;
-
-        // const chechbox1Content = this.state.cloneProjectChecked ?
-        //     <div className="col-lg-6">
-        //         <div className="form-group">
-        //             <div>
-        //                 <Checkbox label="Clone Schedule" onChange={this.handleChange.bind(this, "cloneschedule")} value={this.state.fields["cloneschedule"]} />
-        //             </div>
-        //         </div>
-        //     </div> : null;
-        // const chechbox2Content = this.state.cloneProjectChecked ?
-        //     <div className="col-lg-6">
-        //         <div className="form-group">
-        //             <div>
-        //                 <Checkbox label="Clone Documents" onChange={this.handleChange.bind(this, "clonedocuments")} value={this.state.fields["clonedocuments"]} />
-        //             </div>
-        //         </div>
-        //     </div> : null;
-        // const chechbox3Content = this.state.cloneProjectChecked ?
-        //     <div className="col-lg-6">
-        //         <div className="form-group">
-        //             <div>
-        //                 <Checkbox label="Clone Requirements" onChange={this.handleChange.bind(this, "clonerequirements")} value={this.state.fields["clonerequirements"]} />
-        //             </div>
-        //         </div>
-        //     </div> : null;
-        // const chechbox4Content = this.state.cloneProjectChecked ?
-        //     <div className="col-lg-6">
-        //         <div className="form-group">
-        //             <div>
-        //                 <Checkbox label="Clone Calender" onChange={this.handleChange.bind(this, "clonecalender")} value={this.state.fields["clonecalender"]} />
-        //             </div>
-        //         </div>
-        //     </div> : null;
+        
         return (
             // className="PanelContainer"
             !this.state.isLoading ?
@@ -332,11 +324,12 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
                       <div className="col-sm-6 col-12">
                         <div className="form-group">
                         <span className="error">* </span> <label>
-                            Documents 
+                            Documents
                           </label>
                           <input
                             type="file"
                             onChange={this.fileChangedHandler}
+                            onBlur={this.handleBlurOnFile}
                           />
                           <button
                             type="button"
@@ -346,6 +339,10 @@ export default class AddProject extends React.Component<IAddDocumentProps, {
                           >
                             Upload
                           </button>
+                          {this.state.showComponent ?
+                        <div style={textcolor}>Please upload file</div>:
+                        null
+                    }
                           <span className="error">
                             {this.state.errors["projectname"]}
                           </span>

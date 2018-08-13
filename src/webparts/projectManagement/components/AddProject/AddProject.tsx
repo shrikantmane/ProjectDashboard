@@ -197,6 +197,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     public TaskStatusColor: string;
     public newProjectID: number;
     public isDataSaved: boolean = false;
+    public projectOutline: any = [];
+    public projectOutlineFilename: any;
 
 
     constructor(props) {
@@ -641,6 +643,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             if (this.props.id) {
                 this.setState({ isLoading: true });
                 sp.web.lists.getByTitle("Project").items.getById(this.props.id).update({
+                    Project: obj.projectname.split('_').join(' '),
                     StartDate: obj.startdate ? new Date(obj.startdate).toDateString() : null,
                     DueDate: obj.duedate ? new Date(obj.duedate).toDateString() : null,
                     //Status0Id: 2,
@@ -666,7 +669,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     // this.props.handleLoader(false); 
                     this._closePanel();
                     this.props.parentMethod();
-                    if (this.state.fields["projectoutline"]) {
+                    if (this.state.fields["projectoutline"] && this.state.fields["projectoutline"].name !== this.projectOutlineFilename) {
                         console.log('Saving project outline....................');
                         i.item.attachmentFiles.add(this.state.fields["projectoutline"].name, this.state.fields["projectoutline"]).then((result) => {
                             this.props.parentMethod();
@@ -3471,9 +3474,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                     </div>
                 </div>
             </div> : null;
-        const attachmentDiv = (this.state.fields['projectoutline'] && this.state.fields['projectoutline'].length > 0) ?
+        const attachmentDiv = (this.projectOutline && this.projectOutline.length > 0) ?
             <div className="col-lg-6">
-                {this.state.fields['projectoutline'].map((obj, i) =>
+                {this.projectOutline.map((obj, i) =>
                     <div className="form-group">
                         <label style={{ float: 'left', width: '90%' }}><a href={obj.ServerRelativeUrl}><i
                             style={{ marginRight: "5px" }}
@@ -3566,6 +3569,7 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                                         placeholder="Select start date"
                                                         onSelectDate={this.handleChange.bind(this, "startdate")}
                                                         value={this.state.fields["startdate"]}
+                                                        
                                                     />
                                                     <span className="error">{this.state.errors["startdate"]}</span>
                                                 </div>
@@ -3741,8 +3745,10 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                 this.state.fields["status"] = response ? response[0].On_x0020_Hold_x0020_Status : false;
                 this.state.fields["projectstatus"] = response[0].Status0 ? response[0].Status0.ID : '1';
                 this.state.fields["risk"] = response ? response[0].Risks : 'Low';
-                this.state.fields["projectoutline"] = response[0].AttachmentFiles.length > 0 ? response[0].AttachmentFiles : null;
-
+                //this.state.fields["projectoutline"] = response[0].AttachmentFiles.length > 0 ? response[0].AttachmentFiles : '';
+                this.projectOutline = response[0].AttachmentFiles.length > 0 ? response[0].AttachmentFiles : null;
+                this.projectOutlineFilename = response[0].AttachmentFiles.length > 0 ? response[0].AttachmentFiles[0].FileName : '';
+                
                 const selectedPeopleList: IPersonaWithMenu[] = [];
                 const selectedTarget: IPersonaWithMenu = {};
                 let tempSelectedPersona = {};

@@ -1,14 +1,14 @@
 /*global gantt*/
 import * as React from 'react';
-import { sp, ItemAddResult } from "@pnp/sp";
-import { find} from "lodash";
+import { sp, ItemAddResult, EmailProperties } from "@pnp/sp";
+import { find } from "lodash";
 // import 'dhtmlx-gantt';
 import 'dhtmlx-gantt';
 import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
 import 'dhtmlx-gantt/codebase/ext/dhtmlxgantt_tooltip.js';
 import { Chart, ChartData, ChartLink } from "./Project";
 declare var gantt: any;
-var currentScope:any;
+var currentScope: any;
 
 export default class Gantt extends React.Component<any, any>{
   ganttContainer: any;
@@ -61,20 +61,22 @@ export default class Gantt extends React.Component<any, any>{
   }
 
   initGanttEvents() {
-    if(gantt.ganttEventsInitialized){
+    if (gantt.ganttEventsInitialized) {
       return;
     }
     gantt.ganttEventsInitialized = true;
 
     gantt.attachEvent('onAfterTaskAdd', (id, task: any) => {
-      // if(this.props.onTaskUpdated) {
-      //   this.props.onTaskUpdated(id, 'inserted', task);
-      // }
-      
-      console.log('task22222222222', task);
       let duration = task.type === "Task2" ? 0 : task.duration;
-      let status: any = find(this.props.statusList, { key : task.status });
-      let owner : any  = find(this.props.teamMembers, { key : task.owner });
+      let status: any = find(this.props.statusList, { key: task.status });
+      let owner: any = find(this.props.teamMembers, { key: task.owner });
+
+      const emailProps: EmailProperties = {
+        To: [owner.email],
+        Subject: "Task added",
+        Body: `<b> New Task has been added.</b>`
+      };
+
       sp.web.lists.getByTitle(this.props.scheduleList).items.add({
         Title: task.text,
         StartDate: task.start_date, //"2018-08-03T07:00:00Z"
@@ -84,23 +86,25 @@ export default class Gantt extends React.Component<any, any>{
         AssignedToId: { results: [owner.id] },
         Duration: duration + " days",
         Priority: task.priority,
-       // ParentId: task.parent         
-  
+        // ParentId: task.parent         
+
       }).then((iar: ItemAddResult) => {
-        console.log("ScheduleTask Added !");
+        sp.utility.sendEmail(emailProps).then(mail => {
+        });
       }).catch(err => {
         console.log("Error while adding ScheduleTask", err);
       });
     });
 
     gantt.attachEvent('onAfterTaskUpdate', (id, task) => {
-      // if(this.props.onTaskUpdated) {
-      //   this.props.onTaskUpdated(id, 'updated', task);
-      // }
-      console.log('task1111111111', task);
       let duration = task.type === "Task2" ? 0 : task.duration;
-      let status: any = find(this.props.statusList, { key : task.status });
-      let owner : any  = find(this.props.teamMembers, { key : task.owner });
+      let status: any = find(this.props.statusList, { key: task.status });
+      let owner: any = find(this.props.teamMembers, { key: task.owner });
+      const emailProps: EmailProperties = {
+        To: [owner.email],
+        Subject: "Task updated",
+        Body: `<b> Task has been updated.</b>`
+      };
       sp.web.lists.getByTitle(this.props.scheduleList).items.getById(task.id).update({
         Title: task.text,
         StartDate: task.start_date, //"2018-08-03T07:00:00Z"
@@ -112,64 +116,58 @@ export default class Gantt extends React.Component<any, any>{
         Priority: task.priority,
         //ParentId: task.parent
       }).then((iar: ItemAddResult) => {
-        console.log("ScheduleTask Updated !");
+        sp.utility.sendEmail(emailProps).then(mail => {
+        });
       }).catch(err => {
         console.log("Error while updating ScheduleTask", err);
       });
     });
 
     gantt.attachEvent('onAfterTaskDelete', (id, task) => {
-      // if(this.props.onTaskUpdated) {
-      //   this.props.onTaskUpdated(id, 'deleted');
-      // }
-      console.log('id4364634634', id , task);
       sp.web.lists.getByTitle(this.props.scheduleList).items.getById(task.id).delete().then(_ => {
-        console.log("ScheduleTask deleted !");
       }).catch(err => {
         console.log("Error while deleting ScheduleTask", err);
       });
-  
+
     });
 
     gantt.attachEvent('onAfterLinkAdd', (id, link) => {
-      if(this.props.onLinkUpdated) {
+      if (this.props.onLinkUpdated) {
         this.props.onLinkUpdated(id, 'inserted', link);
       }
     });
 
     gantt.attachEvent('onAfterLinkUpdate', (id, link) => {
-      if(this.props.onLinkUpdated) {
+      if (this.props.onLinkUpdated) {
         this.props.onLinkUpdated(id, 'updated', link);
       }
     });
 
     gantt.attachEvent('onAfterLinkDelete', (id, link) => {
-      if(this.props.onLinkUpdated) {
+      if (this.props.onLinkUpdated) {
         this.props.onLinkUpdated(id, 'deleted');
       }
     });
-  //   gantt.attachEvent("onTaskCreated", function(id, task){
-  //     console.log('onTaskCreated',task);
-  //     task.statusBackgroudColor = "blue";
-  //     return true;
-  // });
-  gantt.attachEvent("onLightboxSave", function(id, item){
-    console.log('onLightboxSaveitem', item)
-    let status: any = find(currentScope.props.statusList, { key : item.status });
-    item.statusBackgroudColor = status.color;
-    item.actualDuration =  item.type === "Task2" ? 0 : item.duration;
-    item.duration = item.type === "Task2" ? 1 : item.duration
-    return true;
-  });
-  // gantt.showLightbox = function(id) {
-  //   var task = gantt.getTask(id);
-  //   console.log('task', task);
-  //   return true;
-  //   };
+    //   gantt.attachEvent("onTaskCreated", function(id, task){
+    //     console.log('onTaskCreated',task);
+    //     task.statusBackgroudColor = "blue";
+    //     return true;
+    // });
+    gantt.attachEvent("onLightboxSave", function (id, item) {
+      let status: any = find(currentScope.props.statusList, { key: item.status });
+      item.statusBackgroudColor = status.color;
+      item.actualDuration = item.type === "Task2" ? 0 : item.duration;
+      item.duration = item.type === "Task2" ? 1 : item.duration
+      return true;
+    });
+    // gantt.showLightbox = function(id) {
+    //   var task = gantt.getTask(id);
+    //   console.log('task', task);
+    //   return true;
+    //   };
   }
 
   componentDidMount() {
-    console.log('this.props.teamMembers', this.props.teamMembers);
     gantt.init(this.ganttContainer);
     this.initGanttEvents();
     gantt.clearAll();
@@ -180,7 +178,7 @@ export default class Gantt extends React.Component<any, any>{
 
   initGanttChart() {
     gantt.config.columns = [
-      {name:"add", label:"", width:30 },
+      { name: "add", label: "", width: 30 },
       {
         name: "attachment", label: "", width: 30,
         template: function (obj) {
@@ -192,7 +190,7 @@ export default class Gantt extends React.Component<any, any>{
         template: function (obj) {
           return "<a href=''><i class='far fa-comments'></i></a>";
         }
-      },    
+      },
       { name: "text", label: "Task name", tree: true, width: 100 },
       { name: "start_date", label: "Start time", align: "center", width: 80 },
       {
@@ -210,7 +208,6 @@ export default class Gantt extends React.Component<any, any>{
       {
         name: "actualDuration", label: "Duration", align: "center", width: 80,
         template: function (obj) {
-          console.log('actualDuration', obj.actualDuration);
           return ("<span>" + obj.actualDuration + "</span>")
         }
       },
@@ -247,23 +244,22 @@ export default class Gantt extends React.Component<any, any>{
       ]
     };
     gantt.templates.task_class = function (start, end, task) {
-      console.log('task_class', task.actualDuration);
       if (task.actualDuration == 0) {
         return "milestone";
       }
     };
 
     gantt.config.lightbox.sections = [
-      {name:"title", height:30, map_to:"text", type:"textarea",focus:true},
-      {name:"description", height:38, map_to:"body", type:"textarea"},
+      { name: "title", height: 30, map_to: "text", type: "textarea", focus: true },
+      { name: "description", height: 38, map_to: "body", type: "textarea" },
       {
         name: "status", height: 25, map_to: "status", type: "select", options: this.props.statusList
       },
       {
         name: "priority", height: 25, map_to: "priority", type: "select", options: [
           { key: "High", label: "High" },
-          { key:  "Normal" , label: "Normal" },
-          { key:"Low", label: "Low" }
+          { key: "Normal", label: "Normal" },
+          { key: "Low", label: "Low" }
         ]
       },
       {
@@ -275,9 +271,9 @@ export default class Gantt extends React.Component<any, any>{
       {
         name: "owner", height: 25, map_to: "owner", type: "select", options: this.props.teamMembers
       },
-      {  name:"time", height:50, map_to:"auto", type:"duration"},
+      { name: "time", height: 50, map_to: "auto", type: "duration" },
 
-      
+
     ];
     gantt.locale.labels.section_title = "Title";
     gantt.locale.labels.section_status = "Status";

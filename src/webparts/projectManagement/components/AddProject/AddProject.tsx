@@ -114,6 +114,8 @@ export interface ICloneProjectData {
     CalendarList: string;
     DocumentList: string;
     RequirementsList: string;
+    
+    
 }
 // export interface IListIDs {
 //     ProjectList: string;
@@ -161,6 +163,8 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     showDepartment: boolean,
     isLoading: boolean,
     growl: any
+    chars_left: number,
+    max_char:number
 }> {
     private _picker: IBasePicker<IPersonaProps>;
     // Added by Ashwini
@@ -239,7 +243,9 @@ export default class AddProject extends React.Component<IAddProjectProps, {
             departmentList: [],
             showDepartment: false,
             isLoading: false,
-            growl: null
+            growl: null,
+            chars_left: 50,
+          max_char:50
         };
         this._showModal = this._showModal.bind(this);
         this._closeModal = this._closeModal.bind(this);
@@ -3399,6 +3405,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
     showSuccess() {
         this.state.growl.show({ severity: 'success', summary: 'Success Message', detail: 'Order submitted' });
     }
+    handleWordCount = event => {
+        const charCount = event.target.value.length;
+        const charLeft = 50 - charCount;
+        this.setState({ chars_left: charLeft});
+    }
     public render(): React.ReactElement<IAddProjectProps> {
         const { selectedOption } = this.state;
         const { inputValue, value } = this.state;
@@ -3521,9 +3532,11 @@ export default class AddProject extends React.Component<IAddProjectProps, {
                                             <div className="col-sm-6 col-12">
                                                 <div className="form-group">
                                                     <span className="error">* </span><label>Project Name <i className="fa fa-info-circle" aria-hidden="true" data-toggle="tooltip" title="Maximum 50 characters are allowed"></i></label>
+                                                    <span className= "charcount">{this.state.chars_left} Characters remaining</span>
                                                     <input ref="projectname" type="text" maxLength={50} className={formControl + " " + (this.state.errorClass["projectname"] ? this.state.errorClass["projectname"] : '')} placeholder="Enter project name"
-                                                        onChange={this.handleChange.bind(this, "projectname")} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName} >
+                                                        onChange={this.handleChange.bind(this, "projectname")} onKeyUp={this.handleWordCount.bind(this)} value={this.state.fields["projectname"]} onBlur={this.handleBlurOnProjectName} >
                                                     </input>
+                                                    
                                                     <span className="error">{this.state.errors["projectname"]}</span>
                                                 </div>
                                             </div>

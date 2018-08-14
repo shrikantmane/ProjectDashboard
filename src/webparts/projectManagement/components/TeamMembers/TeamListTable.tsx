@@ -245,7 +245,7 @@ export default class ProjectListTable extends React.Component<
     getAllProjectMemeber(list) {
         if ((list) != "") {
             sp.web.lists.getByTitle(list).items.select("ID", "Team_x0020_Member/ID", "Team_x0020_Member/Title", "Start_x0020_Date", "End_x0020_Date", "Status")
-                .expand("Team_x0020_Member").orderBy('Team_x0020_Member/Title', true).get().then((response) => {
+                .expand("Team_x0020_Member").filter("Status eq 'Active'").orderBy('Team_x0020_Member/Title', true).get().then((response) => {
                     response.forEach(item => {
               item.ownerName=item.Team_x0020_Member.Title
                 

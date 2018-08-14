@@ -13,7 +13,7 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
     super(props);
     this.state = {
       milstoneList: new Array<Milestone>(),
-      progressbar:null
+      progressbar:0
     };
   }
 
@@ -49,14 +49,16 @@ export default class ProjectMildstone extends React.Component<IProjectMildstoneP
     temp4=temp2.length;
       console.log("a",temp1);
       console.log("b2",temp2)
-      progress=((temp4/temp3)*100);
+      progress=((temp4/temp3)*100)?((temp4/temp3)*100):0;
         console.log("milestones",mildstones)
         console.log("progress1",progress);
         this.setState({ progressbar: progress })
+        
       });
   }
 
   public render(): React.ReactElement<IProjectMildstoneProps> {
+    
     return (
       <div className="projectHealth">
         <div className="row">

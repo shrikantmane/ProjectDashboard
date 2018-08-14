@@ -12,6 +12,7 @@ var currentScope: any;
 
 export default class Gantt extends React.Component<any, any>{
   ganttContainer: any;
+  count : any;
 
   constructor(props) {
     super(props);
@@ -89,15 +90,17 @@ export default class Gantt extends React.Component<any, any>{
         // ParentId: task.parent         
 
       }).then((iar: ItemAddResult) => {
-        sp.utility.sendEmail(emailProps).then(mail => {
-        });
+        // sp.utility.sendEmail(emailProps).then(mail => {
+        // });
       }).catch(err => {
         console.log("Error while adding ScheduleTask", err);
       });
     });
 
     gantt.attachEvent('onAfterTaskUpdate', (id, task) => {
-      let duration = task.type === "Task2" ? 0 : task.duration;
+      console.log('onAfterTaskUpdate', task);
+      if(currentScope.count == 1){
+      let duration = task.actualDuration;
       let status: any = find(this.props.statusList, { key: task.status });
       let owner: any = find(this.props.teamMembers, { key: task.owner });
       const emailProps: EmailProperties = {
@@ -116,11 +119,13 @@ export default class Gantt extends React.Component<any, any>{
         Priority: task.priority,
         //ParentId: task.parent
       }).then((iar: ItemAddResult) => {
-        sp.utility.sendEmail(emailProps).then(mail => {
-        });
+        // sp.utility.sendEmail(emailProps).then(mail => {
+        // });
       }).catch(err => {
         console.log("Error while updating ScheduleTask", err);
       });
+    }
+    currentScope.count ++;
     });
 
     gantt.attachEvent('onAfterTaskDelete', (id, task) => {
@@ -154,10 +159,19 @@ export default class Gantt extends React.Component<any, any>{
     //     return true;
     // });
     gantt.attachEvent("onLightboxSave", function (id, item) {
+      currentScope.count = 0;
       let status: any = find(currentScope.props.statusList, { key: item.status });
       item.statusBackgroudColor = status.color;
       item.actualDuration = item.type === "Task2" ? 0 : item.duration;
-      item.duration = item.type === "Task2" ? 1 : item.duration
+      item.duration = item.type === "Task2" ? 1 : item.duration;
+      item.end_date = gantt.calculateEndDate(item.start_date, item.duration);
+      gantt.updateTask(item.id);
+      //gantt.render();
+    //   item.end_date = gantt.calculateEndDate(item.start_date, item.duration);
+    //   gantt.updateTask(item.id);
+    //   gantt.refreshData();
+    //  // gantt.refreshTask();
+    //   gantt.render();
       return true;
     });
     // gantt.showLightbox = function(id) {
@@ -165,6 +179,70 @@ export default class Gantt extends React.Component<any, any>{
     //   console.log('task', task);
     //   return true;
     //   };
+
+    var inlineEditors = gantt.ext.inlineEditors;
+
+    inlineEditors.attachEvent("onSave", function (state) {
+      console.log('onSave', state);    
+      if(state.columnName =="actualDuration"){
+        currentScope.count = 1;
+        var task = gantt.getTask(state.id);
+        task.duration = state.newValue == 0 ? 1 :  state.newValue;
+        task.end_date = gantt.calculateEndDate(task.start_date, task.duration);
+        gantt.updateTask(task.id);
+      //  gantt.refreshData();
+      } 
+      // if(state.columnName =="actualDuration"){
+      //   var task = gantt.getTask(state.id);
+      // //  task.duration = state.newValue == 0 ? 1 :  state.newValue;
+      //   task.duration = 3;
+      //   task.end_date = gantt.calculateEndDate(task.start_date, task.duration);
+      //   gantt.updateTask(task.id);
+      //   gantt.refreshData();
+      // }
+   //   gantt.refreshData();
+      // return true;
+      //var task = gantt.getTask(state.id);
+    //   task.duration = task.actualDuration;
+    //  gantt.refreshTask(state.id);
+    //  gantt.render();
+      // -> { id: itemId, 
+      //      columnName: columnName, 
+      //      oldValue: value, 
+      //      newValue: value
+      //    };
+    });
+    inlineEditors.attachEvent("onBeforeEditStart", function (state) {
+      console.log('onBeforeEditStart', state);
+      // -> {id: itemId, columnName: columnName};
+      return true;
+    });
+    inlineEditors.attachEvent("onEditStart", function (state) {
+      console.log('onEditStart', state);
+      currentScope.count = 1;
+      // -> {id: itemId, columnName: columnName};
+    });
+    inlineEditors.attachEvent("onBeforeSave", function (state) {
+      console.log('onBeforeSave', state);
+ 
+      // var task = gantt.getTask(state.id);
+      // task.duration = state.newValue;
+      // task.end_date = gantt.calculateEndDate(task.start_date, task.duration);
+      // gantt.updateTask(task.id);
+      // gantt.refreshData();
+      // -> { id: itemId, 
+      //      columnName: columnName, 
+      //      oldValue: value, 
+      //      newValue: value
+      //    };
+      return true;
+    });
+
+    inlineEditors.attachEvent("onEditEnd", function (state) {
+      console.log('onEditEnd' , state);
+      currentScope.count = 0;
+      // -> {id: itemId, columnName: columnName};
+    });
   }
 
   componentDidMount() {
@@ -174,9 +252,21 @@ export default class Gantt extends React.Component<any, any>{
     gantt.parse(this.props.tasks);
     this.initGanttChart()
     currentScope = this;
+    currentScope.count = 0;
   }
 
   initGanttChart() {
+    var editors = {
+      text: { type: "text", map_to: "text" },
+      start_date: {
+        type: "date", map_to: "start_date", min: new Date(2018, 0, 1),
+        max: new Date(2019, 0, 1)
+      },
+      duration: { type: "number", map_to: "actualDuration", min: 0, max: 100 },
+      status: { type: "select", map_to: "status", options: this.props.statusList },
+      predecessors: { type: "predecessor", map_to: "auto" }
+    };
+
     gantt.config.columns = [
       { name: "add", label: "", width: 30 },
       {
@@ -191,8 +281,8 @@ export default class Gantt extends React.Component<any, any>{
           return "<a href=''><i class='far fa-comments'></i></a>";
         }
       },
-      { name: "text", label: "Task name", tree: true, width: 100 },
-      { name: "start_date", label: "Start time", align: "center", width: 80 },
+      { name: "text", label: "Task name", tree: true, width: 100, resize: true, editor: editors.text },
+      { name: "start_date", label: "Start time", align: "center", width: 80, editor: editors.start_date },
       {
         name: "ryg", label: "RYG", width: 22,
         template: function (obj) {
@@ -200,13 +290,13 @@ export default class Gantt extends React.Component<any, any>{
         }
       },
       {
-        name: "status", label: "Status", width: 80,
+        name: "status", label: "Status", width: 80, editor: editors.status,
         template: function (obj) {
           return (obj.status)
         }
       },
       {
-        name: "actualDuration", label: "Duration", align: "center", width: 80,
+        name: "actualDuration", label: "Duration", align: "center", width: 80, editor: editors.duration,
         template: function (obj) {
           return ("<span>" + obj.actualDuration + "</span>")
         }
@@ -272,7 +362,6 @@ export default class Gantt extends React.Component<any, any>{
         name: "owner", height: 25, map_to: "owner", type: "select", options: this.props.teamMembers
       },
       { name: "time", height: 50, map_to: "auto", type: "duration" },
-
 
     ];
     gantt.locale.labels.section_title = "Title";

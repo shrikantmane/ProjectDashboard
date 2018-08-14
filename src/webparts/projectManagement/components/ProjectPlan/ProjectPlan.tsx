@@ -117,6 +117,7 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
       .expand("Status0", "AssignedTo", "ParentID", "Predecessors")
       .get()
       .then((response: Array<Plan>) => {
+        console.log('Chart response', response);
         let chartData = new Chart();
         chartData.data = new Array<ChartData>();
         chartData.links = new Array<ChartLink>();
@@ -132,7 +133,7 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
             status: item.Status0 ? item.Status0.Status : "",
             priority: item.Priority,
             type: duration == 0 ? "Task2" : "Task",
-            duration: duration,
+            duration: duration == 0 ? 1 : duration,
             actualDuration: duration,
             progress: item.PercentComplete / 100,
             parent: item.ParentID ? item.ParentID.Id : null,

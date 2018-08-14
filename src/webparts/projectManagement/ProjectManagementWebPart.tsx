@@ -40,8 +40,8 @@ export default class ProjectManagementWebPart extends BaseClientSideWebPart<IPro
         return Promise.resolve();
       }else if(Environment.type === EnvironmentType.SharePoint){   //Modern SharePoint page 
         if(siteurl!== "" || siteurl!== null){
-        // spCurrentPageUrl= siteurl.split('.com')[1] + '/SitePages/Projects.aspx';
-         spCurrentPageUrl= siteurl.split('.com')[1] + '/_layouts/15/workbench.aspx';
+         spCurrentPageUrl= siteurl.split('.com')[1] + '/SitePages/Projects.aspx';
+         // spCurrentPageUrl= siteurl.split('.com')[1] + '/_layouts/15/workbench.aspx';
          //spCurrentPageUrl= '/sites/hbctest/_layouts/15/workbench.aspx';
         }
         //spCurrentPageUrl= "/sites/hbctest/SitePages/Dashboard.aspx";

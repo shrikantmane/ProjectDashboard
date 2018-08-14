@@ -52,6 +52,8 @@ export default class ProjectLevelDashboard extends React.Component<
       "Project_x0020_Document",
       "Project_x0020_Team_x0020_Members",
       "Project_x0020_Infromation",
+      "Project_x0020_Comments",
+      "Task_x0020_Comments",
       "AttachmentFiles",
       "AttachmentFiles/ServerRelativeUrl",
       "AttachmentFiles/FileName"
@@ -70,9 +72,10 @@ export default class ProjectLevelDashboard extends React.Component<
           project.Project_x0020_Document = response[0].Project_x0020_Document;
           project.Project_x0020_Team_x0020_Members = response[0].Project_x0020_Team_x0020_Members;
           project.Project_x0020_Infromation = response[0].Project_x0020_Infromation;
+          project.Task_x0020_Comments = response[0].Task_x0020_Comments;
           file.Name = response[0].AttachmentFiles.length > 0 ? response[0].AttachmentFiles[0].FileName : '';
           file.ServerRelativeUrl = response[0].AttachmentFiles.length > 0 ? response[0].AttachmentFiles[0].ServerRelativeUrl : '';
-          this.setState({ project: project, attachment : file });
+          this.setState({ project: project, attachment: file });
         }
       })
       .catch((e: Error) => {
@@ -137,7 +140,7 @@ export default class ProjectLevelDashboard extends React.Component<
                     </div>
                   </div>
                 </div>
-                <ProjectPlan scheduleList={this.state.project.Schedule_x0020_List}></ProjectPlan>
+                <ProjectPlan scheduleList={this.state.project.Schedule_x0020_List} commentList={this.state.project.Task_x0020_Comments} ></ProjectPlan>
                 <ProjectTaskList taskList={this.state.project.Task_x0020_List}></ProjectTaskList>
                 <ProjectDocument projectDocument={this.state.project.Project_x0020_Document}></ProjectDocument>
                 <div className="clearfix"></div>

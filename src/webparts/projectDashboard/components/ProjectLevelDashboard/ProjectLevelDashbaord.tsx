@@ -100,7 +100,7 @@ export default class ProjectLevelDashboard extends React.Component<
       });
   }
   public render(): React.ReactElement<IProjectLevelDashboardProps> {
-    let projectOutlineButton = this.state.attachment.ServerRelativeUrl !== '' ? <a href={this.state.attachment.ServerRelativeUrl} target="_blank" style={{ float: 'right' }} className="btn-outline btn btn-sm">Project Outline</a> : null
+    let projectOutlineButton = this.state.attachment.ServerRelativeUrl !== '' ? <a href={this.state.attachment.ServerRelativeUrl} target="_blank" style={{ float: 'right' }} className="btnoutlineproject btn btn-sm">Project Outline</a> : null
     return (
       <div className="ProjectLevelDashboard">
         <div className="container-fluid">

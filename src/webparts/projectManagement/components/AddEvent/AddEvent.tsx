@@ -241,7 +241,7 @@ export default class AddProject extends React.Component<IAddEventProps, {
             let obj: any = this.state.fields;
             if (this.props.id) {
             sp.web.lists.getByTitle(this.props.list).items.getById(this.props.id).update({
-                Title: obj.projectname ? obj.obj.projectname.trim() : '',
+                Title: obj.projectname ? obj.projectname.trim() : '',
                // Description: obj.description ? obj.description : '',
                 EventDate: obj.startdate ? new Date(obj.startdate).toDateString() : '',
                 //EventDate: obj.projectdescription ? obj.projectdescription : '',

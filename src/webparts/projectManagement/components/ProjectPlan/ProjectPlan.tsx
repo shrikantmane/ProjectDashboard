@@ -6,6 +6,8 @@ import Toolbar from './Toolbar';
 import { Plan, Chart, ChartData, ChartLink, Status } from "./Project";
 import { IProjectPlanProps } from './IProjectPlanProps';
 import { IProjectPlanState } from './IProjectPlanState';
+import Documents from '../Documents/Documents';
+import Comments from '../Comments/Comments';
 
 export default class ProjectPlan extends React.Component<IProjectPlanProps, IProjectPlanState> {
 
@@ -15,9 +17,18 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
       currentZoom: 'Months',
       chart: new Chart(),
       statusList: [],
-      teamMembers: []
+      teamMembers: [],
+      scheduleList: '',
+      commentList: '',
+      showCommentComponent: false,
+      showDocumentComponent: false,
+      documentID: null
     };
     this.handleZoomChange = this.handleZoomChange.bind(this);
+    this.showComments = this.showComments.bind(this);
+    this.showDocuments = this.showDocuments.bind(this);
+    this.reopenPanel = this.reopenPanel.bind(this);
+
   }
 
   // componentDidMount(){
@@ -30,6 +41,7 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
     this.getTaskStatus();
   }
   componentWillReceiveProps(nextProps) {
+    this.setState({ scheduleList: nextProps.scheduleList, commentList: nextProps.commentList });
     if (this.props.scheduleList != nextProps.scheduleList)
       this.getProjectPlan(nextProps.scheduleList);
     if (this.props.teamMemberlist != nextProps.teamMemberlist)
@@ -41,7 +53,26 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
       currentZoom: zoom
     });
   }
-
+  reopenPanel() {
+    this.setState({
+      showDocumentComponent: false,
+      showCommentComponent: false,
+      //taskID: null,
+      documentID: null
+    })
+  }
+  showComments(id) {
+    this.setState({
+      showCommentComponent: true,
+      documentID: Number(id)
+    });
+  }
+  showDocuments(id) {
+    this.setState({
+      showDocumentComponent: true,
+      documentID: Number(id)
+    });
+  }
   private getTaskStatus(): void {
     sp.web.lists
       .getByTitle("Task Status Color").items
@@ -66,12 +97,12 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
     sp.web.lists
       .getByTitle(teamMemberlist)
       .items.select(
-        "Team_x0020_Member/ID",
-        "Team_x0020_Member/Title",
-        "Team_x0020_Member/EMail",
-        "Start_x0020_Date",
-        "End_x0020_Date",
-        "Status",
+      "Team_x0020_Member/ID",
+      "Team_x0020_Member/Title",
+      "Team_x0020_Member/EMail",
+      "Start_x0020_Date",
+      "End_x0020_Date",
+      "Status",
     )
       .expand("Team_x0020_Member")
       .get()
@@ -96,23 +127,23 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
     sp.web.lists
       .getByTitle(scheduleList)
       .items.select(
-        "ID",
-        "Title",
-        "StartDate",
-        "DueDate",
-        "Duration",
-        "PercentComplete",
-        "Body",
-        "Status0/ID",
-        "Status0/Status",
-        "Status0/Status_x0020_Color",
-        "AssignedTo/Title",
-        "AssignedTo/ID",
-        "AssignedTo/EMail",
-        "Priority",
-        "ParentID/Id",
-        "Predecessors/Id",
-        "Predecessors/Title"
+      "ID",
+      "Title",
+      "StartDate",
+      "DueDate",
+      "Duration",
+      "PercentComplete",
+      "Body",
+      "Status0/ID",
+      "Status0/Status",
+      "Status0/Status_x0020_Color",
+      "AssignedTo/Title",
+      "AssignedTo/ID",
+      "AssignedTo/EMail",
+      "Priority",
+      "ParentID/Id",
+      "Predecessors/Id",
+      "Predecessors/Title"
       )
       .expand("Status0", "AssignedTo", "ParentID", "Predecessors")
       .get()
@@ -167,6 +198,14 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
               </div>
             </div>
             <div className="col-sm-12 col-12">
+              {this.state.showCommentComponent ?
+                <Comments id={this.state.documentID} list={this.props.commentList} parentReopen={this.reopenPanel} /> :
+                null
+              }
+              {this.state.showDocumentComponent ?
+                <Documents id={this.state.documentID} list={this.props.scheduleList} parentReopen={this.reopenPanel} /> :
+                null
+              }
               {this.state.chart && this.state.chart.data && this.state.statusList && this.state.statusList.length > 0
                 && this.state.teamMembers && this.state.teamMembers.length > 0 ?
                 <div className="taskGanttContainer">
@@ -181,6 +220,8 @@ export default class ProjectPlan extends React.Component<IProjectPlanProps, IPro
                       statusList={this.state.statusList}
                       teamMembers={this.state.teamMembers}
                       zoom={this.state.currentZoom}
+                      showComments={this.showComments}
+                      showDocuments={this.showDocuments}
                     />
                   </div>
                 </div>

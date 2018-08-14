@@ -6,16 +6,48 @@ import { find } from "lodash";
 import 'dhtmlx-gantt';
 import 'dhtmlx-gantt/codebase/dhtmlxgantt.css';
 import 'dhtmlx-gantt/codebase/ext/dhtmlxgantt_tooltip.js';
+import { IGanttChartProps } from './IGanttChart';
 import { Chart, ChartData, ChartLink } from "./Project";
 declare var gantt: any;
 var currentScope: any;
 
-export default class Gantt extends React.Component<any, any>{
+export default class Gantt extends React.Component<IGanttChartProps, {
+  showDocumentComponent: boolean;
+  showCommentComponent: boolean;
+  taskID: any,
+  documentID: any
+}>{
   ganttContainer: any;
 
   constructor(props) {
     super(props);
+    this.state = {
+      showDocumentComponent: false,
+      showCommentComponent: false,
+      taskID: 0,
+      documentID: 0
+    }
+    this.onDocuments = this.onDocuments.bind(this);
+    this.onComment = this.onComment.bind(this);
+    this.reopenPanel = this.reopenPanel.bind(this);
     this.initGanttChart();
+    console.log('schedulelist : ', this.props.scheduleList);
+    console.log('commentList : ', this.props.commentList);
+  }
+
+  onDocuments(id): void {
+    this.props.showDocuments(Number(id));
+  }
+  onComment(id): void {
+    this.props.showComments(Number(id));
+  }
+  reopenPanel() {
+    this.setState({
+      showDocumentComponent: false,
+      showCommentComponent: false,
+      taskID: null,
+      documentID: null
+    })
   }
   setZoom(value) {
     switch (value) {
@@ -182,13 +214,13 @@ export default class Gantt extends React.Component<any, any>{
       {
         name: "attachment", label: "", width: 30,
         template: function (obj) {
-          return "<a href=''><i class='fas fa-paperclip'></i></a>";
+          return "<i class='fas fa-paperclip'></i>";
         }
       },
       {
         name: "comments", label: "", width: 30,
         template: function (obj) {
-          return "<a href=''><i class='far fa-comments'></i></a>";
+          return "<i class='far fa-comments'></i>";
         }
       },
       { name: "text", label: "Task name", tree: true, width: 100 },
@@ -212,6 +244,18 @@ export default class Gantt extends React.Component<any, any>{
         }
       },
     ];
+    gantt.attachEvent("onTaskClick", function (id, e) {
+      //any custom logic here
+      console.log(e);
+      console.log(id);
+      if (e.target.className === 'fas fa-paperclip') {
+        currentScope.onDocuments(id);
+      }
+      else if (e.target.className === 'far fa-comments') {
+        currentScope.onComment(id);
+      }
+      return true;
+    });
     gantt.templates.grid_file = function (item) {
       return "";
     };

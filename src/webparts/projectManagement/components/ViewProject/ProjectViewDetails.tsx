@@ -41,7 +41,7 @@ export default class ProjectViewDetails extends React.Component<
             refreshCalender: false,
             imgURL: "",
             Risks: "",
-            onholddate:"",
+            onholddate: "",
             events: [
                 {
                     id: 10,
@@ -82,7 +82,8 @@ export default class ProjectViewDetails extends React.Component<
                 //       start: '2018-07-30'
                 //   }
             ],
-            scheduleList : ""
+            scheduleList: "",
+            commentList: ""
         };
         this.onAddProject = this.onAddProject.bind(this);
         this.onRefreshCalender = this.onRefreshCalender.bind(this)
@@ -109,7 +110,7 @@ export default class ProjectViewDetails extends React.Component<
     getProjectData(id) {
         console.log('params : ' + id);
         sp.web.lists.getByTitle("Project").items
-            .select("ID", "Project", "DueDate", "Priority", "On_x0020_Hold_x0020_Status", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "AssignedTo/EMail", "Priority", "Task_x0020_List", "Project_x0020_Team_x0020_Members", "Project_x0020_Document", "Requirements", "Project_x0020_Infromation", "Project_x0020_Calender", "StartDate", "Risks","On_x0020_Hold_x0020_Date","Schedule_x0020_List").expand("Status0", "AssignedTo")
+            .select("ID", "Project", "DueDate", "Priority", "On_x0020_Hold_x0020_Status", "Status0/ID", "Status0/Status", "Status0/Status_x0020_Color", "AssignedTo/Title", "AssignedTo/ID", "AssignedTo/EMail", "Priority", "Task_x0020_List", "Project_x0020_Team_x0020_Members", "Project_x0020_Document", "Requirements", "Project_x0020_Infromation", "Project_x0020_Calender", "StartDate", "Risks", "On_x0020_Hold_x0020_Date", "Schedule_x0020_List", "Task_x0020_Comments").expand("Status0", "AssignedTo")
             .filter('ID eq \'' + id + '\'')
             .getAll()
             .then((response) => {
@@ -118,25 +119,25 @@ export default class ProjectViewDetails extends React.Component<
                 if (response != null) {
 
                     console.log('Project by names', response);
-                     if (response[0].On_x0020_Hold_x0020_Status === true)
-                        {status = "Yes";}
+                    if (response[0].On_x0020_Hold_x0020_Status === true)
+                    { status = "Yes"; }
                     else
-                       { status = "No";}
-// if(response[0].On_x0020_Hold_x0020_Date!=null){
-//     onHoldDate=new Date(response[0].On_x0020_Hold_x0020_Date).toDateString();
-// }
-// else{
-//     onHoldDate="-"
-// }
+                    { status = "No"; }
+                    // if(response[0].On_x0020_Hold_x0020_Date!=null){
+                    //     onHoldDate=new Date(response[0].On_x0020_Hold_x0020_Date).toDateString();
+                    // }
+                    // else{
+                    //     onHoldDate="-"
+                    // }
                     this.setState({
                         project: response ? response[0].Project : '',
                         startdate: response[0].StartDate ? new Date(response[0].StartDate).toDateString() : "-",
                         enddate: response[0].DueDate ? new Date(response[0].DueDate).toDateString() : "-",
                         onhold: response ? status : null,
-                        onholddate:response[0].On_x0020_Hold_x0020_Date ? new Date(response[0].On_x0020_Hold_x0020_Date).toDateString() : "-",
-                        owner: response ? (response[0].AssignedTo!==undefined ?(response[0].AssignedTo? response[0].AssignedTo[0].Title: null) :null) : null,
+                        onholddate: response[0].On_x0020_Hold_x0020_Date ? new Date(response[0].On_x0020_Hold_x0020_Date).toDateString() : "-",
+                        owner: response ? (response[0].AssignedTo !== undefined ? (response[0].AssignedTo ? response[0].AssignedTo[0].Title : null) : null) : null,
                         priority: response ? response[0].Priority : '',
-                        status: response ? (response[0].Status0===undefined ?(response[0].Status0? response[0].Status0.Status: null) : response[0].Status0.Status ) : null,
+                        status: response ? (response[0].Status0 === undefined ? (response[0].Status0 ? response[0].Status0.Status : null) : response[0].Status0.Status) : null,
                         //status: response ? (response[0].Status0 ? response[0].Status0.Status : null) : '',
                         informationlist: response ? response[0].Project_x0020_Infromation : '',
                         teammemberlist: response ? response[0].Project_x0020_Team_x0020_Members : '',
@@ -144,11 +145,12 @@ export default class ProjectViewDetails extends React.Component<
                         documentlist: response ? response[0].Project_x0020_Document : '',
                         Id: response ? response[0].ID : '',
                         calendarList: response ? response[0].Project_x0020_Calender : '',
-                        statuscolor: response ? (response[0].Status0!==undefined ?(response[0].Status0? response[0].Status0.Status_x0020_Color: null) : null) : null,
+                        statuscolor: response ? (response[0].Status0 !== undefined ? (response[0].Status0 ? response[0].Status0.Status_x0020_Color : null) : null) : null,
                         //statuscolor: response ? (response[0].Status0 ? response[0].Status0.Status_x0020_Color : null) : null,
-                        imgURL:response ? (response[0].AssignedTo!==undefined ?(response[0].AssignedTo? "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" + response[0].AssignedTo[0].EMail + "&UA=0&size=HR64x64&sc=1531997060853" : null) : null) : null,
+                        imgURL: response ? (response[0].AssignedTo !== undefined ? (response[0].AssignedTo ? "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" + response[0].AssignedTo[0].EMail + "&UA=0&size=HR64x64&sc=1531997060853" : null) : null) : null,
                         Risks: response ? response[0].Risks : '',
-                        scheduleList : response[0] ? response[0].Schedule_x0020_List : ""
+                        scheduleList: response[0] ? response[0].Schedule_x0020_List : "",
+                        commentList: response[0] ? response[0].Task_x0020_Comments : "",
 
                     });
                     console.log("helllo", this.state)
@@ -177,15 +179,15 @@ export default class ProjectViewDetails extends React.Component<
                             <div className="row">
                                 <div className="col-12 col-sm-12">
                                     <div className="well headerWell">
-                                    <p id="project-name">{this.state.project}</p>
-                                    <div className="current-project-conatiner current-project-conatiner-status">
-                                        <span>Status</span>
-                                        <span className="tags " style={{ background: this.state.statuscolor ,color: "white" + this.state.statuscolor, fontSize: "11px!important;" }}>{this.state.status}</span>
-                                    </div>
+                                        <p id="project-name">{this.state.project}</p>
+                                        <div className="current-project-conatiner current-project-conatiner-status">
+                                            <span>Status</span>
+                                            <span className="tags " style={{ background: this.state.statuscolor, color: "white" + this.state.statuscolor, fontSize: "11px!important;" }}>{this.state.status}</span>
+                                        </div>
                                         <div className="row topMargin10">
                                             <div className="col-sm-2 col-12 borderRight">
-                                                <div className="current-project-conatiner current-project-conatiner-owner">                                                    
-                                                    <img className="profile-img-style" src={this.state.imgURL} style={{ display: !this.state.imgURL? 'none': '' }}  />
+                                                <div className="current-project-conatiner current-project-conatiner-owner">
+                                                    <img className="profile-img-style" src={this.state.imgURL} style={{ display: !this.state.imgURL ? 'none' : '' }} />
                                                     <p>{this.state.owner}</p>
                                                 </div>
                                             </div>
@@ -206,13 +208,13 @@ export default class ProjectViewDetails extends React.Component<
                                                     <div className="col-12 col-sm-2 ">
                                                         <div className="current-project-conatiner">
                                                             <span>On Hold</span>
-                                                            <div>{this.state.onhold}</div>  
+                                                            <div>{this.state.onhold}</div>
                                                         </div>
                                                     </div>
                                                     <div className="col-12 col-sm-2 borderRight">
                                                         <div className="current-project-conatiner">
                                                             <span>On Hold Date</span>
-                                                            <div>{this.state.onholddate}</div>  
+                                                            <div>{this.state.onholddate}</div>
                                                         </div>
                                                     </div>
                                                     <div className="col-12 col-sm-2">
@@ -239,7 +241,7 @@ export default class ProjectViewDetails extends React.Component<
                                                             {/* <span>Status</span> */}
                                                             <span className="tags orange" style={{ color: this.state.statuscolor, border: "1px solid " + this.state.statuscolor }}>{this.state.status}</span>
                                                         </div>
-                                                       
+
                                                     </div>
                                                 </div>
                                             </div>
@@ -256,7 +258,7 @@ export default class ProjectViewDetails extends React.Component<
                                         <div><DocumentListTable list={this.state.documentlist} projectId={this.state.Id}></DocumentListTable></div>
                                     </div>
                                 </div>
-                                
+
                                 <div className="col-12 col-sm-12">
                                     <div className="well hbc-list hbc-list-roles">
                                         <div><InformationListTable list={this.state.informationlist} projectId={this.state.Id}></InformationListTable></div>
@@ -265,7 +267,7 @@ export default class ProjectViewDetails extends React.Component<
 
                                 <div className="col-12 col-sm-12">
                                     <div className="well">
-                                        <div><ProjectPlan scheduleList={this.state.scheduleList} teamMemberlist={this.state.teammemberlist}></ProjectPlan></div>
+                                        <div><ProjectPlan scheduleList={this.state.scheduleList} commentList={this.state.commentList} teamMemberlist={this.state.teammemberlist}></ProjectPlan></div>
                                     </div>
                                 </div>
 

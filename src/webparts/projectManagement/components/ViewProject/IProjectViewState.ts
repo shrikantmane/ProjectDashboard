@@ -26,4 +26,5 @@ export interface IProjectViewState{
     imgURL:any;
     statuscolor:any;
     scheduleList:string;
+    commentList:string;
 }

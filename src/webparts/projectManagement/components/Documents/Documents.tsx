@@ -1,7 +1,7 @@
 import * as React from "react";
 import { IDocumentsProps } from './IDocumentProps';
 import { Panel, PanelType } from 'office-ui-fabric-react/lib/Panel';
-import styles from "../../ProjectDashboard.module.scss";
+import styles from "../ProjectManagement.module.scss";
 import { sp, ItemAddResult, Web } from "@pnp/sp";
 import moment from 'moment/src/moment';
 
@@ -20,6 +20,9 @@ export default class Documents extends React.Component<IDocumentsProps, {
             errors: {},
         }
         this.onSubmit = this.onSubmit.bind(this);
+
+        console.log('id', this.props.id);
+        console.log('list', this.props.list);
     }
     componentDidMount() {
         this.getTaskDocuments();
@@ -27,7 +30,7 @@ export default class Documents extends React.Component<IDocumentsProps, {
     private getTaskDocuments() {
         let reactHandler = this;
         //let ScheduleList = currentProject.Schedule_x0020_List;
-        let ScheduleList = 'AlphaServe_Schedule_List';
+        let ScheduleList = this.props.list;
         sp.web.lists
             .getByTitle(ScheduleList)
             .items.select(
@@ -40,7 +43,7 @@ export default class Documents extends React.Component<IDocumentsProps, {
             "Author/Title"
             )
             .expand("AttachmentFiles", "Author")
-            .filter("ID eq 10")
+            .filter("ID eq " + this.props.id)
             .get()
             .then(response => {
                 console.log("response of Schedule List -", response);
@@ -83,9 +86,9 @@ export default class Documents extends React.Component<IDocumentsProps, {
     }
     onSubmit() {
         if (this.handleValidation()) {
-            let ScheduleList = 'AlphaServe_Schedule_List';
+            let ScheduleList = this.props.list;
 
-            sp.web.lists.getByTitle(ScheduleList).items.getById(10).update({
+            sp.web.lists.getByTitle(ScheduleList).items.getById(this.props.id).update({
                 // Title: "My New Title",
             }).then(i => {
                 i.item.attachmentFiles.add(this.state.fields["attachment"].name, this.state.fields["attachment"]).then((result) => {
@@ -156,7 +159,7 @@ export default class Documents extends React.Component<IDocumentsProps, {
                             <div className="mid-section">
                                 {fileContainer}
                             </div>
-                            <div className="bottom_wrapper clearfix">
+                             <div className="bottom_wrapper clearfix">
                                 <div className="display-line form-group">
                                     <div className=" form-control fileupload" data-provides="fileupload">
                                         <input id="file_upload" type="file" onChange={this.handleChange.bind(this, "attachment")} />
@@ -166,9 +169,9 @@ export default class Documents extends React.Component<IDocumentsProps, {
                                     <div style={{ marginLeft: '12px' }}>
                                         <button type="button" className="btn-style btn btn-primary" onClick={this.onSubmit}>Submit</button>
                                     </div>
-                                    <span className="error">{this.state.errors["attachment"]}</span>
                                 </div>
-                            </div>
+                                <span className="error">{this.state.errors["attachment"]}</span>
+                            </div> 
                         </div>
                     </div>
                 </Panel>

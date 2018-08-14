@@ -30,7 +30,7 @@ export default class ProjectProjectRoleResponsibility extends React.Component<IP
           if (item.Owner) {
             let loginName = "i:0#.f|membership|" + item.Owner.EMail;
             sp.profiles.getPropertiesFor(loginName).then(function (result) {
-              item.Owner.Department = result.UserProfileProperties[13].Value;
+              item.Owner.Department = result.UserProfileProperties ? result.UserProfileProperties[13].Value : '';
               //item.Owner.PictureURL = result.UserProfileProperties[16].Value;
               item.Owner.PictureURL = "https://outlook.office365.com/owa/service.svc/s/GetPersonaPhoto?email=" +
               item.Owner.EMail +

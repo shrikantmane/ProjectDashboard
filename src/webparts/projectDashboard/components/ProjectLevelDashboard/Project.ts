@@ -7,6 +7,7 @@ export class Project {
     public Project_x0020_Document: string;
     public Project_x0020_Team_x0020_Members: string;
     public Project_x0020_Infromation: string;
+    public Task_x0020_Comments : string;
 }
 
 export class Milestone {

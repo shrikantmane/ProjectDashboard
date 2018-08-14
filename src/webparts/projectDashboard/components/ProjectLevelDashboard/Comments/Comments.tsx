@@ -21,6 +21,9 @@ export default class Comments extends React.Component<ICommentsProps, {
         }
         this.sendComment = this.sendComment.bind(this);
         this.handleKeyUp = this.handleKeyUp.bind(this);
+
+        console.log('id', this.props.id);
+        console.log('list', this.props.list);
     }
     componentDidMount() {
         this.getTaskComments();
@@ -28,9 +31,9 @@ export default class Comments extends React.Component<ICommentsProps, {
     private getTaskComments() {
         let reactHandler = this;
         //let ScheduleList = currentProject.Schedule_x0020_List;
-        let ScheduleList = 'AlphaServe_Task_Comments';
+        let CommentList = this.props.list;
         sp.web.lists
-            .getByTitle(ScheduleList)
+            .getByTitle(CommentList)
             .items.select(
             "Created",
             "Comment",
@@ -38,7 +41,7 @@ export default class Comments extends React.Component<ICommentsProps, {
             "Author/Title"
             )
             .expand("Author")
-            .filter("Task_x0020_Name/ID eq 10")
+            .filter("Task_x0020_Name/ID eq " + this.props.id)
             .get()
             .then(response => {
                 console.log("response of Task List -", response);
@@ -65,10 +68,10 @@ export default class Comments extends React.Component<ICommentsProps, {
         this.setState({ fields });
     }
     sendComment() {
-        let ScheduleList = 'AlphaServe_Task_Comments';
+        let ScheduleList = this.props.list;
         sp.web.lists.getByTitle(ScheduleList).items.add({
             Comment: this.state.fields['text'].trim(),
-            Task_x0020_NameId: 10
+            Task_x0020_NameId: this.props.id
         }).then(r => {
             // this will add an attachment to the item we just created
             // r.item.attachmentFiles.add("file.txt", "Here is some file content.");
@@ -111,13 +114,13 @@ export default class Comments extends React.Component<ICommentsProps, {
                             <ul className="messages">
                                 {commentContainer}
                             </ul>
-                            <div className="bottom_wrapper clearfix">
+                            {/* <div className="bottom_wrapper clearfix">
                                 <div className="message_input_wrapper">
                                     <input className="message_input" placeholder="Type your comment here..." onChange={this.handleChange.bind(this, "text")} onKeyUp={this.handleKeyUp}
                                         value={this.state.fields["text"]} />
                                 </div>
                                 {buttonContainer}
-                            </div>
+                            </div> */}
                         </div>
                     </div>
                 </Panel>

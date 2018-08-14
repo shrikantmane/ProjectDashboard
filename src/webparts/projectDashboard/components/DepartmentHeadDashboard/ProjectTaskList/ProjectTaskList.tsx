@@ -240,12 +240,12 @@ export default class ProjectTaskList extends React.Component<
           <div className="col-sm-12 col-12 cardHeading">
             <div className="tasklist-div">
               <h5>Task List</h5>
-               {/* <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onDocuments.bind(11)}>
+                <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onDocuments.bind(11)}>
                 Documents
               </button>
               <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onComment.bind(11)}>
                 Comments
-              </button>  */}
+              </button>  
               <button type="button" className="btn btn-primary btn-sm" style={{ marginBottom: "10px" }} onClick={this.onAddTask}>
                 Add Task
               </button>
